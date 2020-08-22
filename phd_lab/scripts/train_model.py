@@ -24,13 +24,17 @@ class Main:
     def __call__(self, config_path: Path, run_id: str, device: Optional[str]):
         pass
 
+
 @click.command()
-@click.argument("--config", "-c", type=str)
-@click.argument("--device", "-d", type=str)
-@click.argument()
-#TODO: Make proper click command line
+@click.option("--conifg", type=str, required=True, help="Link to the configuration json")
+@click.option("--device", type=str, required=True, help="The device to deploy the experiment on, this argument uses pytorch codes.")
+@click.option("--run-id", type=str, required=True, help="the id of the run")
+@click.option("--model-registry", type=str, required=False, help="registry of the model")
+@click.option("--dataset-registry", type=str, required=False, help="registry of the datasets")
+@click.option("--optimizer-registry", type=str, required=False, help="registry of the optimizers")
 def main(config: str, device: str, run_id: str):
     pass
 
+
 if __name__ == "__main__":
-    pass
+    main()

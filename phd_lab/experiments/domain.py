@@ -1,6 +1,6 @@
 from torch.utils.data import DataLoader
 from attr import attrs, attrib
-from typing import Optional, Protocol, Iterable
+from typing import Optional, Protocol, Iterable, Dict, Any
 from pathlib import Path
 from torch.nn.modules import Module
 from torch.optim import Optimizer
@@ -16,7 +16,7 @@ class Metric(Protocol):
     def value(self) -> float:
         ...
 
-    def update(self, y_true: Iterable, y_pred: Iterable, prefix: str) -> None:
+    def update(self, y_true: Iterable, y_pred: Iterable) -> None:
         ...
 
     def reset(self) -> None:
@@ -31,11 +31,23 @@ class LRScheduler(Protocol):
     def step(self) -> None:
         ...
 
+    def load_state_dict(self, state_dict: Dict[str, Any]):
+        ...
+
+    def state_dict(self) -> Dict[str, Any]:
+        ...
+
 
 class DummyLRScheduler(LRScheduler):
     """
-    The Defaul LR-Scheduler in case no scheduler is used
+    The Default LR-Scheduler in case no scheduler is used
     """
+
+    def load_state_dict(self, state_dict: Dict[str, Any]):
+        return
+
+    def state_dict(self) -> Dict[str, Any]:
+        return {}
 
     def step(self) -> None:
         return
@@ -95,7 +107,7 @@ class ModelFactory(Protocol):
 
 class OptimizerFactory(Protocol):
 
-    def __call__(self, **kargs) -> OptimizerSchedulerBundle:
+    def __call__(self, **kwargs) -> OptimizerSchedulerBundle:
         """
         Provides a OptimizerFactory-Bundle for the trainer object
         :return: bundle of optimizer and trainer
