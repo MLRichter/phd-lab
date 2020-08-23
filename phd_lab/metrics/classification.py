@@ -7,8 +7,8 @@ import torch
 @attrs(auto_attribs=True, slots=True)
 class Top5Accuracy:
 
-    total: Union[int, float, Tensor] = 0
-    correct: Union[int, float, Tensor] = 0
+    accuracy_accumulator: Union[int, float, Tensor] = 0
+    total: int = 0
     name: str = "top5-accuracy"
 
     def _accuracy(self, output: Tensor, target: Tensor, topk: Tuple[int] = (1,)):
@@ -28,16 +28,16 @@ class Top5Accuracy:
 
     @property
     def value(self) -> float:
-        return self.correct / self.total
+        return self.accuracy_accumulator / self.total
 
     def update(self, y_true: Tensor, y_pred: Tensor) -> None:
         _, predicted = torch.max(y_pred.data, 1)
-        self.correct += self._accuracy(y_pred, y_true, (5,))[0]
-        self.total += y_true.size(0)
+        self.accuracy_accumulator += self._accuracy(y_pred, y_true, (5,))[0]
+        self.total += 1
 
     def reset(self) -> None:
         self.total = 0
-        self.correct = 0
+        self.accuracy_accumulator = 0
 
 
 @attrs(auto_attribs=True, slots=True)
@@ -49,7 +49,7 @@ class Accuracy:
 
     @property
     def value(self) -> float:
-        return self.correct / self.total
+        return 100 * (self.correct / self.total)
 
     def update(self, y_true: Tensor, y_pred: Tensor) -> None:
         _, predicted = torch.max(y_pred.data, 1)

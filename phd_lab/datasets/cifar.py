@@ -17,9 +17,9 @@ def Cifar10(batch_size=12, output_size=32, cache_dir='tmp') -> DataBundle:
     RS = transforms.Resize(output_size)
 
     # Transforms object for trainset with augmentation
-    transform_with_aug = transforms.Compose([RC, RHF, TT, NRM, RS])
+    transform_with_aug = transforms.Compose([RC, RHF, RS, TT, NRM])
     # Transforms object for testset with NO augmentation
-    transform_no_aug = transforms.Compose([TT, NRM, RS])
+    transform_no_aug = transforms.Compose([RS, TT, NRM])
 
 
     trainset = torchvision.datasets.CIFAR10(root=cache_dir, train=True,

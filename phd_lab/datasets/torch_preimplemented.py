@@ -49,7 +49,7 @@ def TinyImageNet(batch_size=12, output_size=64) -> DataBundle:
     # Transforms object for trainset with augmentation
     transform_with_aug = transforms.Compose([RC, RHF, RS, TT, NRM])
     # Transforms object for testset with NO augmentation
-    transform_no_aug = transforms.Compose([TT, NRM])
+    transform_no_aug = transforms.Compose([RS, TT, NRM])
 
 
     trainset = torchvision.datasets.ImageFolder(root='./tmp/tiny-imagenet-200/train/', transform=transform_with_aug)
@@ -132,7 +132,7 @@ class Lighting(object):
 
 
 def ImageNet(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
-    size = output_size[0]
+    size = output_size
     __imagenet_pca = {
         'eigval': torch.Tensor([0.2175, 0.0188, 0.0045]),
         'eigvec': torch.Tensor([
@@ -145,7 +145,7 @@ def ImageNet(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
 
     train_tfms = transforms.Compose([
         transforms.Resize(output_size),
-        transforms.CenterCrop(size),
+        transforms.CenterCrop(output_size),
         transforms.RandomHorizontalFlip(),
         transforms.ColorJitter(.4,.4,.4),
         transforms.ToTensor(),
@@ -154,8 +154,8 @@ def ImageNet(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
     ])
 
     val_tfms = transforms.Compose([
-        transforms.Resize(int(size*1.14)),
-        transforms.CenterCrop(size),
+        transforms.Resize(int(output_size*1.14)),
+        transforms.CenterCrop(output_size),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
@@ -182,7 +182,7 @@ def TinyResizedFood101(batch_size=12, output_size=256,
                        cache_dir='tmp', shuffle_test: bool = False) -> DataBundle:
     RS = transforms.Resize(32)
     RS2 = transforms.Resize(output_size)
-    RC = transforms.RandomCrop(output_size, padding=32)
+    RC = transforms.RandomCrop(output_size, padding=output_size//8)
     RHF = transforms.RandomHorizontalFlip()
     NRM = transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
     TT = transforms.ToTensor()

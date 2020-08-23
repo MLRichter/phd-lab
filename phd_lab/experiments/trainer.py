@@ -41,7 +41,6 @@ class Trainer:
     # Technical Setup
     device: str = 'cpu'
     logs_dir: str = './logs'
-    plot: bool = True
 
     # delve setup
     conv_method = 'channelwise'
@@ -65,7 +64,7 @@ class Trainer:
             verbose=False,
             conv_method=self.conv_method,
             log_interval=1,
-            device=self.saturation_device,
+            device=self.device_sat,
             reset_covariance=True,
             max_samples=None,
             initial_epoch=self._initial_epoch,
@@ -108,18 +107,18 @@ class Trainer:
         self._initial_epoch = self._trained_epochs + 1
 
     def _check_training_done(self):
-        self.experiment_done = False
         if self._initial_epoch >= self.epochs:
-            self.experiment_done = True
+            self._experiment_done = True
             print(
                 f'Experiment Logs for the exact same experiment with identical run_id was detected, '
                 f'training will be skipped, consider using another run_id'
             )
 
     def _checkpointing(self):
-        self.experiment_done = False
         self._initial_epoch = 0
         self._trained_epochs = 0
+        self._experiment_done = False
+        self.model = self.model.to(self.device)
         if os.path.exists(self._save_path):
             self._load_initial_and_trained_epoch()
             self._check_training_done()
@@ -137,11 +136,11 @@ class Trainer:
             cudnn.benchmark = True
 
     def __attrs_post_init__(self):
-        self.saturation_device = self.device if self.saturation_device is None else self.saturation_device
+        self.device_sat = self.device if self.device_sat is None else self.device_sat
         self._enable_benchmark_mode_if_cuda()
         self._initialize_saving_structure()
-        self._initialize_tracker()
         self._checkpointing()
+        self._initialize_tracker()
 
     def _reset_metrics(self):
         for metric in self.metrics:
@@ -161,7 +160,7 @@ class Trainer:
     def _print_epoch_status(self, epoch: int, old_time: int, metric_dict: Dict[str, float]):
         metrics = [f"{k}:  {round(v, 3)}" for (k, v) in metric_dict.items()]
         print(
-            epoch, 'of', self.epochs,
+            epoch+1, 'of', self.epochs,
             'processing time', round(time() - old_time, 3),
             *metrics
         )
@@ -191,7 +190,7 @@ class Trainer:
         torch.save(state_dict, self._save_path.replace('.csv', '.pt'))
 
     def train(self):
-        if self.experiment_done:
+        if self._experiment_done:
             return
         old_time = time()
         for epoch in range(self._initial_epoch, self.epochs):
@@ -226,7 +225,7 @@ class Trainer:
             self.optimizer_bundle.optimizer.zero_grad()
             outputs = self.model(inputs)
             _, predicted = torch.max(outputs.data, 1)
-            self._eval_metrics(labels, predicted)
+            self._eval_metrics(labels, outputs)
 
             loss = self.criterion(outputs, labels)
             loss.backward()
@@ -254,7 +253,7 @@ class Trainer:
                 total += labels.size(0)
                 test_loss += loss.item()
 
-                self._eval_metrics(labels, predicted)
+                self._eval_metrics(labels, outputs)
 
                 if batch % 10 == 0 or batch == (len(self.data_bundle.test_dataset)-1):
                     self._print_status(batch, old_time, self.data_bundle.test_dataset)
