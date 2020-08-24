@@ -79,7 +79,7 @@ class DatasetFactory(Protocol):
             self,
             output_resolution: int,
             batch_size: int,
-            cache_dir: Path,
+            cache_dir: str,
     ) -> DataBundle:
         """
         The Factory produces a dataset bundle consisting of a train, test set and sme metadata.
@@ -107,7 +107,7 @@ class ModelFactory(Protocol):
 
 class OptimizerFactory(Protocol):
 
-    def __call__(self, **kwargs) -> OptimizerSchedulerBundle:
+    def __call__(self, model: Module, **kwargs) -> OptimizerSchedulerBundle:
         """
         Provides a OptimizerFactory-Bundle for the trainer object
         :return: bundle of optimizer and trainer
