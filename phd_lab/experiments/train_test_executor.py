@@ -4,34 +4,21 @@ from types import ModuleType
 from .trainer import Trainer
 from .domain import Metric
 from .utils.dependency_injection import get_metrics, get_optimizer, get_model, get_dataset, get_factory
-
-
-def extract():
-    pass
-
-
-def project():
-    pass
-
+from .utils.post_training import Extract, Project
+import json
 
 _MODES = {
-    "train": lambda: None,
-    "extract": extract,
-    "project": project
+    "train": lambda x: None,
+    "extract": Extract(),
+    "project_pca": Project('pca'),
+    "project": Project('pca'),
+    "project_random": Project('random')
 }
 
 
 @attrs(auto_attribs=True, slots=True, frozen=True)
 class TrainTestExecutor:
-
     mode: str = "train"
-    _projection_deltas: List[float] = [
-        0.9, 0.91, 0.92, 0.93, 0.94,
-        0.95, 0.96, 0.97, 0.98, 0.99,
-        0.992, 0.994, 0.996, 0.998, 0.999,
-        0.999, 0.9991, 0.9992, 0.9993, 0.9994,
-        0.9995, 0.9996, 0.9997, 0.9998, 0.9999, 3.0
-    ]
 
     def __call__(
             self,
@@ -73,8 +60,29 @@ class TrainTestExecutor:
                           delta=delta,
                           data_parallel=data_parallel,
                           downsampling=downsampling)
+        with open(trainer._save_path.replace('.csv', '_config.json'), 'w') as fp:
+            config = {
+                "model": model,
+                "epoch": epoch,
+                "batch_size": batch_size,
+
+                "dataset": dataset,
+                "resolution": resolution,
+
+                "optimizer": optimizer,
+                "metrics": metrics,
+
+                "logs_dir": logs_dir,
+                "device": device,
+
+                "conv_method": ["channelwise"],
+                "delta": delta,
+                "data_parallel": data_parallel,
+                "downsampling": downsampling
+            }
+            json.dump(config, fp)
         trainer.train()
         try:
-            _MODES[self.mode]()
+            _MODES[self.mode](trainer)
         except KeyError:
             raise ValueError(f"Illegal mode {self.mode}, legal values are {list(_MODES.keys())}")

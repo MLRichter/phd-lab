@@ -126,7 +126,7 @@ class Trainer:
             self._load_optimizer_and_scheduler()
             print(
                 'Resuming existing run, starting at epoch',
-                self._initial_epoch, 'from',
+                self._initial_epoch+1, 'from',
                 self._save_path.replace('.csv', '.pt')
                 )
 
@@ -194,7 +194,7 @@ class Trainer:
             return
         old_time = time()
         for epoch in range(self._initial_epoch, self.epochs):
-            print('Start training epoch', self.epochs)
+            print('Start training epoch', epoch+1)
             train_metric = self.train_epoch()
             test_metric = self.test()
             train_metric.update(test_metric)

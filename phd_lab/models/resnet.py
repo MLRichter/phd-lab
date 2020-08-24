@@ -7,7 +7,7 @@ from ..experiments.utils.pca_layers import Conv2DPCALayer, LinearPCALayer
 from torchvision.models import ResNet, vgg19_bn as vgg19_orig, vgg16_bn as vgg16_orig, resnet34 as resnet34_orig, \
     resnet152 as resnet152_orig
 
-PCA = False
+PCA = True
 PRETRAINED = False
 
 import torch.nn as nn

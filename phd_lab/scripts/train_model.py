@@ -6,9 +6,9 @@ from types import ModuleType
 from typing import Union
 from itertools import product as cproduct
 from copy import deepcopy
-from ..experiments.trainer import Trainer
-from ..experiments.utils.config import DEFAULT_CONFIG
-from ..experiments.utils.dependency_injection import get_factory, get_model, get_dataset, get_metrics, get_optimizer
+from phd_lab.experiments.trainer import Trainer
+from phd_lab.experiments.utils.config import DEFAULT_CONFIG
+from phd_lab.experiments.train_test_executor import TrainTestExecutor
 
 import click
 import json
@@ -18,14 +18,10 @@ import numpy as np
 @attrs(auto_attribs=True, frozen=True, slots=True)
 class Main:
     _trainer: Trainer = attrib(init=False)
-    _config: Dict[str, Any]
     _dataset_module: Union[ModuleType, str] = datasets
     _model_module: Union[ModuleType, str] = models
     _optimizer_module: Union[ModuleType, str] = optimizers
     _metrics_module: Union[ModuleType, str] = metrics
-
-    def _save_experiment_json(self):
-        pass
 
     def _build_iterator_config(self, config: Dict[str, Any]) -> Dict[str, List[Any]]:
         return {k: v if isinstance(v, list) else [v] for k, v in config.items()}
@@ -59,39 +55,36 @@ class Main:
                     operational_config['downsampling']
                 )):
             print("Running experiment", exp_num, "of", np.product([len(operational_config[key])
-                                                                   for key in optimizer.keys() if key != 'metrics']))
-            databundle = get_dataset(get_factory(dataset, self._dataset_module), output_resolution=resolution,
-                                     batch_size=batch_size,
-                                     cache_dir="tmp")
-            pytorch_model = get_model(get_factory(model, self._model_module), num_classes=databundle.cardinality)
-            optimizerscheduler = get_optimizer(get_factory(optimizer, self._optimizer_module), model=pytorch_model)
-            metric_accumulators = get_metrics(
-                [get_factory(metric, self._metrics_module) for metric in operational_config['metrics']])
-            trainer = Trainer(model=pytorch_model,
-                              data_bundle=databundle,
-                              optimizer_bundle=optimizerscheduler,
-                              run_id=run_id,
-                              batch_size=batch_size,
-                              epochs=epoch,
-                              metrics=metric_accumulators,
-                              device=device,
-                              logs_dir=logs_dir,
-                              delta=delta,
-                              data_parallel=data_parallel,
-                              downsampling=downsampling)
-            trainer.train()
-
+                                                                   for key in operational_config.keys() if key != 'metrics']))
+            executor = TrainTestExecutor('train')
+            executor(
+                exp_num=exp_num,
+                optimizer=optimizer,
+                dataset=dataset,
+                model=model,
+                metrics=operational_config['metrics'],
+                batch_size=batch_size,
+                epoch=epoch,
+                device=device,
+                logs_dir=logs_dir,
+                delta=delta,
+                data_parallel=data_parallel,
+                downsampling=downsampling,
+                resolution=resolution,
+                run_id=run_id,
+                model_module=self._model_module,
+                dataset_module=self._dataset_module,
+                optimizer_module=self._optimizer_module,
+                metric_module=self._metrics_module)
 
 @click.command()
-@click.option("--conifg", type=str, required=True, help="Link to the configuration json")
+@click.option("--config", type=str, required=True, help="Link to the configuration json")
 @click.option("--device", type=str, required=True,
               help="The device to deploy the experiment on, this argument uses pytorch codes.")
 @click.option("--run-id", type=str, required=True, help="the id of the run")
-@click.option("--model-registry", type=str, required=False, help="registry of the model")
-@click.option("--dataset-registry", type=str, required=False, help="registry of the datasets")
-@click.option("--optimizer-registry", type=str, required=False, help="registry of the optimizers")
 def main(config: str, device: str, run_id: str):
-    pass
+    main = Main()
+    main(config_path=Path(config), run_id=run_id, device=device)
 
 
 if __name__ == "__main__":

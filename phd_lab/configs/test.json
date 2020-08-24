@@ -1,8 +1,6 @@
-import torch
-
-DEFAULT_CONFIG = {
+{
     "model": ["resnet18"],
-    "epoch": [30],
+    "epoch": [5],
     "batch_size": [128],
 
     "dataset": ["Cifar10"],
@@ -12,10 +10,10 @@ DEFAULT_CONFIG = {
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["./logs/"],
-    "device": ['cuda:0' if torch.cuda.is_available() else 'cpu'],
+    "device": ["cuda:0"],
 
     "conv_method": ["channelwise"],
     "delta": [0.99],
-    "data_parallel": [False],
-    "downsampling": [None]
+    "data_parallel": false,
+    "downsampling": null
 }

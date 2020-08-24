@@ -77,8 +77,8 @@ class DatasetFactory(Protocol):
 
     def __call__(
             self,
-            output_resolution: int,
             batch_size: int,
+            output_size: int,
             cache_dir: str,
     ) -> DataBundle:
         """

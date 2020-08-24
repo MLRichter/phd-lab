@@ -23,7 +23,7 @@ def get_model(factory: ModelFactory, num_classes: int, **kwargs) -> Module:
 
 
 def get_dataset(factory: DatasetFactory, batch_size: int, output_resolution: int, cache_dir: str) -> DataBundle:
-    return factory(output_resolution=output_resolution, batch_size=batch_size, cache_dir=cache_dir)
+    return factory(output_size=output_resolution, batch_size=batch_size, cache_dir=cache_dir)
 
 
 def get_optimizer(factory: OptimizerFactory, model: Module, **kwargs) -> OptimizerSchedulerBundle:
