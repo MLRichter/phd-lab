@@ -333,7 +333,6 @@ class Conv2DPCALayer(LinearPCALayer):
                 self._compute_pca_matrix()
                 self._reset_autorcorrelation()
                 self.pca_computed = True
-            #if self.centering:
             x1 = self.mean_subtracting_convolution(x)
             x = x + x1
             return self.convolution(x)

@@ -1,4 +1,11 @@
 import torch
+import os
+from phd_lab import models, datasets, optimizers, metrics
+
+MODEL_REGISTRY = models
+DATASET_REGISTRY = datasets
+OPTIMIZER_REGISTRY = optimizers
+METRICS_REGISTRY = metrics
 
 DEFAULT_CONFIG = {
     "model": ["resnet18"],
@@ -19,3 +26,15 @@ DEFAULT_CONFIG = {
     "data_parallel": [False],
     "downsampling": [None]
 }
+
+
+def build_saving_structure(logs_dir: str, model_name: str, dataset_name: str, output_resolution: int, run_id: str) -> str:
+    save_dir: str = os.path.join(
+        logs_dir,
+        model_name,
+        f"{dataset_name}_{output_resolution}",
+        run_id
+    )
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    return save_dir

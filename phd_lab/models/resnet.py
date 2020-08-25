@@ -7,14 +7,11 @@ from ..experiments.utils.pca_layers import Conv2DPCALayer, LinearPCALayer
 from torchvision.models import ResNet, vgg19_bn as vgg19_orig, vgg16_bn as vgg16_orig, resnet34 as resnet34_orig, \
     resnet152 as resnet152_orig
 
-PCA = True
+PCA = False
 PRETRAINED = False
 
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
-
-__all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
-           'resnet152']
 
 model_urls = {
     'resnet18': 'https://download.pytorch.org/models/resnet18-5c106cde.pth',

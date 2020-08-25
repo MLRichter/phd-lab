@@ -1,16 +1,14 @@
 from attr import attrib, attrs
 from torch.nn.modules import Module
-from torch.optim import Optimizer
 from torch.utils.data import DataLoader
-import numpy as np
 import torch
 from time import time
-import pandas as pd
 import torch.nn as nn
 from typing import Optional, List, Dict, Tuple
 from delve import CheckLayerSat
 from delve.writers import CSVandPlottingWriter
 from .domain import DataBundle, OptimizerSchedulerBundle, Metric
+from .utils.config import build_saving_structure
 import os
 import datetime
 
@@ -73,14 +71,13 @@ class Trainer:
         )
 
     def _initialize_saving_structure(self):
-        save_dir: str = os.path.join(
-            self.logs_dir,
-            self.model.name,
-            f"{self.data_bundle.dataset_name}_{self.data_bundle.output_resolution}",
-            self.run_id
+        save_dir: str = build_saving_structure(
+            logs_dir=self.logs_dir,
+            model_name=self.model.name,
+            dataset_name=self.data_bundle.dataset_name,
+            output_resolution=self.data_bundle.output_resolution,
+            run_id=self.run_id
         )
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir)
         self._save_path = os.path.join(
             save_dir,
             f"{self.model.name}-{self.data_bundle.dataset_name}-r{self.data_bundle.output_resolution}-bs{self.batch_size}-e{self.epochs}.csv")

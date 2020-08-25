@@ -103,7 +103,9 @@ class LatentRepresentationCollector:
                 layers = self.get_layer_from_submodule(module, layers, '')
         return layers
 
-    def save(self):
+    def save(self, model_log_path) -> None:
+        with open(join(self.savepath, "model_pointer.txt"), "w+") as fp:
+            fp.write(model_log_path)
         if not exists(self.savepath):
             makedirs(self.savepath)
         for mode, logs in self.logs.items():

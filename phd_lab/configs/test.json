@@ -1,5 +1,5 @@
 {
-    "model": ["resnet18"],
+    "model": ["resnet18_XXS"],
     "epoch": [5],
     "batch_size": [128],
 

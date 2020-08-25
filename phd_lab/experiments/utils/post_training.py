@@ -5,14 +5,48 @@ from ..trainer import Trainer
 import numpy as np
 import pandas as pd
 import os
+import json
 from attr import attrs
 from torch.nn.modules import Module
 from .extraction import LatentRepresentationCollector, extract_from_dataset
+from .receptive_field import receptive_field
+from .dependency_injection import get_model
 
 _MODE = {
     'pca': change_all_pca_layer_thresholds,
     'random': change_all_pca_layer_thresholds_and_inject_random_directions
 }
+
+
+@attrs(auto_attribs=True, slots=True, frozen=True)
+class ReceptiveField:
+
+    def _reload_model_as_sequential(self, trainer: Trainer) -> None:
+        with open(trainer._save_path.replace(".csv", "_config.json")) as fp:
+            model_setup = json.load(fp)
+            trainer.model = get_model(model_setup['model'], num_classes=10, noskip=True)
+            trainer.model.to(trainer.device)
+
+    def __call__(self, trainer: Trainer):
+        if "ResNet" in trainer.model.name:
+            print("Detected ResNet-style network, "
+                  "reloading model without skip connections "
+                  "for receptive field computation")
+            self._reload_model_as_sequential(trainer)
+        receptive_field_dict = receptive_field(trainer.model,
+                                               (
+                                                   3,
+                                                   trainer.data_bundle.output_resolution,
+                                                   trainer.data_bundle.output_resolution
+                                                )
+                                               )
+        if not os.path.exists('./receptive_field'):
+            os.makedirs('./receptive_field')
+        savepath = os.path.join(
+            os.path.dirname(trainer._save_path),
+            f"receptive_field_{trainer.model.name }_{trainer.data_bundle.dataset_name}"
+            f"_{trainer.data_bundle.output_resolution}.csv")
+        pd.DataFrame.from_dict(receptive_field_dict).to_csv(savepath, sep=';')
 
 
 @attrs(auto_attribs=True, slots=True, frozen=True)
@@ -118,4 +152,4 @@ class Extract:
         print('Extracting test')
         model.eval()
         extract_from_dataset(logger, False, model, trainer.data_bundle.test_dataset, trainer.device)
-        logger.save()
+        logger.save(os.path.dirname(trainer._save_path))

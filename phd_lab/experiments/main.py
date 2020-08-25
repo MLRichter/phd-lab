@@ -8,9 +8,9 @@ from itertools import product as cproduct
 from copy import deepcopy
 from phd_lab.experiments.trainer import Trainer
 from phd_lab.experiments.utils.config import DEFAULT_CONFIG
+from phd_lab.experiments.utils.dependency_injection import add_registry
 from phd_lab.experiments.train_test_executor import TrainTestExecutor
 
-import click
 import json
 import numpy as np
 
@@ -22,6 +22,13 @@ class Main:
     _model_module: Union[ModuleType, str] = models
     _optimizer_module: Union[ModuleType, str] = optimizers
     _metrics_module: Union[ModuleType, str] = metrics
+    _mode: str = "extract"
+
+    def __attrs_post_init__(self):
+        add_registry(self._model_module, 'model')
+        add_registry(self._dataset_module, 'dataset')
+        add_registry(self._optimizer_module, 'optimizer')
+        add_registry(self._metrics_module, 'metrics')
 
     def _build_iterator_config(self, config: Dict[str, Any]) -> Dict[str, List[Any]]:
         return {k: v if isinstance(v, list) else [v] for k, v in config.items()}
@@ -54,9 +61,9 @@ class Main:
                     operational_config['data_parallel'],
                     operational_config['downsampling']
                 )):
-            print("Running experiment", exp_num, "of", np.product([len(operational_config[key])
+            print("Running experiment", exp_num+1, "of", np.product([len(operational_config[key])
                                                                    for key in operational_config.keys() if key != 'metrics']))
-            executor = TrainTestExecutor("extract")
+            executor = TrainTestExecutor(self._mode)
             executor(
                 exp_num=exp_num,
                 optimizer=optimizer,
@@ -76,16 +83,3 @@ class Main:
                 dataset_module=self._dataset_module,
                 optimizer_module=self._optimizer_module,
                 metric_module=self._metrics_module)
-
-@click.command()
-@click.option("--config", type=str, required=True, help="Link to the configuration json")
-@click.option("--device", type=str, required=True,
-              help="The device to deploy the experiment on, this argument uses pytorch codes.")
-@click.option("--run-id", type=str, required=True, help="the id of the run")
-def main(config: str, device: str, run_id: str):
-    main = Main()
-    main(config_path=Path(config), run_id=run_id, device=device)
-
-
-if __name__ == "__main__":
-    main()

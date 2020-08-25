@@ -4,7 +4,7 @@ from types import ModuleType
 from .trainer import Trainer
 from .domain import Metric
 from .utils.dependency_injection import get_metrics, get_optimizer, get_model, get_dataset, get_factory
-from .utils.post_training import Extract, Project
+from .utils.post_training import Extract, Project, ReceptiveField
 import json
 
 _MODES = {
@@ -12,7 +12,8 @@ _MODES = {
     "extract": Extract(),
     "project_pca": Project('pca'),
     "project": Project('pca'),
-    "project_random": Project('random')
+    "project_random": Project('random'),
+    "receptive-field": ReceptiveField()
 }
 
 
@@ -41,13 +42,12 @@ class TrainTestExecutor:
             optimizer_module: Union[str, ModuleType],
             metric_module: Union[str, Metric]
     ) -> None:
-        databundle = get_dataset(get_factory(dataset, dataset_module), output_resolution=resolution,
+        databundle = get_dataset(dataset, output_resolution=resolution,
                                  batch_size=batch_size,
                                  cache_dir="tmp")
-        pytorch_model = get_model(get_factory(model, model_module), num_classes=databundle.cardinality)
-        optimizerscheduler = get_optimizer(get_factory(optimizer, optimizer_module), model=pytorch_model)
-        metric_accumulators = get_metrics(
-            [get_factory(metric, metric_module) for metric in metrics])
+        pytorch_model = get_model(model, num_classes=databundle.cardinality)
+        optimizerscheduler = get_optimizer(optimizer, model=pytorch_model)
+        metric_accumulators = get_metrics([get_factory(metric, metric_module) for metric in metrics])
         trainer = Trainer(model=pytorch_model,
                           data_bundle=databundle,
                           optimizer_bundle=optimizerscheduler,
@@ -60,7 +60,7 @@ class TrainTestExecutor:
                           delta=delta,
                           data_parallel=data_parallel,
                           downsampling=downsampling)
-        with open(trainer._save_path.replace('.csv', '_config.json'), 'w') as fp:
+        with open(trainer._save_path.replace('.csv', '_config.json'), 'w', encoding="ascii") as fp:
             config = {
                 "model": model,
                 "epoch": epoch,
