@@ -1,7 +1,0 @@
-README.rst
-setup.py
-phd_lab/__init__.py
-phd_lab.egg-info/PKG-INFO
-phd_lab.egg-info/SOURCES.txt
-phd_lab.egg-info/dependency_links.txt
-phd_lab.egg-info/top_level.txt
