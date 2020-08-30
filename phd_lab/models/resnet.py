@@ -41,9 +41,10 @@ def conv1x1(in_planes, out_planes, stride=1):
 class BasicBlock(nn.Module):
     expansion = 1
 
-    def __init__(self, inplanes, planes, stride=1, downsample=None, thresh=.99, centering=False, noskip=False):
+    def __init__(self, inplanes, planes, stride=1, downsample=None, thresh=.99, centering=False, noskip=False, nodownsampling=False):
         super(BasicBlock, self).__init__()
         self.noskip = noskip
+        self.nodownsampling = nodownsampling
         self.thresh = thresh
         self.centering = centering
         self.conv1 = conv3x3(inplanes, planes, stride)
@@ -75,7 +76,7 @@ class BasicBlock(nn.Module):
         if self.downsample is not None:
             identity = self.downsample(x)
 
-        if not self.noskip:
+        if not self.noskip and not (self.nodownsampling and self.downsample is not None):
             out += identity
         out = self.relu(out)
 
@@ -85,7 +86,7 @@ class BasicBlock(nn.Module):
 class Bottleneck(nn.Module):
     expansion = 4
 
-    def __init__(self, inplanes, planes, stride=1, downsample=None, threshold=.999, centering=False, noskip=False):
+    def __init__(self, inplanes, planes, stride=1, downsample=None, threshold=.999, centering=False, noskip=False, nodownsample=False):
         super(Bottleneck, self).__init__()
         self.noskip = noskip
         self.conv1 = conv1x1(inplanes, planes)
@@ -136,11 +137,12 @@ class Bottleneck(nn.Module):
 class ResNet(nn.Module):
 
     def __init__(self, block, layers, num_classes=1000, zero_init_residual=False, thresh=.999, centering=False,
-                 noskip=False, scale_factor=1, **kwargs):
+                 noskip=False, scale_factor=1, nodownsampling=False, **kwargs):
         super(ResNet, self).__init__()
         if len(layers) <= 4:
             for _ in range(len(layers), 9):
                 layers.append(None)
+        self.nodownsampling = nodownsampling
         self.noskip = noskip
         self.inplanes = 64 // scale_factor
         self.thresh = thresh
@@ -154,19 +156,27 @@ class ResNet(nn.Module):
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, int(64 // scale_factor), layers[0], threshold=thresh, centering=centering)
         self.layer2 = None if layers[1] is None else self._make_layer(block, int(128 // scale_factor), layers[1],
-                                                                      stride=2, threshold=thresh, centering=centering)
+                                                                      stride=2, threshold=thresh, centering=centering,
+
+                                                                      nodownsampling=nodownsampling)
         self.layer3 = None if layers[2] is None else self._make_layer(block, int(256 // scale_factor), layers[2],
-                                                                      stride=2, threshold=thresh, centering=centering)
+                                                                      stride=2, threshold=thresh, centering=centering,
+                                                                      nodownsampling=nodownsampling)
         self.layer4 = None if layers[3] is None else self._make_layer(block, int(512 // scale_factor), layers[3],
-                                                                      stride=2, threshold=thresh, centering=centering)
+                                                                      stride=2, threshold=thresh, centering=centering,
+                                                                      nodownsampling=nodownsampling)
         self.layer5 = None if layers[4] is None else self._make_layer(block, int(512 // scale_factor), layers[4],
-                                                                      stride=2, threshold=thresh, centering=centering)
+                                                                      stride=2, threshold=thresh, centering=centering,
+                                                                      nodownsampling=nodownsampling)
         self.layer6 = None if layers[5] is None else self._make_layer(block, int(512 // scale_factor), layers[5],
-                                                                      stride=2, threshold=thresh, centering=centering)
+                                                                      stride=2, threshold=thresh, centering=centering,
+                                                                      nodownsampling=nodownsampling)
         self.layer7 = None if layers[6] is None else self._make_layer(block, int(512 // scale_factor), layers[6],
-                                                                      stride=2, threshold=thresh, centering=centering)
+                                                                      stride=2, threshold=thresh, centering=centering,
+                                                                      nodownsampling=nodownsampling)
         self.layer8 = None if layers[7] is None else self._make_layer(block, int(512 // scale_factor), layers[7],
-                                                                      stride=2, threshold=thresh, centering=centering)
+                                                                      stride=2, threshold=thresh, centering=centering,
+                                                                      nodownsampling=nodownsampling)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(int(self.get_fully_connected_units(layers) // scale_factor) * block.expansion, num_classes)
 
@@ -187,7 +197,7 @@ class ResNet(nn.Module):
                 elif isinstance(m, BasicBlock):
                     nn.init.constant_(m.bn2.weight, 0)
 
-    def _make_layer(self, block, planes, blocks, stride=1, threshold=.999, centering=False):
+    def _make_layer(self, block, planes, blocks, stride=1, threshold=.999, centering=False, nodownsampling=False):
         downsample = None
         if (stride != 1 or self.inplanes != planes * block.expansion) and not self.noskip:
             downsample = nn.Sequential(
@@ -197,11 +207,11 @@ class ResNet(nn.Module):
 
         layers = []
         layers.append(
-            block(self.inplanes, planes, stride, downsample if not self.noskip else None, threshold, centering,
+            block(self.inplanes, planes, stride, downsample if not self.noskip or not self.nodownsampling else None, threshold, centering,
                   noskip=self.noskip))
         self.inplanes = planes * block.expansion
         for _ in range(1, blocks):
-            layers.append(block(self.inplanes, planes, noskip=self.noskip))
+            layers.append(block(self.inplanes, planes, noskip=self.noskip, nodownsampling=nodownsampling))
 
         return nn.Sequential(*layers)
 
@@ -250,6 +260,19 @@ class ResNet(nn.Module):
         return x
 
 
+def resnet18nodownsample(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], nodownsampling=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18NoDownsampling'
+    return model
+
+
 def resnet18noskip(pretrained=False, **kwargs):
     """Constructs a ResNet-18 model.
 
@@ -260,7 +283,7 @@ def resnet18noskip(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'ResNet18NoSkip'
-    return model
+    return
 
 
 def resnet34noskip(pretrained=False, **kwargs):

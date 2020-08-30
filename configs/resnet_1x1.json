@@ -1,0 +1,19 @@
+{
+    "model": ["resnet18", "resnet18noskip", "resnet18nodownsample"],
+    "epoch": [30],
+    "batch_size": [128],
+
+    "dataset": ["Cifar10"],
+    "resolution": [32, 150],
+
+    "optimizer": ["adam"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+    "device": ["cuda:0"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": null
+}

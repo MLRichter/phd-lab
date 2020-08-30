@@ -1,8 +1,9 @@
 from torch.utils.data import DataLoader
 from attr import attrs, attrib
-from typing import Optional, Protocol, Iterable, Dict, Any
+from typing import Optional, Iterable, Dict, Any
+from typing_extensions import Protocol
 from torch.nn.modules import Module
-from torch.optim import Optimizer
+from torch.optim.optimizer import Optimizer
 
 
 @attrs(auto_attribs=True, slots=True, frozen=True)
