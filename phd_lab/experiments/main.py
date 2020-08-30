@@ -17,6 +17,17 @@ import numpy as np
 
 @attrs(auto_attribs=True, frozen=True, slots=True)
 class Main:
+    """The main execution function.
+
+    This function handles training and post-training actions.
+    Args:
+        dataset_module:     Module containing the dataset factories
+        model_module:       Module containing the model factories
+        optimizer_module:   Module containing the optimizer factories
+        metrics_module:     Module containing the metric factories
+        mode:               String key for post-training strategy.
+    """
+
     _trainer: Trainer = attrib(init=False)
     _dataset_module: Union[ModuleType, str] = datasets
     _model_module: Union[ModuleType, str] = models

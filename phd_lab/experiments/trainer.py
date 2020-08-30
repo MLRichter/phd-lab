@@ -18,6 +18,27 @@ def now():
 
 @attrs(auto_attribs=True, slots=True)
 class Trainer:
+    """The trainer object handles the actual training and testing of the model.
+
+    Args:
+        model:              The PyTorch-Model
+        data_bundle:        The training and test data as a DataBundle
+        optimizer_bundle:   Contains the optimizer and the learning rate scheduler
+        run_id:             A string identifying the specific run.
+        batch_size:         The batch_size to train the model on.
+        epochs:             The (total) number of epochs to train the model.
+        criterion:          The optimization criterionn (loss), default is cross-entropy
+        metrics:            A list of metric-object
+        device:             The compute device or list of compute devices to place the model(s) on
+        logs_dir:           The directory to store the results
+        conv_method:        The strategy for handling convolutional layers for saturation computation
+        device_sat:         The device to compute the saturation on. If None, the same device is used as for
+                            the model.
+        delta:              The delta threshold for computing saturation
+        data_parallel:      Enable or Disable multi-GPU
+        downsampling:       If None, downsampling is disabled, else the feature maps will be downsampled
+                            to (downsampling x downsampling) resolution
+    """
 
     # private internal variables
     _tracker: CheckLayerSat = attrib(init=False)
@@ -187,6 +208,14 @@ class Trainer:
         torch.save(state_dict, self._save_path.replace('.csv', '.pt'))
 
     def train(self):
+        """Train the model.
+
+        The model is trained for a total number of epochs given the number of epochs provided in the constructor.
+        This includes epochs this model was trained previously.
+
+        Returns:
+            The path to the saturation ans metric logs.
+        """
         if self._experiment_done:
             return
         old_time = time()
@@ -206,6 +235,11 @@ class Trainer:
         return self._save_path + '.csv'
 
     def train_epoch(self) -> Dict[str, float]:
+        """Train a single epoch.
+
+        Returns:
+            A dictionary containing all metrics computed incrementally during training.
+        """
         self.model.train()
         self._reset_metrics()
         running_loss = 0
@@ -233,6 +267,11 @@ class Trainer:
         return self._track_metrics('training', running_loss, total)
 
     def test(self):
+        """Evaluate the model on the test set.
+
+        Returns:
+            The metric computed on the test set.
+        """
         self._reset_metrics()
         self.model.eval()
         total = 0

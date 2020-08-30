@@ -7,18 +7,26 @@ from .utils.dependency_injection import get_metrics, get_optimizer, get_model, g
 from .utils.post_training import Extract, Project, ReceptiveField
 import json
 
+# The modes registered in this dictionary are valid post-training strategy.
 _MODES = {
     "train": lambda x: None,
     "extract": Extract(),
-    "project_pca": Project('pca'),
+    "project-pca": Project('pca'),
     "project": Project('pca'),
-    "project_random": Project('random'),
+    "project-random": Project('random'),
     "receptive-field": ReceptiveField()
 }
 
 
 @attrs(auto_attribs=True, slots=True, frozen=True)
 class TrainTestExecutor:
+    """The executor object that conducts training and post-training strategies.
+
+    Args:
+        mode:   the post training mode. Must be contained in _MODE of this file.
+
+    """
+
     mode: str = "train"
 
     def __call__(
@@ -42,6 +50,28 @@ class TrainTestExecutor:
             optimizer_module: Union[str, ModuleType],
             metric_module: Union[str, Metric]
     ) -> None:
+        """Assemble trainer and execute training as well as post-training.
+
+        Args:
+            exp_num:                The experiment number (integer)
+            optimizer:              The function name of the optimizer factory
+            dataset:                The function name of the dataset factory
+            model:                  The function name of the model factory
+            metrics:                The list of function names of the metric factories
+            batch_size:             The batch size
+            epoch:                  The total number of epochs to train the model
+            device:                 The compute device to train the model on, may be also a list.
+            logs_dir:               The log-folder.
+            delta:                  Delta-threshold for computing the saturation.
+            data_parallel:          Enable multi-gpu
+            downsampling:           Height and width to downsample the feature maps to. If None no dowsampling is done.
+            resolution:             The resolution of the input
+            run_id:                 The run-id of the run
+            model_module:           The module containing the model factory
+            dataset_module:         The module containing the dataset factory
+            optimizer_module:       The module containing the optimizer factory
+            metric_module:          The module containing the metric factory
+        """
         databundle = get_dataset(dataset, output_resolution=resolution,
                                  batch_size=batch_size,
                                  cache_dir="tmp")

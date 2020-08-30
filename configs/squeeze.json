@@ -1,6 +1,6 @@
 {
-    "model": ["resnet18_XXS"],
-    "epoch": [5],
+    "model": ["squeezenet10", "squeezenet11"],
+    "epoch": [30],
     "batch_size": [128],
 
     "dataset": ["Cifar10"],
@@ -9,7 +9,7 @@
     "optimizer": ["adam"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
-    "logs_dir": ["./logs/"],
+    "logs_dir": ["../logs/"],
     "device": ["cuda:0"],
 
     "conv_method": ["channelwise"],
