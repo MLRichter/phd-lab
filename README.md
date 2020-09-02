@@ -102,7 +102,7 @@ Please note that post-training actions like the extractions of latent representa
 Furthermore runs are identified by their run-id. Runs under different run-ids generally do not recognize each other, even if they
 are based on the same configuration.
 
-### Probe Classifiers and Latent Representation Extraaction
+### Probe Classifiers and Latent Representation Extraction
 Another operation that is possible with this repository is training probe classifiers on receptive fields.
 Probe Classifiers are LogisticRegression models. They are trained on the output of a neural network layer using the original labels.
 The performance relative to the model performance yields an intermediate solution quality for the trained model.
