@@ -137,12 +137,13 @@ class Bottleneck(nn.Module):
 class ResNet(nn.Module):
 
     def __init__(self, block, layers, num_classes=1000, zero_init_residual=False, thresh=.999, centering=False,
-                 noskip=False, scale_factor=1, nodownsampling=False, **kwargs):
+                 noskip=False, scale_factor=1, nodownsampling=False, highway=False, **kwargs):
         super(ResNet, self).__init__()
         if len(layers) <= 4:
             for _ in range(len(layers), 9):
                 layers.append(None)
         self.nodownsampling = nodownsampling
+        self.highway = highway
         self.noskip = noskip
         self.inplanes = 64 // scale_factor
         self.thresh = thresh
@@ -199,7 +200,7 @@ class ResNet(nn.Module):
 
     def _make_layer(self, block, planes, blocks, stride=1, threshold=.999, centering=False, nodownsampling=False):
         downsample = None
-        if (stride != 1 or self.inplanes != planes * block.expansion) and not self.noskip:
+        if (stride != 1 or self.inplanes != planes * block.expansion) and not (self.noskip or self.nodownsampling):
             downsample = nn.Sequential(
                 conv1x1(self.inplanes, planes * block.expansion, stride),
                 nn.BatchNorm2d(planes * block.expansion),
@@ -208,10 +209,17 @@ class ResNet(nn.Module):
         layers = []
         layers.append(
             block(self.inplanes, planes, stride, downsample if not self.noskip or not self.nodownsampling else None, threshold, centering,
-                  noskip=self.noskip))
+                  noskip=self.noskip or self.nodownsampling, nodownsampling=nodownsampling))
         self.inplanes = planes * block.expansion
         for _ in range(1, blocks):
-            layers.append(block(self.inplanes, planes, noskip=self.noskip, nodownsampling=nodownsampling))
+            if self.highway:
+                downsample = nn.Sequential(
+                    conv1x1(self.inplanes, planes * block.expansion, 1),
+                    nn.BatchNorm2d(planes * block.expansion),
+                )
+            else:
+                downsample = None
+            layers.append(block(self.inplanes, planes, noskip=self.noskip, nodownsampling=nodownsampling, downsample=downsample))
 
         return nn.Sequential(*layers)
 
@@ -260,6 +268,18 @@ class ResNet(nn.Module):
         return x
 
 
+def resnet18highway(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], highway=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18Highway'
+    return model
+
 def resnet18nodownsample(pretrained=False, **kwargs):
     """Constructs a ResNet-18 model.
 
@@ -283,7 +303,7 @@ def resnet18noskip(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'ResNet18NoSkip'
-    return
+    return model
 
 
 def resnet34noskip(pretrained=False, **kwargs):

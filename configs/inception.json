@@ -1,10 +1,5 @@
 {
-    "model": [
-        "resnet18",
-        "resnet18nodownsample",
-        "resnet18noskip",
-        "resnet18highway"
-    ],
+    "model": ["inception3"],
     "epoch": [30],
     "batch_size": [128],
 

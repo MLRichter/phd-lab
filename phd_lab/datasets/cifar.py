@@ -42,6 +42,45 @@ def Cifar10(batch_size=12, output_size=32, cache_dir='tmp') -> DataBundle:
     )
 
 
+def BlackBorderCifar10(batch_size=12, output_size=32, cache_dir='tmp') -> DataBundle:
+
+    border = (output_size - 32) // 2
+    uneven = output_size % 2
+
+    # Transformations
+    RC = transforms.RandomCrop((32, 32), padding=4)
+    PAD = transforms.Pad((border, border, border + uneven, border + uneven))
+    RHF = transforms.RandomHorizontalFlip()
+    NRM = transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
+    TT = transforms.ToTensor()
+    RS = transforms.Resize(output_size)
+
+    # Transforms object for trainset with augmentation
+    transform_with_aug = transforms.Compose([RC, RHF, PAD, TT, NRM])
+    # Transforms object for testset with NO augmentation
+    transform_no_aug = transforms.Compose([PAD, TT, NRM])
+
+
+    trainset = torchvision.datasets.CIFAR10(root=cache_dir, train=True,
+                                            download=True, transform=transform_with_aug)
+    train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                              shuffle=True, num_workers=8, pin_memory=True)
+    testset = torchvision.datasets.CIFAR10(root=cache_dir, train=False,
+                                           download=True, transform=transform_no_aug)
+    test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                             shuffle=False, num_workers=8, pin_memory=True)
+    train_loader.name = "BlackBorderCifar10"
+
+    return DataBundle(
+        dataset_name="BlackBorderCifar10",
+        train_dataset=train_loader,
+        test_dataset=test_loader,
+        cardinality=10,
+        output_resolution=output_size,
+        is_classifier=True
+    )
+
+
 def Cifar100(batch_size=12,
              output_size=(32,32),
              cache_dir='tmp') -> DataBundle:

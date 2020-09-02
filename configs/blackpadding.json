@@ -1,15 +1,13 @@
 {
     "model": [
-        "resnet18",
-        "resnet18nodownsample",
-        "resnet18noskip",
-        "resnet18highway"
+        "vgg16",
+        "resnet18"
     ],
     "epoch": [30],
-    "batch_size": [128],
+    "batch_size": [64],
 
-    "dataset": ["Cifar10"],
-    "resolution": [32],
+    "dataset": ["BlackBorderCifar10"],
+    "resolution": [32, 150],
 
     "optimizer": ["adam"],
     "metrics": ["Accuracy", "Top5Accuracy"],

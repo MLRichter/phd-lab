@@ -70,7 +70,8 @@ class Trainer:
 
     def _initialize_tracker(self):
         writer = CSVandPlottingWriter(
-            self._save_path.replace('.csv', '')
+            self._save_path.replace('.csv', ''),
+            primary_metric='test_accuracy'
         )
 
         self._tracker = CheckLayerSat(

@@ -1,5 +1,13 @@
 {
-    "model": ["squeezenet10", "squeezenet11"],
+    "model": [
+        "squeezenet11dc",
+        "squeezenet11res",
+        "squeezenet11mpns",
+        "squeezenet11mp",
+        "squeezenet11ns",
+        "squeezenet11as",
+        "squeezenet11"
+    ],
     "epoch": [30],
     "batch_size": [128],
 

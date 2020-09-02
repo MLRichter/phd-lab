@@ -48,13 +48,18 @@ The system has the follow save structure
 
 +-- logs
 |   +-- MyModel
-|   |   +-- MyDataset1_64                       //dataset name followed by input resolution
-|   |   |   +-- MyRun                           //id of this specific run
-|   |   |   |   +-- config.json                 //lets repeat this specific run
-|   |   |   |   +-- saturation_results.csv
-|   |   |   |   +-- saved_model.pkl             //model, lr-scheduler and optimizer states
-|   |   |   |   +-- projected_results.csv       //if you projected the networks
-|   |   |   |   +-- saturation_plot_epoch0.png  //plots of saturation and intrinsic dimensionality
+|   |   +-- MyDataset1_64                                               //dataset name followed by input resolution
+|   |   |   +-- MyRun                                                   //id of this specific run
+|   |   |   |   +--  MyModel-MyDataset1-r64-bs128-e30_config.json       //lets repeat this specific run
+|   |   |   |   +--  MyModel-MyDataset1-r64-bs128-e30.csv               //saturation and metrics
+|   |   |   |   +--  MyModel-MyDataset1-r64-bs128-e30.pt                //model, lr-scheduler and optimizer states
+|   |   |   |   +--  projected_results.csv                              //if you projected the networks
+|   |   |   |   +--  MyModel-MyDataset1-r64-bs128-e30lsat_epoch0.png    //plots of saturation and intrinsic dimensionality
+|   |   |   |   +--  MyModel-MyDataset1-r64-bs128-e30lsat_epoch1.png   
+|   |   |   |   +--  MyModel-MyDataset1-r64-bs128-e30lsat_epoch2.png    
+|   |   |   |   +--  .                                              
+|   |   |   |   +--  .                                             
+|   |   |   |   +--  .                                              
 |   +-- VGG16
 |   |   +-- Cifar10_32
 .   .   .   .   .     
@@ -72,17 +77,43 @@ in the logs, but may want to remove extracted latent representations on a regula
 Execution of experiments is fairly straight forward. You can easily write scripts 
 if you want to deviate from the out-of-the-box configurations (more on that later).
 In the ``phd_lab`` folder you will find scripts handling different kinds
-of model training and analysis:
-+ ``train_model.py``
-+ ``compute_receptive_field.py``
-+ ``infer_with_altering_delta.py``
-+ ``extract_latent_representations.py``
+of model training and analysis.
+
 + ``train_probes.py``
 
 ### Training models
+There are 4 overall scripts that will conduct a training if called. It is worth noting that 
+each script is calling the same Main-Functionn object in just a slightly different configuration.
+They therefore share the same command line arguments and basic execution logic.
+The scripts are:
++ ``train_model.py`` train models and compute saturation along the way
++ ``infer_with_altering_delta.py`` same as train.py, after trainingg concluded the model es evaluated on the test set, while changing the delta-value of all PCA layers.
++ ``extract_latent_representations.py`` extract the latent representation of the train and test set after training has concluded.
++ ``compute_receptive_field.py`` compute the receptive field after training. Non-sequential models must implemented ``noskip: bool`` argument in their consstructor in order for this to work properly.
 
-### Projected Networks
+All of these scripts have the same arguments:
++ ``--config`` path to the config.json
++ ``--device`` compute device for the model ``cuda:n`` for the nth gpu,``cpu`` for cpu
++ ``--run-id`` the id of the run, may be any string, all experiments of this config will be saved in a subfolder with this id. This is useful if you want to repeat experiments multiple times.
 
-### Probe Classifierss and Latent Representation Extraaction
+#### Checkpointing
+All metrics and the model itself are checkpointed after each epoch and the previous weights are overwritten.
+The system will automatically resume training at the end of the last finished epoch.
+If one or more trainings were completed, these trainings are skipped.
+Please note that post-training actions like the extractions of latent representations will still be executed.
+Furthermore runs are identified by their run-id. Runs under different run-ids generally do not recognize each other, even if they
+are based on the same configuration.
+
+### Probe Classifiers and Latent Representation Extraaction
+Another operation that is possible with this repository is training probe classifiers on receptive fields.
+Probe Classifiers are LogisticRegression models. They are trained on the output of a neural network layer using the original labels.
+The performance relative to the model performance yields an intermediate solution quality for the trained model.
+You can extract the latent representation by calling ``extract_latent_representations.py``.
+To train models on the latent representation call ```train_probes.py```.
+The script can take the following arguments:
++ ``--config`` the config the original experiments were conducted on
++ ``-f`` the root folder of the latent representation storage is by default``./latent_representation``
++ ``-mp`` the number of processes spawned by this script. By default the number of processes equal to the number of cores are used.,
+
 
 ## Adding Models / Datasets / Optimizers
