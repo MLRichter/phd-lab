@@ -44,7 +44,7 @@ Logging is done in a folder structure. The root folder of the logs is specified
 in ``logs_dir`` of the config file.
 The system has the follow save structure
 
-```bash
+```
 
 +-- logs
 |   +-- MyModel
@@ -79,8 +79,6 @@ if you want to deviate from the out-of-the-box configurations (more on that late
 In the ``phd_lab`` folder you will find scripts handling different kinds
 of model training and analysis.
 
-+ ``train_probes.py``
-
 ### Training models
 There are 4 overall scripts that will conduct a training if called. It is worth noting that 
 each script is calling the same Main-Functionn object in just a slightly different configuration.
@@ -113,7 +111,43 @@ To train models on the latent representation call ```train_probes.py```.
 The script can take the following arguments:
 + ``--config`` the config the original experiments were conducted on
 + ``-f`` the root folder of the latent representation storage is by default``./latent_representation``
-+ ``-mp`` the number of processes spawned by this script. By default the number of processes equal to the number of cores are used.,
++ ``-mp`` the number of processes spawned by this script. By default the number of processes equal to the number of cores on your cpu. Note that the parallelization is done 
+over the number of layers, therefore more processes than layers will not yield any performance benefits.
 
+
+### Using consecutive script calls of scripts to split your workload
+All experiments are strictly tied to the run-id and their configuration. This means that two trained models 
+are considered equal if they are trained using the same configuration parameters and run-id, regardless of the called script.
+There for you could for instance run: 
+
+```python train_model.py --config ./configs/myconfig.json --device cuda:0 --run-id MyRun```
+
+followed by 
+
+```python compute_receptive_field.py --config ./configs/myconfig.json --device cuda:0 --run-id MyRun```
+
+the latter script call will recognize the previously trained models and just skip to computing 
+the receptive field and add the additional results to the logs.
 
 ## Adding Models / Datasets / Optimizers
+You may want to add optimizer, models and datasets to this experimental setup. Basically there is a package for each of
+these ingredientes:
++ ````phd_lab.datasets````
++ ````phd_lab.models````
++ ````phd_lab.optimizers````
++ ````phd_lab.metrics````
+
+You can add datasets, model, metrics and optimizers by importing the respective factories in the ````__init__```` file of the respective
+packages.
+The interfaces for the respective factories are defines as protocols in ````phd_lab.experiments.domain```` or you can
+simply orient yourself on the existing once in the package.
+If you want to use entirely different registries for datasets, models, optimizers and metrics you can change registry 
+by setting different values for:
++ ````phd_lab.experiments.utils.config.MODEL_REGISTRY````
++ ````phd_lab.experiments.utils.config.DATASET_REGISTRY````
++ ````phd_lab.experiments.utils.config.OPTIMIZER_REGISTRY````
++ ````phd_lab.experiments.utils.config.METRICS_REGISTRY````
+
+These registries do not need to be Module or Package-Types, they merely need to have a ````__dict__```` that maps string keys
+to the respective factories.
+The name in the config file must allways match a factory in order to be a valid configuration.
