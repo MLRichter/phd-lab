@@ -3,7 +3,8 @@ import torch
 from os import makedirs
 from os.path import exists, join
 from torch.nn import Conv2d, Linear, LSTM
-from typing import Union
+from torch.utils.data import DataLoader
+from typing import Union, Dict, List
 from shutil import rmtree
 import numpy as np
 from time import time
@@ -11,8 +12,19 @@ import pickle
 
 
 class LatentRepresentationCollector:
+    """This Object collects the latent representation from all layers.
+    """
 
     def __init__(self, model: Module, savepath: str, save_instantly: bool = True, downsampling: int = None):
+        """
+
+        Args:
+            model:              this is a pyTorch-Module
+            savepath:           the filepath points to a folder where latent representations will be stored.
+                                For storage a subfolder will be created.
+            save_instantly:     if true, the data will be saved incrementally with a save checkpoint at each batch.
+            downsampling:       downsample the latent representation to a height and width equal to the downsampling value.
+        """
         self.savepath = savepath
         self.downsampling = downsampling
         if exists(savepath):
@@ -35,6 +47,16 @@ class LatentRepresentationCollector:
         self.record = True
 
     def _record_stat(self, activations_batch: torch.Tensor, layer: Module, training_state: str):
+        """This function is called in the forward-hook to all convolutional and linear layers.
+
+        Args:
+            activations_batch:  the batch of data
+            layer:              the module object, the latent representations are recorded.
+            training_state:     state of training, may be either "eval" or "train"
+
+        Returns:
+            Returns nothing, this hook is side-effect free
+        """
         if activations_batch.dim() == 4:  # conv layer (B x C x H x W)
             if self.downsampling is not None:
                 activations_batch = torch.nn.functional.interpolate(activations_batch, self.downsampling)
@@ -52,6 +74,13 @@ class LatentRepresentationCollector:
             pickle.dump(batch, file=self.logs[training_state][layer.name])
 
     def _register_hooks(self, layer: Module, layer_name: str, interval: int) -> None:
+        """Register a forward hook on a given layer.
+
+        Args:
+            layer:          the module.
+            layer_name:     name of the layer.
+            interval:       unused variable, needed for compatibility.
+        """
         layer.name = layer_name
 
         def record_layer_history(layer: torch.nn.Module, input, output):
@@ -70,7 +99,20 @@ class LatentRepresentationCollector:
         layer.register_forward_hook(record_layer_history)
 
     def get_layer_from_submodule(self, submodule: torch.nn.Module,
-                                 layers: dict, name_prefix: str = ''):
+                                 layers: dict, name_prefix: str = '') -> Dict[str, Module]:
+        """Finds all linear and convolutional layers in a network structure.
+
+        The algorithm is recursive.
+
+        Args:
+            submodule:      the current submodule.
+            layers:         the dictionary containing all layers found so far.
+            name_prefix:    the prefix of the layers name. The prefix resembled the position in
+                            the networks structure.
+
+        Returns:
+            the layers stored in a dictionary.
+        """
         if len(submodule._modules) > 0:
             for idx, (name, subsubmodule) in \
                               enumerate(submodule._modules.items()):
@@ -90,7 +132,15 @@ class LatentRepresentationCollector:
             print('added layer {}'.format(layer_name))
             return layers
 
-    def get_layers_recursive(self, modules: Union[list, torch.nn.Module]):
+    def get_layers_recursive(self, modules: Union[List[torch.nn.Module], torch.nn.Module]) -> Dict[str, Module]:
+        """Recursive search algorithm for finding convolutional an linear layers
+
+        Args:
+            modules: maybe a single (sub)-module or a List of modules
+
+        Returns:
+            a dictionary that maps layer names to modules
+        """
         layers = {}
         if not isinstance(modules, list) and not hasattr(
                 modules, 'out_features'):
@@ -104,6 +154,12 @@ class LatentRepresentationCollector:
         return layers
 
     def save(self, model_log_path) -> None:
+        """Saving the models latent representations.
+
+        Args:
+            model_log_path:     the path that logs the model.
+
+        """
         with open(join(self.savepath, "model_pointer.txt"), "w+") as fp:
             fp.write(model_log_path)
         if not exists(self.savepath):
@@ -117,7 +173,17 @@ class LatentRepresentationCollector:
                     data.close()
 
 
-def extract_from_dataset(logger: LatentRepresentationCollector, train: bool, model: Module, dataset, device: str):
+def extract_from_dataset(logger: LatentRepresentationCollector,
+                         train: bool, model: Module, dataset: DataLoader, device: str) -> None:
+    """Extract latent representations from a given classification dataset.
+
+    Args:
+        logger:     The logger that collects the latent representations.
+        train:      Marks the subset as training or evalutation dataset
+        model:      The model from which the latent representations need to be collected.
+        dataset:    The dataset, may be a torch data-loader
+        device:     The device the model is deployed on, maybe any torch compatible key.
+    """
     mode = 'train' if train else 'eval'
     correct, total = 0, 0
     old_time = time()
