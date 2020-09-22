@@ -53,7 +53,8 @@ class TrainTestExecutor:
             model_module: Union[str, ModuleType],
             dataset_module: Union[str, ModuleType],
             optimizer_module: Union[str, ModuleType],
-            metric_module: Union[str, Metric]
+            metric_module: Union[str, Metric],
+            cache_dir: str
     ) -> None:
         """Assemble trainer and execute training as well as post-training.
 
@@ -76,10 +77,11 @@ class TrainTestExecutor:
             dataset_module:         The module containing the dataset factory
             optimizer_module:       The module containing the optimizer factory
             metric_module:          The module containing the metric factory
+            cache_dir               Directory to store dataset
         """
         databundle = get_dataset(dataset, output_resolution=resolution,
                                  batch_size=batch_size,
-                                 cache_dir="tmp")
+                                 cache_dir=cache_dir)
         pytorch_model = get_model(model, num_classes=databundle.cardinality)
         optimizerscheduler = get_optimizer(optimizer, model=pytorch_model)
         metric_accumulators = get_metrics([get_factory(metric, metric_module) for metric in metrics])
@@ -113,7 +115,9 @@ class TrainTestExecutor:
                 "conv_method": ["channelwise"],
                 "delta": delta,
                 "data_parallel": data_parallel,
-                "downsampling": downsampling
+                "downsampling": downsampling,
+
+                "cache_dir": cache_dir
             }
             json.dump(config, fp)
         trainer.train()

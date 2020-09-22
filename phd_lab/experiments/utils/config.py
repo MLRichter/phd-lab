@@ -24,7 +24,9 @@ DEFAULT_CONFIG = {
     "conv_method": ["channelwise"],
     "delta": [0.99],
     "data_parallel": [False],
-    "downsampling": [None]
+    "downsampling": [None],
+
+    "cache_dir": [os.environ.get("TORCH_DATADIR", "tmp")]
 }
 
 

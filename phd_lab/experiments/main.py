@@ -57,7 +57,7 @@ class Main:
         for exp_num, (model, epoch, batch_size,
                       dataset, resolution, optimizer,
                       logs_dir, device, conv_method,
-                      delta, data_parallel, downsampling) in \
+                      delta, data_parallel, downsampling, cache_dir) in \
                 enumerate(cproduct(
                     operational_config['model'],
                     operational_config['epoch'],
@@ -70,7 +70,8 @@ class Main:
                     operational_config['conv_method'],
                     operational_config['delta'],
                     operational_config['data_parallel'],
-                    operational_config['downsampling']
+                    operational_config['downsampling'],
+                    operational_config['cache_dir']
                 )):
             print("Running experiment", exp_num+1, "of", np.product([len(operational_config[key])
                                                                    for key in operational_config.keys() if key != 'metrics']))
@@ -93,4 +94,5 @@ class Main:
                 model_module=self._model_module,
                 dataset_module=self._dataset_module,
                 optimizer_module=self._optimizer_module,
-                metric_module=self._metrics_module)
+                metric_module=self._metrics_module,
+                cache_dir=cache_dir)
