@@ -1,3 +1,6 @@
+attrs
+typing-extensions
+click
 torch
 torchvision
 delve

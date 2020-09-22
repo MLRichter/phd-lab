@@ -4,7 +4,47 @@
 The phd lab repository contains routines for training of networks, extraction of latent representations,
 saturation computation and other experimental and probe training.
 
-### Configure your Experiments
+## <a name="install"></a>Installing phd-lab
+
+Phd-lab is written in python. It uses several third-party moduls which
+have to be installed in order to run the experiments. The following
+two sections provide installation instructions.
+
+### <a name="pip"></a>Installation with pip
+
+The file `requirements.txt` can be used to install all requirements
+using `pip` into new, virtual environment (called `phd-lab-env`):
+```sh
+python3 -m venv phd-lab-env
+source phd-lab-env/bin/activate
+pip3 install -r requirements.txt
+```
+
+Remarks:
+* it seems not possible to install `delve` with Python 3.5.2
+(the version installed at the IKW)
+* at our institute, torch complains that the NVIDIA driver is too old
+(found version 10010). However, there seems to be no way to upgrade
+this with pip. In this situation you may resort to the 
+[conda installation](#conda).
+* if not needed anymore, the virtual environment can be deleted by typing
+  `rm -R phd-lab-env/`.
+
+### <a name="conda"></a>Installation with conda
+
+When using `conda`, you can use the file `environment.yml` to set up a
+new conda environment caled `phd-lab`, containing all required packages:
+```sh
+conda env create -f environment.yml
+conda activate phd-lab
+```
+
+Remarks:
+* in no longer needed, the environment can be removed by typing
+`conda remove --name phd-lab --all`
+
+
+## Configure your Experiments
 Models are configures using json-Files. The json files are collected in the ./configs
 folder.
 ````json

@@ -1,0 +1,7 @@
+__pycache__/
+*.*~
+*.swp
+logs/
+tmp/
+tmp2/
+phd-lab-env/
