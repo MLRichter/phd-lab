@@ -1,0 +1,21 @@
+{
+    "model": [
+        "vgg13_XS"
+    ],
+    "epoch": [30],
+    "batch_size": [32],
+
+    "dataset": ["Cifar10"],
+    "resolution": [500, 400, 300, 200, 100, 32],
+
+    "optimizer": ["adam"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+    "device": ["cuda:0"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": null
+}
