@@ -52,6 +52,8 @@ class Main:
     def __call__(self, config_path: Path, run_id: str, device: Optional[str]):
         with config_path.open() as fp:
             config: Dict[str, Any] = json.load(fp)
+            if not "device" in config:
+                config["device"] = device
         iterable_config = self._build_iterator_config(config)
         operational_config = self._inject_values_from_default_config(iterable_config)
         for exp_num, (model, epoch, batch_size,

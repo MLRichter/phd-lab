@@ -8,6 +8,7 @@ from sklearn.linear_model import LogisticRegression as LogisticRegressionModel
 import pickle
 from multiprocessing import Pool
 from attr import attrs, attrib
+from phd_lab.experiments.utils import config
 
 
 @attrs(auto_attribs=True, slots=True)
@@ -130,7 +131,7 @@ def train_model(data_path: str, labels_path: str) -> LogisticRegressionModel:
     print('Loading training data from', data_path)
     data, labels = get_data_annd_labels(data_path, labels_path)
     print('Training data obtained with shape', data.shape)
-    model = LogisticRegressionModel(multi_class='multinomial', n_jobs=6, solver='saga', verbose=0).fit(data, labels)#train(model, data_loader)
+    model = LogisticRegressionModel(multi_class='multinomial', n_jobs=12, solver='saga', verbose=0).fit(data, labels)#train(model, data_loader)
     return model
 
 
@@ -181,7 +182,7 @@ def main(args: PseudoArgs):
     Args:
         args:  The configuration of the training as PseudoArgs object
     """
-    if os.path.exists(os.path.join(args.save_path, 'probe_performance.csv')):
+    if os.path.exists(os.path.join(args.save_path, config.PROBE_PERFORMANCE_SAVEFILE)):
         print('Detected existing results')
         if args.overwrite:
             print("overwriting is enabled. Training will continue and previous results will be overwritten.")
@@ -209,7 +210,7 @@ def main(args: PseudoArgs):
                     'train_acc': t_accs,
                     'eval_acc': e_accs
                 }
-            ).to_csv(os.path.join(args.save_path, "probe_performances.csv"), sep=';')
+            ).to_csv(os.path.join(args.save_path, config.PROBE_PERFORMANCE_SAVEFILE), sep=';')
         else:
             fargs.append((train_data, eval_data))
 
@@ -225,7 +226,7 @@ def main(args: PseudoArgs):
                 'train_acc': t_accs,
                 'eval_acc': e_accs
             }
-        ).to_csv(os.path.join(args.save_path, 'probe_performance.csv'), sep=';')
+        ).to_csv(os.path.join(args.save_path, config.PROBE_PERFORMANCE_SAVEFILE), sep=';')
 
 
 def parse_model(model_name, shape, num_classes) ->  str:

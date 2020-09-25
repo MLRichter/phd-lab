@@ -11,6 +11,10 @@ import json
 _MODES = {
     "train": lambda x: None,
     "extract": Extract(),
+    "extract_9": Extract(downsampling=9),
+    "extract_8": Extract(downsampling=8),
+    "extract_7": Extract(downsampling=7),
+    "extract_6": Extract(downsampling=6),
     "extract_5": Extract(downsampling=5),
     "extract_4": Extract(downsampling=4),
     "extract_3": Extract(downsampling=3),

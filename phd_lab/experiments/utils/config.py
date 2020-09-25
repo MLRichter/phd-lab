@@ -7,6 +7,8 @@ DATASET_REGISTRY = datasets
 OPTIMIZER_REGISTRY = optimizers
 METRICS_REGISTRY = metrics
 
+PROBE_PERFORMANCE_SAVEFILE = "probe_performances.csv"
+
 DEFAULT_CONFIG = {
     "model": ["resnet18"],
     "epoch": [30],
