@@ -59,8 +59,8 @@ class LatentRepresentationCollector:
         """
         if activations_batch.dim() == 4:  # conv layer (B x C x H x W)
             if self.downsampling is not None:
-                activations_batch = torch.nn.functional.interpolate(activations_batch, self.downsampling, mode="nearest")
-                #activations_batch = torch.nn.functional.adaptive_avg_pool2d(activations_batch, (self.downsampling, self.downsampling))
+                #activations_batch = torch.nn.functional.interpolate(activations_batch, self.downsampling, mode="nearest")
+                activations_batch = torch.nn.functional.adaptive_avg_pool2d(activations_batch, (self.downsampling, self.downsampling))
                 # TODO: Test Global Average Pooling
                 # TODO: Test bilinear interpolation with downsampling = 4
 

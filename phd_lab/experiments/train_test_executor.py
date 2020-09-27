@@ -4,7 +4,7 @@ from types import ModuleType
 from .trainer import Trainer
 from .domain import Metric
 from .utils.dependency_injection import get_metrics, get_optimizer, get_model, get_dataset, get_factory
-from .utils.post_training import Extract, Project, ReceptiveField
+from .utils.post_training import Extract, Project, ReceptiveField, ComputeFLOPS
 import json
 
 # The modes registered in this dictionary are valid post-training strategy.
@@ -23,7 +23,8 @@ _MODES = {
     "project-pca": Project('pca'),
     "project": Project('pca'),
     "project-random": Project('random'),
-    "receptive-field": ReceptiveField()
+    "receptive-field": ReceptiveField(),
+    "flops": ComputeFLOPS()
 }
 
 

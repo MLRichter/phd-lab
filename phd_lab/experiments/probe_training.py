@@ -183,7 +183,7 @@ def main(args: PseudoArgs):
         args:  The configuration of the training as PseudoArgs object
     """
     if os.path.exists(os.path.join(args.save_path, config.PROBE_PERFORMANCE_SAVEFILE)):
-        print('Detected existing results')
+        print('Detected existing results', os.path.join(args.save_path, config.PROBE_PERFORMANCE_SAVEFILE))
         if args.overwrite:
             print("overwriting is enabled. Training will continue and previous results will be overwritten.")
         else:

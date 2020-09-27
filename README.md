@@ -90,10 +90,12 @@ The system has the follow save structure
 |   +-- MyModel
 |   |   +-- MyDataset1_64                                               //dataset name followed by input resolution
 |   |   |   +-- MyRun                                                   //id of this specific run
+|   |   |   |   +--  probe_performance.csv                              //if you compute probe performances this file is added containing accuracies per layer, you may add a prefix to this file
+|   |   |   |   +--  projected_results.csv                              //if you projected the networks
+|   |   |   |   +--  computational_info.json                            //train_model.py will compute some meta info on FLOPS per inference step and save it as json
 |   |   |   |   +--  MyModel-MyDataset1-r64-bs128-e30_config.json       //lets repeat this specific run
 |   |   |   |   +--  MyModel-MyDataset1-r64-bs128-e30.csv               //saturation and metrics
 |   |   |   |   +--  MyModel-MyDataset1-r64-bs128-e30.pt                //model, lr-scheduler and optimizer states
-|   |   |   |   +--  projected_results.csv                              //if you projected the networks
 |   |   |   |   +--  MyModel-MyDataset1-r64-bs128-e30lsat_epoch0.png    //plots of saturation and intrinsic dimensionality
 |   |   |   |   +--  MyModel-MyDataset1-r64-bs128-e30lsat_epoch1.png   
 |   |   |   |   +--  MyModel-MyDataset1-r64-bs128-e30lsat_epoch2.png    
@@ -124,15 +126,20 @@ There are 4 overall scripts that will conduct a training if called. It is worth 
 each script is calling the same Main-Functionn object in just a slightly different configuration.
 They therefore share the same command line arguments and basic execution logic.
 The scripts are:
-+ ``train_model.py`` train models and compute saturation along the way
++ ``train_model.py`` train models and compute saturation along the way, adds also a json with information about FLOPs required per image and training
 + ``infer_with_altering_delta.py`` same as train.py, after trainingg concluded the model es evaluated on the test set, while changing the delta-value of all PCA layers.
 + ``extract_latent_representations.py`` extract the latent representation of the train and test set after training has concluded.
 + ``compute_receptive_field.py`` compute the receptive field after training. Non-sequential models must implemented ``noskip: bool`` argument in their consstructor in order for this to work properly.
++ ``probes_meta_execution_script.py`` basically ``extract_latent_representations.py`` and ``train_probes.py`` combined into one file for easier handling. 
 
 All of these scripts have the same arguments:
 + ``--config`` path to the config.json
 + ``--device`` compute device for the model ``cuda:n`` for the nth gpu,``cpu`` for cpu
 + ``--run-id`` the id of the run, may be any string, all experiments of this config will be saved in a subfolder with this id. This is useful if you want to repeat experiments multiple times.
+
+Additionally ``extract_latent_representations.py`` has an additional argument:
++ ``--downsampling`` target height and width of the downsampled feature map. Default value is 4. Adaptive Average Pooling is used for downsampling. In case of ``probes_meta_execution_script.py`` this argument is called ``-d`` instead and may be used multiple times to train probed multiple times on various resolutions.
++ ``--prefix`` if set, the content of this argument will be added as a prefix infront of the filename, separated by underscore. For example``foo_probe_performance.csv``.
 
 #### Checkpointing
 All metrics and the model itself are checkpointed after each epoch and the previous weights are overwritten.

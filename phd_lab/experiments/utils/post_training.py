@@ -6,11 +6,14 @@ import numpy as np
 import pandas as pd
 import os
 import json
+import torch
 from attr import attrs
 from torch.nn.modules import Module
 from .extraction import LatentRepresentationCollector, extract_from_dataset
 from .receptive_field import receptive_field
 from .dependency_injection import get_model
+from ptflops import get_model_complexity_info
+from pthflops import count_ops
 
 _MODE = {
     'pca': change_all_pca_layer_thresholds,
@@ -153,3 +156,54 @@ class Extract:
         model.eval()
         extract_from_dataset(logger, False, model, trainer.data_bundle.test_dataset, trainer.device)
         logger.save(os.path.dirname(trainer._save_path))
+
+
+@attrs(auto_attribs=True, slots=True, frozen=True)
+class ComputeFLOPS:
+
+    #TODO: Test it
+    @staticmethod
+    def _flops_to_string(flops: int, units: str = 'Mac', unit_scale: str = "G", precision: int = 2):
+        if units is None:
+            if flops // 10 ** 9 > 0:
+                return str(round(flops / 10. ** 9, precision)) + ' GMac'
+            elif flops // 10 ** 6 > 0:
+                return str(round(flops / 10. ** 6, precision)) + ' MMac'
+            elif flops // 10 ** 3 > 0:
+                return str(round(flops / 10. ** 3, precision)) + ' KMac'
+            else:
+                return str(flops) + ' Mac'
+        else:
+            if unit_scale == 'G':
+                return str(round(flops / 10. ** 9, precision)) + ' ' + unit_scale + units
+            elif unit_scale == 'M':
+                return str(round(flops / 10. ** 6, precision)) + ' ' + unit_scale + units
+            elif unit_scale == 'K':
+                return str(round(flops / 10. ** 3, precision)) + ' ' + unit_scale + units
+            else:
+                return str(flops) + ' ' + units
+
+    def __call__(self, trainer: Trainer):
+        resolution = 3, trainer.data_bundle.output_resolution, trainer.data_bundle.output_resolution
+        fake_input = torch.rand(1, *resolution).to(trainer.device)
+        ops, _ = count_ops(trainer.model, fake_input)
+        macs, params = get_model_complexity_info(trainer.model, resolution, as_strings=False,
+                                                 print_per_layer_stat=True, verbose=True)
+
+        n_samples = len(trainer.data_bundle.train_dataset) * trainer.batch_size
+        total_train_flops = macs * 2 * 3 * n_samples * trainer.epochs
+        results = {
+            "flops": ops,
+            "macs": macs,
+            "params": params,
+            "total flops": total_train_flops,
+
+            "str flops": self._flops_to_string(ops, "FLOPS"),
+            "str macs": self._flops_to_string(macs, "MAC"),
+            "str params": self._flops_to_string(params, "Params"),
+            "str total flops": self._flops_to_string(total_train_flops, "FLOPS")
+        }
+        savefile = os.path.join(os.path.dirname(trainer._save_path), "computational_info.json")
+
+        with open(savefile, "w+") as fp:
+            json.dump(results, fp)
