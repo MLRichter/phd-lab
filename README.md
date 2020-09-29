@@ -42,7 +42,14 @@ conda activate phd-lab
 Remarks:
 * in no longer needed, the environment can be removed by typing
 `conda remove --name phd-lab --all`
-
+* at the institute of cognitive science (IKW), the currently installed
+  nvidia driver (418.67) allows at best CUDA toolkit vesrion 10.1.
+  Use the file `environment-ikw.yml` instead of `environment.yml`
+  for an adapted environment.
+* To check if torch can use your CUDA version, you can run the following command:
+```sh
+python -c "import torch; print(torch._C._cuda_isDriverSufficient())"
+```
 
 ## Configure your Experiments
 Models are configures using json-Files. The json files are collected in the ./configs
