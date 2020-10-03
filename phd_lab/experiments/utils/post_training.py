@@ -1,4 +1,4 @@
-from typing import List, Union, Dict
+from typing import List, Union, Dict, Optional
 from .pca_layers import change_all_pca_layer_thresholds, change_all_pca_layer_thresholds_and_inject_random_directions
 from time import time
 from ..trainer import Trainer
@@ -139,17 +139,26 @@ class Project:
 class Extract:
 
     latent_representation_logs: str = './latent_datasets/'
-    downsampling: int = 4
+    downsampling: Optional[int] = 4
+    save_feature_map_positions_individually: bool = False
 
     def __call__(self, trainer: Trainer):
         trainer._tracker.stop()
         model = trainer.model
         print('Initializing logger')
-        logger = LatentRepresentationCollector(model, savepath=os.path.join(self.latent_representation_logs,
-                                                                            '{}_{}_{}'.format(model.name,
-                                                                                              trainer.data_bundle.dataset_name,
-                                                                                              trainer.data_bundle.output_resolution)
-                                                                            ), downsampling=self.downsampling)
+        logger = LatentRepresentationCollector(
+            model,
+            savepath=os.path.join(
+                self.latent_representation_logs,
+                '{}_{}_{}'.format(
+                    model.name,
+                    trainer.data_bundle.dataset_name,
+                    trainer.data_bundle.output_resolution
+                )
+            ),
+            downsampling=self.downsampling,
+            save_per_position=self.save_feature_map_positions_individually
+        )
         print('Extracting training')
         extract_from_dataset(logger, True, model, trainer.data_bundle.train_dataset, trainer.device)
         print('Extracting test')
@@ -161,7 +170,6 @@ class Extract:
 @attrs(auto_attribs=True, slots=True, frozen=True)
 class ComputeFLOPS:
 
-    #TODO: Test it
     @staticmethod
     def _flops_to_string(flops: int, units: str = 'Mac', unit_scale: str = "G", precision: int = 2):
         if units is None:

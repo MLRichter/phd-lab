@@ -6,6 +6,7 @@ from torch.nn import Conv2d, Linear, LSTM
 from torch.utils.data import DataLoader
 from typing import Union, Dict, List
 from shutil import rmtree
+from itertools import product
 import numpy as np
 from time import time
 import pickle
@@ -15,7 +16,11 @@ class LatentRepresentationCollector:
     """This Object collects the latent representation from all layers.
     """
 
-    def __init__(self, model: Module, savepath: str, save_instantly: bool = True, downsampling: int = None):
+    def __init__(self, model: Module,
+                 savepath: str,
+                 save_instantly: bool = True,
+                 downsampling: int = None,
+                 save_per_position: bool = False):
         """
 
         Args:
@@ -24,9 +29,11 @@ class LatentRepresentationCollector:
                                 For storage a subfolder will be created.
             save_instantly:     if true, the data will be saved incrementally with a save checkpoint at each batch.
             downsampling:       downsample the latent representation to a height and width equal to the downsampling value.
+            save_per_position:  saves a dataset per layer per position of the feature map instead of saving the feature maps downsamples as a whole.
         """
         self.savepath = savepath
         self.downsampling = downsampling
+        self.save_per_position = save_per_position
         if exists(savepath):
             print('Found previous extraction in folder, removing it...')
             rmtree(savepath)
@@ -61,16 +68,23 @@ class LatentRepresentationCollector:
             if self.downsampling is not None:
                 #activations_batch = torch.nn.functional.interpolate(activations_batch, self.downsampling, mode="nearest")
                 activations_batch = torch.nn.functional.adaptive_avg_pool2d(activations_batch, (self.downsampling, self.downsampling))
-                # TODO: Test Global Average Pooling
-                # TODO: Test bilinear interpolation with downsampling = 4
-
-            activations_batch = activations_batch.view(activations_batch.size(0), -1)
+            if self.save_per_position:
+                activations_batch = activations_batch.view(activations_batch.size(0), -1)
         batch = activations_batch.cpu().numpy()
         if not self.save_instantly:
             if layer.name not in self.logs[training_state]:
                 self.logs[training_state][layer.name] = batch
             else:
                 self.logs[training_state][layer.name] = np.vstack((self.logs[training_state][layer.name], batch))
+        elif self.save_per_position and batch.shape == 4:
+            for (i, j) in product(batch.shape[2], batch.shape[3]):
+                position = batch[:, :, i, j]
+                saveable = position.view(position.size(0), -1)
+                savepath = self.savepath + '/' + training_state + '-' + layer.name + f'-({i},{j})' + '.p'
+                if not exists(savepath):
+                    self.logs[training_state][layer.name] = open(savepath, 'wb')
+                pickle.dump(saveable, file=self.logs[training_state][layer.name])
+
         else:
             savepath = self.savepath+'/'+training_state+'-'+layer.name+'.p'
             if not exists(savepath):

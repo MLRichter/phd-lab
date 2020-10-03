@@ -11,6 +11,8 @@ import json
 _MODES = {
     "train": lambda x: None,
     "extract": Extract(),
+    "extract_pixelwise": Extract(downsampling=None, save_feature_map_positions_individually=True),
+    "extract_None": Extract(downsampling=None),
     "extract_9": Extract(downsampling=9),
     "extract_8": Extract(downsampling=8),
     "extract_7": Extract(downsampling=7),
