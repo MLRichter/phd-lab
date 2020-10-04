@@ -161,6 +161,7 @@ class Extract:
         )
         print('Extracting training')
         extract_from_dataset(logger, True, model, trainer.data_bundle.train_dataset, trainer.device)
+        logger.save(os.path.dirname(trainer._save_path))
         print('Extracting test')
         model.eval()
         extract_from_dataset(logger, False, model, trainer.data_bundle.test_dataset, trainer.device)

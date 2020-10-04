@@ -10,7 +10,8 @@ from itertools import product
 import numpy as np
 from time import time
 import pickle
-
+import win32file
+win32file._setmaxstdio(2048)
 
 class LatentRepresentationCollector:
     """This Object collects the latent representation from all layers.
@@ -68,7 +69,7 @@ class LatentRepresentationCollector:
             if self.downsampling is not None:
                 #activations_batch = torch.nn.functional.interpolate(activations_batch, self.downsampling, mode="nearest")
                 activations_batch = torch.nn.functional.adaptive_avg_pool2d(activations_batch, (self.downsampling, self.downsampling))
-            if self.save_per_position:
+            if not self.save_per_position:
                 activations_batch = activations_batch.view(activations_batch.size(0), -1)
         batch = activations_batch.cpu().numpy()
         if not self.save_instantly:
@@ -76,14 +77,16 @@ class LatentRepresentationCollector:
                 self.logs[training_state][layer.name] = batch
             else:
                 self.logs[training_state][layer.name] = np.vstack((self.logs[training_state][layer.name], batch))
-        elif self.save_per_position and batch.shape == 4:
-            for (i, j) in product(batch.shape[2], batch.shape[3]):
+        elif self.save_per_position and len(batch.shape) == 4:
+            for (i, j) in product(range(batch.shape[2]), range(batch.shape[3])):
                 position = batch[:, :, i, j]
-                saveable = position.view(position.size(0), -1)
+                saveable = position.squeeze()
                 savepath = self.savepath + '/' + training_state + '-' + layer.name + f'-({i},{j})' + '.p'
                 if not exists(savepath):
-                    self.logs[training_state][layer.name] = open(savepath, 'wb')
-                pickle.dump(saveable, file=self.logs[training_state][layer.name])
+                    if layer.name not in self.logs[training_state]:
+                        self.logs[training_state][layer.name] = {}
+                    self.logs[training_state][layer.name][(i, j)] = open(savepath, 'wb')
+                pickle.dump(saveable, file=self.logs[training_state][layer.name][(i, j)])
 
         else:
             savepath = self.savepath+'/'+training_state+'-'+layer.name+'.p'
@@ -188,7 +191,11 @@ class LatentRepresentationCollector:
                     with open(self.savepath+'/'+mode+'-'+layer_name+'.p', 'wb') as p:
                         pickle.dump(data, p)
                 else:
-                    data.close()
+                    if isinstance(data, dict):
+                        for _, fp in data.items():
+                            fp.close()
+                    else:
+                        data.close()
 
 
 def extract_from_dataset(logger: LatentRepresentationCollector,
