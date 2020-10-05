@@ -13,6 +13,7 @@ import pickle
 import win32file
 win32file._setmaxstdio(2048)
 
+
 class LatentRepresentationCollector:
     """This Object collects the latent representation from all layers.
     """

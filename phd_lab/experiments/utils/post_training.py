@@ -160,6 +160,7 @@ class Extract:
             save_per_position=self.save_feature_map_positions_individually
         )
         print('Extracting training')
+        model.train()
         extract_from_dataset(logger, True, model, trainer.data_bundle.train_dataset, trainer.device)
         logger.save(os.path.dirname(trainer._save_path))
         print('Extracting test')
