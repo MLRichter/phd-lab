@@ -71,7 +71,8 @@ class Bottleneck(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=10):
+    def __init__(self, block, num_blocks, num_classes=10, resolution=32):
+        self.resolution = resolution
         super(ResNet, self).__init__()
         self.in_planes = 64
 
@@ -92,7 +93,9 @@ class ResNet(nn.Module):
             self.in_planes = planes * block.expansion
         return nn.Sequential(*layers)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor):
+        if self.resolution is None:
+            self.resolution = x.shape[2]
         out = F.relu(self.bn1(self.conv1(x)))
         out = self.layer1(out)
         out = self.layer2(out)

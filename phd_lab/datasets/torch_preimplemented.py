@@ -38,7 +38,7 @@ def Food101(batch_size=12,
     )
 
 
-def TinyImageNet(batch_size=12, output_size=64) -> DataBundle:
+def TinyImageNet(batch_size=12, output_size=64, cache_dir="tmp") -> DataBundle:
     # Transformations
     RC = transforms.RandomCrop(64, padding=64//8)
     RHF = transforms.RandomHorizontalFlip()

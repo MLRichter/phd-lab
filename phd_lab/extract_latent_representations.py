@@ -1,6 +1,8 @@
 from pathlib import Path
 from phd_lab.experiments.main import Main
 import click
+import win32file
+win32file._setmaxstdio(4096)
 
 
 @click.command()

@@ -86,8 +86,10 @@ class LatentRepresentationCollector:
                 if not exists(savepath):
                     if layer.name not in self.logs[training_state]:
                         self.logs[training_state][layer.name] = {}
-                    self.logs[training_state][layer.name][(i, j)] = open(savepath, 'wb')
-                pickle.dump(saveable, file=self.logs[training_state][layer.name][(i, j)])
+                    self.logs[training_state][layer.name][(i, j)] = savepath
+
+                with open(self.logs[training_state][layer.name][(i, j)], 'ab') as fp:
+                    pickle.dump(saveable, file=fp)
 
         else:
             savepath = self.savepath+'/'+training_state+'-'+layer.name+'.p'
@@ -188,6 +190,8 @@ class LatentRepresentationCollector:
             makedirs(self.savepath)
         for mode, logs in self.logs.items():
             for layer_name, data in self.logs[mode].items():
+                if isinstance(data, str):
+                    continue
                 if isinstance(data, np.ndarray):
                     with open(self.savepath+'/'+mode+'-'+layer_name+'.p', 'wb') as p:
                         pickle.dump(data, p)
