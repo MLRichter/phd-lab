@@ -198,9 +198,11 @@ class LatentRepresentationCollector:
                 else:
                     if isinstance(data, dict):
                         for _, fp in data.items():
-                            fp.close()
+                            if hasattr(fp, "close"):
+                                fp.close()
                     else:
-                        data.close()
+                        if hasattr(fp, "close"):
+                            data.close()
 
 
 def extract_from_dataset(logger: LatentRepresentationCollector,

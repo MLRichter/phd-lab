@@ -17,7 +17,7 @@ from phd_lab.experiments.utils import config as app_config
               help="The device to deploy the experiment on, this argument uses pytorch codes.")
 @click.option("--run-id", type=str, required=True, help="the id of the run")
 @click.option("-mp", type=int, required=True, help="Number of cpu cores to use for probe training")
-@click.option("--prefix", type=str, required=True, help="prefix of the probe file")
+@click.option("--prefix", type=str, required=True, default="", help="prefix of the probe file")
 @click.option("-d", multiple=True, type=int, help="downsamplings")
 @click.option("--folder", type=str, default="./latent_datasets")
 def main(config: str, device: str, run_id: str, mp: int, prefix: str, d: Tuple[int], folder: str):

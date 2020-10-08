@@ -1,13 +1,13 @@
 {
     "model": [
-        "vgg16",
-        "resnet18"
+        "resnet18",
+        "vgg16"
     ],
     "epoch": [30],
     "batch_size": [64],
 
     "dataset": ["BlackBorderCifar10"],
-    "resolution": [32, 150],
+    "resolution": [32, 64, 128, 160],
 
     "optimizer": ["adam"],
     "metrics": ["Accuracy", "Top5Accuracy"],

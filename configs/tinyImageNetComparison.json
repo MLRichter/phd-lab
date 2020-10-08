@@ -1,6 +1,5 @@
 {
     "model": [
-        "vgg16",
         "resnet18"
     ],
     "epoch": [90],

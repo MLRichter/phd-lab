@@ -1,6 +1,6 @@
 {
     "model": [
-        "PC_ResNet18"
+        "resnet18"
     ],
     "epoch": [90],
     "batch_size": [128],

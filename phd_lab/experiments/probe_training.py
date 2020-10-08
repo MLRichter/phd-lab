@@ -9,7 +9,11 @@ import pickle
 from multiprocessing import Pool
 from attr import attrs, attrib
 from phd_lab.experiments.utils import config
-
+from joblib import Parallel, delayed
+from joblib import Memory
+if not os.path.exists(".memcache"):
+    os.makedirs(".memcache")
+memory = Memory(".memcache", verbose=0)
 
 @attrs(auto_attribs=True, slots=True)
 class PseudoArgs:
@@ -119,6 +123,11 @@ def get_data_annd_labels(data_path: str, label_path: str) -> Tuple[np.ndarray, n
     """
     return load(data_path), np.squeeze(load(label_path))
 
+@memory.cache
+def fit_with_cache(data: np.ndarray, labels: np.ndarray):
+    model = LogisticRegressionModel(multi_class='multinomial', n_jobs=12, solver='saga', verbose=0).fit(data, labels)
+    return model
+
 
 def train_model(data_path: str, labels_path: str) -> LogisticRegressionModel:
     """Train a logistic regression model on latent representations and labels from the original dataset.
@@ -131,8 +140,8 @@ def train_model(data_path: str, labels_path: str) -> LogisticRegressionModel:
     print('Loading training data from', data_path)
     data, labels = get_data_annd_labels(data_path, labels_path)
     print('Training data obtained with shape', data.shape)
-    model = LogisticRegressionModel(multi_class='multinomial', n_jobs=12, solver='saga', verbose=0).fit(data, labels)#train(model, data_loader)
-    return model
+    return fit_with_cache(data, labels)
+
 
 
 def obtain_accuracy(model: LogisticRegressionModel, data_path, label_path: str) -> float:
@@ -215,8 +224,8 @@ def main(args: PseudoArgs):
             fargs.append((train_data, eval_data))
 
     if args.mp != 0:
-        with Pool(args.mp) as p:
-            results = p.map(train_model_for_data_mp, fargs)
+        p = Parallel(n_jobs=args.mp, verbose=1000)
+        results = p(delayed(train_model_for_data_mp)(farg) for farg in fargs)
         for i, result in enumerate(results):
             t_accs.append(result[0])
             e_accs.append(result[1])
