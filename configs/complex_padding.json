@@ -1,0 +1,22 @@
+{
+    "model": [
+        "resnet18",
+        "vgg16"
+    ],
+    "epoch": [30],
+    "batch_size": [64],
+
+    "dataset": ["Cifar10", "ReflectBorderCifar10"],
+    "resolution": [32, 64, 128, 160],
+
+    "optimizer": ["adam"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+    "device": ["cuda:0"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": null
+}
