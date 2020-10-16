@@ -70,6 +70,39 @@ def TinyImageNet(batch_size=12, output_size=64, cache_dir="tmp") -> DataBundle:
         dataset_name="TinyImageNet"
     )
 
+def Malaria(batch_size=12, output_size=150, cache_dir="tmp") -> DataBundle:
+    # Transformations
+    #RC = transforms.RandomCrop(64, padding=64//8)
+    RHF = transforms.RandomHorizontalFlip()
+    RVF = transforms.RandomVerticalFlip()
+    NRM = transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
+    TT = transforms.ToTensor()
+    RS = transforms.Resize((output_size, output_size))
+
+    # Transforms object for trainset with augmentation
+    transform_with_aug = transforms.Compose([RS, RVF, RHF, TT, NRM])
+    # Transforms object for testset with NO augmentation
+    transform_no_aug = transforms.Compose([RS, TT, NRM])
+
+
+    trainset = torchvision.datasets.ImageFolder(root='./tmp/malaria/train/', transform=transform_with_aug)
+    testset = torchvision.datasets.ImageFolder(root='./tmp/malaria/test/', transform=transform_no_aug)
+
+
+    train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                              shuffle=True, num_workers=3, pin_memory=False)
+    test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                             shuffle=True, num_workers=3, pin_memory=False)
+    train_loader.name = "Malaria"
+    return DataBundle(
+        train_dataset=train_loader,
+        test_dataset=test_loader,
+        cardinality=2,
+        output_resolution=output_size,
+        is_classifier=True,
+        dataset_name="Malaria"
+    )
+
 
 def g2rgb(x):
     return x.repeat(3, 1, 1)

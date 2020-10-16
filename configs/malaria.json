@@ -6,11 +6,11 @@
     "epoch": [30],
     "batch_size": [64],
 
-    "dataset": ["ReflectBorderCifar10"],
+    "dataset": ["Malaria"],
     "resolution": [32, 64, 128, 160],
 
     "optimizer": ["adam"],
-    "metrics": ["Accuracy", "Top5Accuracy"],
+    "metrics": ["Accuracy"],
 
     "logs_dir": ["../logs/"],
     "device": ["cuda:0"],
