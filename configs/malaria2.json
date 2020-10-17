@@ -1,0 +1,22 @@
+{
+    "model": [
+        "resnet18",
+        "vgg16"
+    ],
+    "epoch": [30],
+    "batch_size": [32],
+
+    "dataset": ["Malaria"],
+    "resolution": [32, 64, 128, 160, 256, 300],
+
+    "optimizer": ["adam"],
+    "metrics": ["Accuracy"],
+
+    "logs_dir": ["../logs/"],
+    "device": ["cuda:0"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": null
+}
