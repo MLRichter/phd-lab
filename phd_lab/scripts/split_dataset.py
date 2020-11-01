@@ -1,4 +1,4 @@
-from shutil import rmtree, copyfile, copy
+from shutil import rmtree, copy
 from pathlib import Path
 from typing import List, Dict, Tuple
 from tqdm import tqdm
@@ -7,7 +7,7 @@ import click_pathlib
 import click
 
 
-def searching_all_files(directory):
+def searching_all_files(directory: Path) -> List[Path]:
     dirpath = Path(directory)
     assert(dirpath.is_dir())
     file_list = []

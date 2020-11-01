@@ -164,6 +164,100 @@ class Lighting(object):
         return img.add(rgb.view(3, 1, 1).expand_as(img))
 
 
+def iNaturalist(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
+    __imagenet_pca = {
+        'eigval': torch.Tensor([0.2175, 0.0188, 0.0045]),
+        'eigvec': torch.Tensor([
+            [-0.5675, 0.7192, 0.4009],
+            [-0.5808, -0.0045, -0.8140],
+            [-0.5836, -0.6948, 0.4203],
+        ])
+    }
+
+
+    train_tfms = transforms.Compose([
+        transforms.Resize((output_size, output_size)),
+        transforms.CenterCrop((output_size, output_size)),
+        transforms.RandomHorizontalFlip(),
+        transforms.ColorJitter(.4,.4,.4),
+        transforms.ToTensor(),
+        Lighting(0.1, __imagenet_pca['eigval'], __imagenet_pca['eigvec']),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    val_tfms = transforms.Compose([
+        transforms.Resize(int(output_size*1.14)),
+        transforms.CenterCrop(output_size),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    trainset = torchvision.datasets.ImageFolder(root="E:\\inaturalist\\train", transform=train_tfms)
+    testset = torchvision.datasets.ImageFolder(root="E:\\inaturalist\\test", transform=val_tfms)
+
+    train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                               shuffle=True, num_workers=6, pin_memory=True)
+    test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                             shuffle=False, num_workers=6, pin_memory=True)
+    train_loader.name = "iNaturalist"
+    return DataBundle(
+        dataset_name="iNaturalist",
+        train_dataset=train_loader,
+        test_dataset=test_loader,
+        cardinality=1010,
+        output_resolution=output_size,
+        is_classifier=True
+    )
+
+def ResizediNaturalist(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
+    __imagenet_pca = {
+        'eigval': torch.Tensor([0.2175, 0.0188, 0.0045]),
+        'eigvec': torch.Tensor([
+            [-0.5675, 0.7192, 0.4009],
+            [-0.5808, -0.0045, -0.8140],
+            [-0.5836, -0.6948, 0.4203],
+        ])
+    }
+
+
+    train_tfms = transforms.Compose([
+        transforms.Resize((32, 32)),
+        transforms.Resize((output_size, output_size)),
+        transforms.CenterCrop((output_size, output_size)),
+        transforms.RandomHorizontalFlip(),
+        transforms.ColorJitter(.4,.4,.4),
+        transforms.ToTensor(),
+        Lighting(0.1, __imagenet_pca['eigval'], __imagenet_pca['eigvec']),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    val_tfms = transforms.Compose([
+        transforms.Resize((32, 32)),
+        transforms.Resize(int(output_size*1.14)),
+        transforms.CenterCrop(output_size),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    trainset = torchvision.datasets.ImageFolder(root="E:\\inaturalist\\train", transform=train_tfms)
+    testset = torchvision.datasets.ImageFolder(root="E:\\inaturalist\\test", transform=val_tfms)
+
+    train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                               shuffle=True, num_workers=6, pin_memory=True)
+    test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                             shuffle=False, num_workers=6, pin_memory=True)
+    train_loader.name = "ResizediNaturalist"
+    return DataBundle(
+        dataset_name="ResizediNaturalist",
+        train_dataset=train_loader,
+        test_dataset=test_loader,
+        cardinality=1010,
+        output_resolution=output_size,
+        is_classifier=True
+    )
+
+
+
 def ImageNet(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
     size = output_size
     __imagenet_pca = {
@@ -193,16 +287,64 @@ def ImageNet(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
-    trainset = torchvision.datasets.ImageNet(root="D:\\", transform=train_tfms, split='train')
-    testset = torchvision.datasets.ImageNet(root="D:\\", transform=val_tfms, split='val')
+    trainset = torchvision.datasets.ImageNet(root="C:\\ImageNet", transform=train_tfms, split='train')
+    testset = torchvision.datasets.ImageNet(root="C:\\ImageNet", transform=val_tfms, split='val')
 
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                               shuffle=True, num_workers=6, pin_memory=False)
+                                               shuffle=True, num_workers=6, pin_memory=True)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                             shuffle=False, num_workers=6, pin_memory=False)
+                                             shuffle=False, num_workers=6, pin_memory=True)
     train_loader.name = "ImageNet"
     return DataBundle(
         dataset_name="ImageNet",
+        train_dataset=train_loader,
+        test_dataset=test_loader,
+        cardinality=1000,
+        output_resolution=output_size,
+        is_classifier=True
+    )
+
+
+def ResizedImageNet(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
+    size = output_size
+    __imagenet_pca = {
+        'eigval': torch.Tensor([0.2175, 0.0188, 0.0045]),
+        'eigvec': torch.Tensor([
+            [-0.5675, 0.7192, 0.4009],
+            [-0.5808, -0.0045, -0.8140],
+            [-0.5836, -0.6948, 0.4203],
+        ])
+    }
+
+    train_tfms = transforms.Compose([
+        transforms.Resize((32, 32)),
+        transforms.Resize((output_size, output_size)),
+        transforms.CenterCrop((output_size, output_size)),
+        transforms.RandomHorizontalFlip(),
+        transforms.ColorJitter(.4,.4,.4),
+        transforms.ToTensor(),
+        Lighting(0.1, __imagenet_pca['eigval'], __imagenet_pca['eigvec']),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    val_tfms = transforms.Compose([
+        transforms.Resize((32, 32)),
+        transforms.Resize(int(output_size*1.14)),
+        transforms.CenterCrop(output_size),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    trainset = torchvision.datasets.ImageNet(root="C:\\ImageNet", transform=train_tfms, split='train')
+    testset = torchvision.datasets.ImageNet(root="C:\\ImageNet", transform=val_tfms, split='val')
+
+    train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                               shuffle=True, num_workers=6, pin_memory=True)
+    test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                             shuffle=False, num_workers=6, pin_memory=True)
+    train_loader.name = "ResizedImageNet"
+    return DataBundle(
+        dataset_name="ResizedImageNet",
         train_dataset=train_loader,
         test_dataset=test_loader,
         cardinality=1000,

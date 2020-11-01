@@ -3,6 +3,7 @@ from torch.nn.modules import Module
 from torch.utils.data import DataLoader
 import torch
 from time import time
+from tqdm import tqdm
 import torch.nn as nn
 from typing import Optional, List, Dict, Tuple
 from delve import CheckLayerSat
@@ -107,8 +108,8 @@ class Trainer:
     def _load_model(self):
         self.model.load_state_dict(torch.load(self._save_path.replace('.csv', '.pt'))['model_state_dict'])
         if self.data_parallel:
-            # TODO: make this work with DistributedDataParallel
-            self.model = nn.DataParallel(self.model)
+            print("Enabling multi gpu")
+            self.model = nn.DataParallel(self.model, device_ids=["cuda:0", "cuda:1"], output_device=self.device)
             # from torch.nn.parallel import DistributedDataParallel
         self.model = self.model.to(self.device)
 
@@ -137,6 +138,9 @@ class Trainer:
         self._initial_epoch = 0
         self._trained_epochs = 0
         self._experiment_done = False
+        if self.data_parallel:
+            print("Enabling multi gpu")
+            self.model = nn.DataParallel(self.model, device_ids=["cuda:0", "cuda:1"], output_device=self.device)
         self.model = self.model.to(self.device)
         if os.path.exists(self._save_path):
             self._load_initial_and_trained_epoch()
@@ -168,6 +172,10 @@ class Trainer:
     def _eval_metrics(self, y_true: torch.Tensor, y_pred: torch.Tensor):
         for metric in self.metrics:
             metric.update(y_true, y_pred)
+
+    def _update_pbar_postfix(self, pbar: tqdm):
+        metrics = {metric.name: round(metric.value, 3) for metric in self.metrics}
+        pbar.set_postfix(metrics)
 
     def _print_status(self, batch: int, old_time: int, dataset: DataLoader):
         metrics = [f"{metric.name}:  {round(metric.value, 3)}" for metric in self.metrics]
@@ -246,9 +254,12 @@ class Trainer:
         running_loss = 0
         total = 0
         old_time = time()
-        for batch, data in enumerate(self.data_bundle.train_dataset):
+        pbar = tqdm(self.data_bundle.train_dataset)
+
+        for batch, data in enumerate(pbar):#self.data_bundle.train_dataset):
             if batch % 10 == 0 and batch != 0:
-                self._print_status(batch, old_time, self.data_bundle.train_dataset)
+                #self._print_status(batch, old_time, self.data_bundle.train_dataset)
+                self._update_pbar_postfix(pbar)
                 old_time = time()
 
             inputs, labels = data
@@ -279,7 +290,9 @@ class Trainer:
         test_loss = 0
         with torch.no_grad():
             old_time = time()
-            for batch, data in enumerate(self.data_bundle.test_dataset):
+            pbar = tqdm(self.data_bundle.test_dataset)
+
+            for batch, data in enumerate(pbar):
                 inputs, labels = data
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
 
@@ -293,7 +306,8 @@ class Trainer:
                 self._eval_metrics(labels, outputs)
 
                 if batch % 10 == 0 or batch == (len(self.data_bundle.test_dataset)-1):
-                    self._print_status(batch, old_time, self.data_bundle.test_dataset)
+                    #self._print_status(batch, old_time, self.data_bundle.test_dataset)
+                    self._update_pbar_postfix(pbar)
                     old_time = time()
 
             test_metrics = self._track_metrics('test', test_loss, total)
