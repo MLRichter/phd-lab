@@ -6,6 +6,16 @@ import torch.utils.data
 import torchvision
 from torchvision import transforms
 
+# Ulf: I am experiencing problems when setting num_workers > 0:
+# the Dataloader simply freezes when trying to iterate over the data.
+# This problem occurs with:
+#    anaconda::pytorch-1.4.0-cuda101py38h0~
+#    pytorch::pytorch-1.4.0-py3.8_cuda10.1.243_cudnn7.6.3_0
+#
+# The problem does not occur with:
+#    pytorch::pytorch-1.6.0-py3.8_cuda10.1.243_cudnn7.6.3_0
+#    
+num_workers = 8
 
 def Cifar10(batch_size=12, output_size=32, cache_dir='tmp') -> DataBundle:
 
@@ -25,11 +35,11 @@ def Cifar10(batch_size=12, output_size=32, cache_dir='tmp') -> DataBundle:
     trainset = torchvision.datasets.CIFAR10(root=cache_dir, train=True,
                                             download=True, transform=transform_with_aug)
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                              shuffle=True, num_workers=8, pin_memory=True)
+                                              shuffle=True, num_workers=num_workers, pin_memory=True)
     testset = torchvision.datasets.CIFAR10(root=cache_dir, train=False,
                                            download=True, transform=transform_no_aug)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                             shuffle=False, num_workers=8, pin_memory=True)
+                                             shuffle=False, num_workers=num_workers, pin_memory=True)
     train_loader.name = "Cifar10"
 
     return DataBundle(
@@ -64,11 +74,11 @@ def ReflectBorderCifar10(batch_size=12, output_size=32, cache_dir='tmp') -> Data
     trainset = torchvision.datasets.CIFAR10(root=cache_dir, train=True,
                                             download=True, transform=transform_with_aug)
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                              shuffle=True, num_workers=8, pin_memory=True)
+                                              shuffle=True, num_workers=num_workers, pin_memory=True)
     testset = torchvision.datasets.CIFAR10(root=cache_dir, train=False,
                                            download=True, transform=transform_no_aug)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                             shuffle=False, num_workers=8, pin_memory=True)
+                                             shuffle=False, num_workers=num_workers, pin_memory=True)
     train_loader.name = "ReflectBorderCifar10"
 
     return DataBundle(
@@ -142,11 +152,11 @@ def BlackBorderCifar10(batch_size=12, output_size=32, cache_dir='tmp') -> DataBu
     trainset = torchvision.datasets.CIFAR10(root=cache_dir, train=True,
                                             download=True, transform=transform_with_aug)
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                              shuffle=True, num_workers=8, pin_memory=True)
+                                              shuffle=True, num_workers=num_workers, pin_memory=True)
     testset = torchvision.datasets.CIFAR10(root=cache_dir, train=False,
                                            download=True, transform=transform_no_aug)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                             shuffle=False, num_workers=8, pin_memory=True)
+                                             shuffle=False, num_workers=num_workers, pin_memory=True)
     train_loader.name = "BlackBorderCifar10"
 
     return DataBundle(
@@ -179,11 +189,11 @@ def Cifar100(batch_size=12,
     trainset = torchvision.datasets.CIFAR100(root=cache_dir, train=True,
                                             download=True, transform=transform_with_aug)
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                              shuffle=True, num_workers=8)
+                                              shuffle=True, num_workers=num_workers)
     testset = torchvision.datasets.CIFAR100(root=cache_dir, train=False,
                                            download=True, transform=transform_no_aug)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                             shuffle=False, num_workers=8)
+                                             shuffle=False, num_workers=num_workers)
     train_loader.name = "Cifar100"
 
     return DataBundle(
