@@ -106,11 +106,7 @@ class Trainer:
             f"{self.model.name}-{self.data_bundle.dataset_name}-r{self.data_bundle.output_resolution}-bs{self.batch_size}-e{self.epochs}.csv")
 
     def _load_model(self):
-        self.model.load_state_dict(torch.load(self._save_path.replace('.csv', '.pt'))['model_state_dict'])
-        if self.data_parallel:
-            print("Enabling multi gpu")
-            self.model = nn.DataParallel(self.model, device_ids=["cuda:0", "cuda:1"], output_device=self.device)
-            # from torch.nn.parallel import DistributedDataParallel
+        self.model.load_state_dict(torch.load(self._save_path.replace('.csv', '.pt'), map_location="cpu")['model_state_dict'])
         self.model = self.model.to(self.device)
 
     def _load_optimizer_and_scheduler(self):
