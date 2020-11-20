@@ -4,10 +4,10 @@
         "vgg16"
     ],
     "epoch": [30],
-    "batch_size": [128],
+    "batch_size": [64],
 
     "dataset": ["ResizedMalaria" ,"Malaria"],
-    "resolution": [32, 128],
+    "resolution": [224],
 
     "optimizer": ["adam"],
     "metrics": ["Accuracy"],

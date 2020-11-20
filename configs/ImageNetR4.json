@@ -1,16 +1,15 @@
 {
     "model": [
-        "resnet18",
         "vgg16"
     ],
     "epoch": [30],
     "batch_size": [128],
 
-    "dataset": ["ResizedMalaria" ,"Malaria"],
-    "resolution": [32, 128],
+    "dataset": ["ResizediNaturalist", "iNaturalist", "ImageNet"],
+    "resolution": [224],
 
     "optimizer": ["adam"],
-    "metrics": ["Accuracy"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
     "device": ["cuda:0"],
@@ -18,5 +17,5 @@
     "conv_method": ["channelwise"],
     "delta": [0.99],
     "data_parallel": true,
-    "downsampling": null
+    "downsampling": 4
 }

@@ -70,6 +70,42 @@ def TinyImageNet(batch_size=12, output_size=64, cache_dir="tmp") -> DataBundle:
         dataset_name="TinyImageNet"
     )
 
+def ResizedMalaria(batch_size=12, output_size=150, cache_dir="tmp") -> DataBundle:
+    # Transformations
+    #RC = transforms.RandomCrop(64, padding=64//8)
+    RHF = transforms.RandomHorizontalFlip()
+    RVF = transforms.RandomVerticalFlip()
+    NRM = transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
+    TT = transforms.ToTensor()
+    RS = transforms.Resize((32, 32))
+    RS2 = transforms.Resize((output_size, output_size))
+
+    # Transforms object for trainset with augmentation
+    transform_with_aug = transforms.Compose([RS, RS2, RVF, RHF, TT, NRM])
+    # Transforms object for testset with NO augmentation
+    transform_no_aug = transforms.Compose([RS, RS2, TT, NRM])
+
+
+    trainset = torchvision.datasets.ImageFolder(root='./tmp/malaria/train/', transform=transform_with_aug)
+    testset = torchvision.datasets.ImageFolder(root='./tmp/malaria/test/', transform=transform_no_aug)
+
+
+    train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                              shuffle=True, num_workers=3, pin_memory=False)
+    test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                             shuffle=True, num_workers=3, pin_memory=False)
+    train_loader.name = "ResizedMalaria"
+    return DataBundle(
+        train_dataset=train_loader,
+        test_dataset=test_loader,
+        cardinality=2,
+        output_resolution=output_size,
+        is_classifier=True,
+        dataset_name="ResizedMalaria"
+    )
+
+
+
 def Malaria(batch_size=12, output_size=150, cache_dir="tmp") -> DataBundle:
     # Transformations
     #RC = transforms.RandomCrop(64, padding=64//8)
@@ -196,9 +232,9 @@ def iNaturalist(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
     testset = torchvision.datasets.ImageFolder(root="E:\\inaturalist\\test", transform=val_tfms)
 
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                               shuffle=True, num_workers=6, pin_memory=True)
+                                               shuffle=True, num_workers=6, pin_memory=False)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                             shuffle=False, num_workers=6, pin_memory=True)
+                                             shuffle=False, num_workers=6, pin_memory=False)
     train_loader.name = "iNaturalist"
     return DataBundle(
         dataset_name="iNaturalist",
@@ -243,9 +279,9 @@ def ResizediNaturalist(batch_size=12, output_size=224, cache_dir='tmp') -> DataB
     testset = torchvision.datasets.ImageFolder(root="E:\\inaturalist\\test", transform=val_tfms)
 
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                               shuffle=True, num_workers=6, pin_memory=True)
+                                               shuffle=True, num_workers=6, pin_memory=False)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                             shuffle=False, num_workers=6, pin_memory=True)
+                                             shuffle=False, num_workers=6, pin_memory=False)
     train_loader.name = "ResizediNaturalist"
     return DataBundle(
         dataset_name="ResizediNaturalist",
@@ -291,9 +327,9 @@ def ImageNet(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
     testset = torchvision.datasets.ImageNet(root="C:\\ImageNet", transform=val_tfms, split='val')
 
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                               shuffle=True, num_workers=6, pin_memory=True)
+                                               shuffle=True, num_workers=6, pin_memory=False)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                             shuffle=False, num_workers=6, pin_memory=True)
+                                             shuffle=False, num_workers=6, pin_memory=False)
     train_loader.name = "ImageNet"
     return DataBundle(
         dataset_name="ImageNet",

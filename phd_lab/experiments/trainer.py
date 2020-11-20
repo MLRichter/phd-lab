@@ -252,11 +252,9 @@ class Trainer:
         old_time = time()
         pbar = tqdm(self.data_bundle.train_dataset)
 
-        for batch, data in enumerate(pbar):#self.data_bundle.train_dataset):
+        for batch, data in enumerate(pbar):
             if batch % 10 == 0 and batch != 0:
-                #self._print_status(batch, old_time, self.data_bundle.train_dataset)
                 self._update_pbar_postfix(pbar)
-                old_time = time()
 
             inputs, labels = data
             inputs, labels = inputs.to(self.device), labels.to(self.device)
