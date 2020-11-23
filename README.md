@@ -133,7 +133,7 @@ configurations (more on that later).  In the ``phd_lab`` folder you
 will find scripts handling different kinds of model training and
 analysis.
 
-### Training models
+### <a name="train"></a>Training models
 There are 4 overall scripts that will conduct a training if called. It is worth noting that 
 each script is calling the same Main-Functionn object in just a slightly different configuration.
 They therefore share the same command line arguments and basic execution logic.
@@ -196,23 +196,19 @@ representations.
 The file `model_pointer.txt` contains the path to the log files.
 
 
-### Probe Classifiers and Latent Representation Extraction
+### <a name="probe"></a>Probe Classifiers and Latent Representation Extraction
 Another operation that is possible with this repository is training
 probe classifiers on receptive fields.  Probe Classifiers are
 LogisticRegression models. They are trained on the output of a neural
 network layer using the original labels.  The performance relative to
 the model performance yields an intermediate solution quality for the
-trained model.  You can [extract the latent representation](#extract).
-To train the probe classifiers on the latent representation call
+trained model.  After [extracting the latent representations](#extract)
+you can train the probe classifiers on the latent representation by calling
 ```sh
-train_probes.py --config ./configs/myconfig.json -mp 4
+python train_probes.py --config ./configs/myconfig.json --prefix "SomePrefix" -mp 4
 ```
 
-The performance of the probe classifiers in stored in the [log
-directory](#log) under the name `probe_performances.csv`.
-
-
-The script can take the following arguments:
+The script `train_probes.py` can take the following arguments:
 + ``--config`` the config the original experiments were conducted on
 + ``-f`` the root folder of the latent representation storage is by default``./latent_representation``
 + ``-mp`` the number of processes spawned by this script. By default
@@ -220,20 +216,48 @@ the number of processes equal to the number of cores on your cpu. Note
 that the parallelization is done over the number of layers, therefore
 more processes than layers will not yield any performance benefits.
 
+The performance of the probe classifiers in stored in the [log
+directory](#log) under the name `probe_performances.csv`.
+
+The system uses joblist chaching and will recognize whether a logistic
+regression has allready been fitted on a particular latent
+representation and skip training if it has, making crash recovery less
+painful.
+
 
 ### Using consecutive script calls of scripts to split your workload
-All experiments are strictly tied to the run-id and their configuration. This means that two trained models 
-are considered equal if they are trained using the same configuration parameters and run-id, regardless of the called script.
-There for you could for instance run: 
+All experiments are strictly tied to the run-id and their
+configuration. This means that two trained models are considered equal
+if they are trained using the same configuration parameters and
+run-id, regardless of the called script.  There for you could for
+instance run:
 
-```python train_model.py --config ./configs/myconfig.json --device cuda:0 --run-id MyRun```
+```sh
+python train_model.py --config ./configs/myconfig.json --device cuda:0 --run-id MyRun
+```
 
 followed by 
 
-```python compute_receptive_field.py --config ./configs/myconfig.json --device cuda:0 --run-id MyRun```
+```sh
+python compute_receptive_field.py --config ./configs/myconfig.json --device cuda:0 --run-id MyRun
+```
 
-the latter script call will recognize the previously trained models and just skip to computing 
-the receptive field and add the additional results to the logs.
+the latter script call will recognize the previously trained models
+and just skip to computing the receptive field and add the additional
+results to the logs.
+
+### Performing multiple tasks using the meta execution script
+
+You can combine the steps of [train a model](#train), 
+[extract pixelwise latent representation](#extract) and 
+[train probes](#probe)
+using the script `probe_meta_execution_script.py`:
+```sh
+python probe_meta_execution_script.py --config ../configs/your_config.json -mp ${NumberOfCoresYouWantToUse} -d pixelwise --device cuda:0 --run-id ${YourRunID}
+```
+* `--config `
+* `-d pixelwise`:
+
 
 ## Adding Models / Datasets / Optimizers
 You may want to add optimizer, models and datasets to this experimental setup. Basically there is a package for each of
