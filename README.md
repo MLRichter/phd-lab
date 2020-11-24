@@ -48,6 +48,10 @@ Remarks:
   for an adapted environment.
 * To check if torch can use your CUDA version, you can run the following command:
 ```sh
+python -c "import torch; print(torch.cuda.is_available())"
+```
+  some (but not all) versions of torch also support:
+```sh
 python -c "import torch; print(torch._C._cuda_isDriverSufficient())"
 ```
 
