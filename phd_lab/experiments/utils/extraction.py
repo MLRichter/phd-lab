@@ -233,7 +233,6 @@ def extract_from_dataset(logger: LatentRepresentationCollector,
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels.long()).sum().item()
-            print("SHAPE: ", labels.cpu().numpy().shape)
             if 'labels' not in logger.logs[mode]:
                 logger.logs[mode]['labels'] = labels.cpu().numpy()
             else:
