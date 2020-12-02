@@ -1,5 +1,6 @@
 from torch.nn import Module
 import torch
+import os
 from os import makedirs
 from os.path import exists, join
 from torch.nn import Conv2d, Linear, LSTM
@@ -10,8 +11,10 @@ from itertools import product
 import numpy as np
 from time import time
 import pickle
-import win32file
-win32file._setmaxstdio(2048)
+
+if os.name == 'nt':  # running on windows:
+    import win32file
+    win32file._setmaxstdio(2048)
 
 
 class LatentRepresentationCollector:
