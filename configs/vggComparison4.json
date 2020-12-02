@@ -1,12 +1,12 @@
 {
     "model": [
-        "vgg11",
-        "vgg13",
-        "vgg16",
-        "vgg19"
+        "vgg19_d3",
+        "vgg11_d3",
+        "vgg13_d3",
+        "vgg16_d3"
     ],
     "epoch": [30],
-    "batch_size": [512],
+    "batch_size": [200],
 
     "dataset": ["Cifar10", "MNIST"],
     "resolution": [32],

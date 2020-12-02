@@ -2,6 +2,7 @@ from typing import List, Union, Dict, Optional
 from .pca_layers import change_all_pca_layer_thresholds, change_all_pca_layer_thresholds_and_inject_random_directions
 from time import time
 from ..trainer import Trainer
+from torch.nn.parallel import DataParallel
 import numpy as np
 import pandas as pd
 import os
@@ -144,14 +145,14 @@ class Extract:
 
     def __call__(self, trainer: Trainer):
         trainer._tracker.stop()
-        model = trainer.model
+        model = trainer.model if not isinstance(trainer.model, DataParallel) else trainer.model.module
         print('Initializing logger')
         logger = LatentRepresentationCollector(
             model,
             savepath=os.path.join(
                 self.latent_representation_logs,
                 '{}_{}_{}'.format(
-                    model.name,
+                    model.module.name if isinstance(model, DataParallel) else model.name,
                     trainer.data_bundle.dataset_name,
                     trainer.data_bundle.output_resolution
                 )

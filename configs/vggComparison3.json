@@ -1,9 +1,9 @@
 {
     "model": [
-        "vgg11",
-        "vgg13",
-        "vgg16",
-        "vgg19"
+        "vgg19_d2",
+        "vgg11_d2",
+        "vgg13_d2",
+        "vgg16_d2"
     ],
     "epoch": [30],
     "batch_size": [512],

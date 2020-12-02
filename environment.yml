@@ -1,6 +1,6 @@
 name: phd-lab
 channels:
-  - pytorch
+  - pytorch=1.6.0
   - anaconda
   - defaults
 dependencies:
@@ -11,7 +11,7 @@ dependencies:
   - scikit-learn
   - matplotlib
   - pandas
-  - pytorch
+  - pytorch=1.6.0
   - torchvision
   - pip
   - pip:
