@@ -1,0 +1,21 @@
+{
+    "model": [
+        "resnet18"
+    ],
+    "epoch": [30],
+    "batch_size": [64],
+
+    "dataset": ["ResizediNaturalist"],
+    "resolution": [350],
+
+    "optimizer": ["adam"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+    "device": ["cuda:0"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": true,
+    "downsampling": 4
+}

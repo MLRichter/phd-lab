@@ -15,6 +15,7 @@ if not os.path.exists(".memcache"):
     os.makedirs(".memcache")
 memory = Memory(".memcache", verbose=0)
 
+
 @attrs(auto_attribs=True, slots=True)
 class PseudoArgs:
     """The pseudo args configurng the training of a probe.
@@ -125,7 +126,9 @@ def get_data_annd_labels(data_path: str, label_path: str) -> Tuple[np.ndarray, n
 
 @memory.cache
 def fit_with_cache(data: np.ndarray, labels: np.ndarray):
-    model = LogisticRegressionModel(multi_class='multinomial', n_jobs=12, solver='saga', verbose=0).fit(data, labels)
+    model = LogisticRegressionModel(
+        multi_class='multinomial', n_jobs=12, solver='saga',
+    ).fit(data, labels)
     return model
 
 

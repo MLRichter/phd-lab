@@ -1,12 +1,9 @@
 {
     "model": [
-        "resnet18",
-        "resnet18nodownsample",
-        "resnet18noskip",
-        "resnet18highway"
+        "resnet18_bottleneck"
     ],
     "epoch": [30],
-    "batch_size": [128],
+    "batch_size": [512],
 
     "dataset": ["Cifar10"],
     "resolution": [32],

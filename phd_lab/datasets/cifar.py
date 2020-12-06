@@ -6,7 +6,7 @@ from attr import attrs
 from PIL import Image
 import torch.utils.data
 import numpy as np
-from skimage.io import imshow
+from skimage.io import imshow, show
 
 import torchvision
 from torchvision import transforms
@@ -71,10 +71,12 @@ class RandomPositioning(object):
             PIL Image: Cropped image.
         """
         img_arr = np.array(img)
-        background = np.zeros((*self.size, 3))
+        background = np.zeros((*self.size, 3), dtype=img_arr.dtype)
         start_x, start_y = np.random.randint(0, self.size[0]-img_arr.shape[0]), np.random.randint(0, self.size[1]-img_arr.shape[1])
         end_x, end_y = start_x + img_arr.shape[0], start_y + img_arr.shape[1]
         background[start_x:end_x, start_y:end_y, :] = img_arr
+        #imshow(background)
+        #show()
         return Image.fromarray(background)
 
 

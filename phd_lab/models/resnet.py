@@ -86,7 +86,7 @@ class BasicBlock(nn.Module):
 class Bottleneck(nn.Module):
     expansion = 4
 
-    def __init__(self, inplanes, planes, stride=1, downsample=None, threshold=.999, centering=False, noskip=False, nodownsample=False):
+    def __init__(self, inplanes, planes, stride=1, downsample=None, threshold=.999, centering=False, noskip=False, nodownsampling=False):
         super(Bottleneck, self).__init__()
         self.noskip = noskip
         self.conv1 = conv1x1(inplanes, planes)
@@ -137,11 +137,18 @@ class Bottleneck(nn.Module):
 class ResNet(nn.Module):
 
     def __init__(self, block, layers, num_classes=1000, zero_init_residual=False, thresh=.999, centering=False,
-                 noskip=False, scale_factor=1, nodownsampling=False, highway=False, **kwargs):
+                 noskip=False, scale_factor=1, nodownsampling=False, highway=False, noskip_by_layer=None **kwargs):
         super(ResNet, self).__init__()
         if len(layers) <= 4:
             for _ in range(len(layers), 9):
                 layers.append(None)
+        if noskip_by_layer is None:
+            self.noskip_per_layer = [False] * len(layers)
+        elif noskip:
+            self.noskip_by_layer = [True] * len(layers)
+        else:
+            self.noskip_by_layer = noskip_by_layer
+
         self.nodownsampling = nodownsampling
         self.highway = highway
         self.noskip = noskip
@@ -155,29 +162,36 @@ class ResNet(nn.Module):
         self.bn1 = nn.BatchNorm2d(int(64 // scale_factor))
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-        self.layer1 = self._make_layer(block, int(64 // scale_factor), layers[0], threshold=thresh, centering=centering)
+        self.layer1 = self._make_layer(block, int(64 // scale_factor), layers[0], threshold=thresh, centering=centering,
+                                       noskip=self.noskip_by_layer[0])
         self.layer2 = None if layers[1] is None else self._make_layer(block, int(128 // scale_factor), layers[1],
                                                                       stride=2, threshold=thresh, centering=centering,
-
-                                                                      nodownsampling=nodownsampling)
+                                                                      nodownsampling=nodownsampling,
+                                                                      noskip=self.noskip_by_layer[1])
         self.layer3 = None if layers[2] is None else self._make_layer(block, int(256 // scale_factor), layers[2],
                                                                       stride=2, threshold=thresh, centering=centering,
-                                                                      nodownsampling=nodownsampling)
+                                                                      nodownsampling=nodownsampling,
+                                                                      noskip=self.noskip_by_layer[2])
         self.layer4 = None if layers[3] is None else self._make_layer(block, int(512 // scale_factor), layers[3],
                                                                       stride=2, threshold=thresh, centering=centering,
-                                                                      nodownsampling=nodownsampling)
+                                                                      nodownsampling=nodownsampling,
+                                                                      noskip=self.noskip_by_layer[3])
         self.layer5 = None if layers[4] is None else self._make_layer(block, int(512 // scale_factor), layers[4],
                                                                       stride=2, threshold=thresh, centering=centering,
-                                                                      nodownsampling=nodownsampling)
+                                                                      nodownsampling=nodownsampling,
+                                                                      noskip=self.noskip_by_layer[4])
         self.layer6 = None if layers[5] is None else self._make_layer(block, int(512 // scale_factor), layers[5],
                                                                       stride=2, threshold=thresh, centering=centering,
-                                                                      nodownsampling=nodownsampling)
+                                                                      nodownsampling=nodownsampling,
+                                                                      noskip=self.noskip_by_layer[5])
         self.layer7 = None if layers[6] is None else self._make_layer(block, int(512 // scale_factor), layers[6],
                                                                       stride=2, threshold=thresh, centering=centering,
-                                                                      nodownsampling=nodownsampling)
+                                                                      nodownsampling=nodownsampling,
+                                                                      noskip=self.noskip_by_layer[6])
         self.layer8 = None if layers[7] is None else self._make_layer(block, int(512 // scale_factor), layers[7],
                                                                       stride=2, threshold=thresh, centering=centering,
-                                                                      nodownsampling=nodownsampling)
+                                                                      nodownsampling=nodownsampling,
+                                                                      noskip=self.noskip_by_layer[7])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(int(self.get_fully_connected_units(layers) // scale_factor) * block.expansion, num_classes)
 
@@ -198,7 +212,7 @@ class ResNet(nn.Module):
                 elif isinstance(m, BasicBlock):
                     nn.init.constant_(m.bn2.weight, 0)
 
-    def _make_layer(self, block, planes, blocks, stride=1, threshold=.999, centering=False, nodownsampling=False):
+    def _make_layer(self, block, planes, blocks, stride=1, threshold=.999, centering=False, nodownsampling=False, noskip=False):
         downsample = None
         if (stride != 1 or self.inplanes != planes * block.expansion) and not (self.noskip or self.nodownsampling):
             downsample = nn.Sequential(
@@ -208,8 +222,8 @@ class ResNet(nn.Module):
 
         layers = []
         layers.append(
-            block(self.inplanes, planes, stride, downsample if not self.noskip or not self.nodownsampling else None, threshold, centering,
-                  noskip=self.noskip or self.nodownsampling, nodownsampling=nodownsampling))
+            block(self.inplanes, planes, stride, downsample if not noskip or not self.nodownsampling else None, threshold, centering,
+                  noskip=noskip or self.nodownsampling, nodownsampling=nodownsampling))
         self.inplanes = planes * block.expansion
         for _ in range(1, blocks):
             if self.highway:
@@ -219,7 +233,7 @@ class ResNet(nn.Module):
                 )
             else:
                 downsample = None
-            layers.append(block(self.inplanes, planes, noskip=self.noskip, nodownsampling=nodownsampling, downsample=downsample))
+            layers.append(block(self.inplanes, planes, noskip=noskip, nodownsampling=nodownsampling, downsample=downsample))
 
         return nn.Sequential(*layers)
 
@@ -290,6 +304,45 @@ def resnet18nodownsample(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'ResNet18NoDownsampling'
+    return model
+
+
+def resnet18_nr1(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, False, False, False] **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_NR1'
+    return model
+
+
+def resnet18_nr2(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, True, False, False] **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_NR2'
+    return model
+
+
+def resnet18_nr3(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, True, True, False] **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_NR3'
     return model
 
 
@@ -411,6 +464,19 @@ def resnet18(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'ResNet18'
+    return model
+
+
+def resnet18_bottleneck(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(Bottleneck, [2, 2, 2, 2], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_Bottleneck'
     return model
 
 
