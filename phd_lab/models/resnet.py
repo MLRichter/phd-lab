@@ -137,15 +137,16 @@ class Bottleneck(nn.Module):
 class ResNet(nn.Module):
 
     def __init__(self, block, layers, num_classes=1000, zero_init_residual=False, thresh=.999, centering=False,
-                 noskip=False, scale_factor=1, nodownsampling=False, highway=False, noskip_by_layer=None **kwargs):
+                 noskip=False, scale_factor=1, nodownsampling=False, highway=False, noskip_by_layer=None, **kwargs):
         super(ResNet, self).__init__()
         if len(layers) <= 4:
             for _ in range(len(layers), 9):
                 layers.append(None)
-        if noskip_by_layer is None:
-            self.noskip_per_layer = [False] * len(layers)
-        elif noskip:
+
+        if noskip:
             self.noskip_by_layer = [True] * len(layers)
+        elif noskip_by_layer is None:
+            self.noskip_per_layer = [False] * len(layers)
         else:
             self.noskip_by_layer = noskip_by_layer
 
@@ -313,7 +314,7 @@ def resnet18_nr1(pretrained=False, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, False, False, False] **kwargs)
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, False, False, False], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'ResNet18_NR1'
