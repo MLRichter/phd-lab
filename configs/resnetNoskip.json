@@ -1,0 +1,35 @@
+{
+    "model": [
+        "resnet18_nr1_1",
+        "resnet18_nr1_2",
+        "resnet18_nr1_3",
+        "resnet18_nr1_4",
+        "resnet18_nr2_12",
+        "resnet18_nr2_13",
+        "resnet18_nr2_14",
+        "resnet18_nr2_23",
+        "resnet18_nr2_24",
+        "resnet18_nr2_34",
+        "resnet18_nr3_123",
+        "resnet18_nr3_124",
+        "resnet18_nr3_234",
+        "resnet18noskip",
+	"resnet18"
+    ],
+    "epoch": [30],
+    "batch_size": [128],
+
+    "dataset": ["Cifar10"],
+    "resolution": [32],
+
+    "optimizer": ["adam"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+    "device": ["cuda:0"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": null
+}
