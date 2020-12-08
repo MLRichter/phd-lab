@@ -1,3 +1,5 @@
+from typing import List, Union
+
 import torch
 import torch.nn.functional as F
 import torchvision
@@ -137,8 +139,9 @@ class Bottleneck(nn.Module):
 class ResNet(nn.Module):
 
     def __init__(self, block, layers, num_classes=1000, zero_init_residual=False, thresh=.999, centering=False,
-                 noskip=False, scale_factor=1, nodownsampling=False, highway=False, noskip_by_layer=None, **kwargs):
+                 noskip=False, scale_factor=1, nodownsampling=False, highway=False, noskip_by_layer=None, disable_early_downsampling=False, disable_early_pooling=False, **kwargs):
         super(ResNet, self).__init__()
+        self.disable_early_pooling = disable_early_pooling
         if len(layers) <= 4:
             for _ in range(len(layers), 9):
                 layers.append(None)
@@ -146,7 +149,7 @@ class ResNet(nn.Module):
         if noskip:
             self.noskip_by_layer = [True] * len(layers)
         elif noskip_by_layer is None:
-            self.noskip_per_layer = [False] * len(layers)
+            self.noskip_by_layer = [False] * len(layers)
         else:
             self.noskip_by_layer = noskip_by_layer
 
@@ -156,13 +159,14 @@ class ResNet(nn.Module):
         self.inplanes = 64 // scale_factor
         self.thresh = thresh
         self.centering = centering
-        self.conv1 = nn.Conv2d(3, int(64 // scale_factor), kernel_size=7, stride=2, padding=3,
+        self.conv1 = nn.Conv2d(3, int(64 // scale_factor), kernel_size=7, stride=2 if not disable_early_downsampling else 1, padding=3,
                                bias=False)
         if PCA:
             self.conv1pca = Conv2DPCALayer(64, threshold=thresh, centering=centering)
         self.bn1 = nn.BatchNorm2d(int(64 // scale_factor))
         self.relu = nn.ReLU(inplace=True)
-        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+        if self.disable_early_pooling:
+            self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, int(64 // scale_factor), layers[0], threshold=thresh, centering=centering,
                                        noskip=self.noskip_by_layer[0])
         self.layer2 = None if layers[1] is None else self._make_layer(block, int(128 // scale_factor), layers[1],
@@ -213,9 +217,15 @@ class ResNet(nn.Module):
                 elif isinstance(m, BasicBlock):
                     nn.init.constant_(m.bn2.weight, 0)
 
+    def _get_skip_flag(self, index: int, noskip: Union[bool, List[bool]]) -> bool:
+        if isinstance(noskip, bool):
+            return noskip
+        else:
+            return noskip[index]
+
     def _make_layer(self, block, planes, blocks, stride=1, threshold=.999, centering=False, nodownsampling=False, noskip=False):
         downsample = None
-        if (stride != 1 or self.inplanes != planes * block.expansion) and not (self.noskip or self.nodownsampling):
+        if (stride != 1 or self.inplanes != planes * block.expansion) and not (noskip or self.nodownsampling):
             downsample = nn.Sequential(
                 conv1x1(self.inplanes, planes * block.expansion, stride),
                 nn.BatchNorm2d(planes * block.expansion),
@@ -224,9 +234,9 @@ class ResNet(nn.Module):
         layers = []
         layers.append(
             block(self.inplanes, planes, stride, downsample if not noskip or not self.nodownsampling else None, threshold, centering,
-                  noskip=noskip or self.nodownsampling, nodownsampling=nodownsampling))
+                  noskip=self._get_skip_flag(0, noskip) or self.nodownsampling, nodownsampling=nodownsampling))
         self.inplanes = planes * block.expansion
-        for _ in range(1, blocks):
+        for i in range(1, blocks):
             if self.highway:
                 downsample = nn.Sequential(
                     conv1x1(self.inplanes, planes * block.expansion, 1),
@@ -234,7 +244,7 @@ class ResNet(nn.Module):
                 )
             else:
                 downsample = None
-            layers.append(block(self.inplanes, planes, noskip=noskip, nodownsampling=nodownsampling, downsample=downsample))
+            layers.append(block(self.inplanes, planes, noskip=self._get_skip_flag(i, noskip), nodownsampling=nodownsampling, downsample=downsample))
 
         return nn.Sequential(*layers)
 
@@ -258,7 +268,8 @@ class ResNet(nn.Module):
             x = self.conv1pca(x)
         x = self.bn1(x)
         x = self.relu(x)
-        x = self.maxpool(x)
+        if self.disable_early_pooling:
+            x = self.maxpool(x)
 
         x = self.layer1(x)
         if self.layer2 is not None:
@@ -308,6 +319,84 @@ def resnet18nodownsample(pretrained=False, **kwargs):
     return model
 
 
+def resnet18_ep0(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], disable_early_pooling=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_EP0'
+    return model
+
+
+def resnet18_ep00(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], disable_early_pooling=True, disable_early_downsampling=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_EP00'
+    return model
+
+
+def resnet18_ep01(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], disable_early_downsampling=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_EP01'
+    return model
+
+
+def resnet18_noskip_ep01(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip=True, disable_early_downsampling=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18NoSkip_EP01'
+    return model
+
+
+def resnet18_noskip_ep00(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip=True, disable_early_pooling=True, disable_early_downsampling=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18NoSkip_EP00'
+    return model
+
+def resnet18_noskip_ep0(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip=True, disable_early_pooling=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18NoSkip_EP0'
+    return model
+
+
+
 def resnet18_nr1(pretrained=False, **kwargs):
     """Constructs a ResNet-18 model.
 
@@ -327,7 +416,7 @@ def resnet18_nr2(pretrained=False, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, True, False, False] **kwargs)
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, True, False, False], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'ResNet18_NR2'
@@ -340,10 +429,23 @@ def resnet18_nr3(pretrained=False, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, True, True, False] **kwargs)
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, True, True, False], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'ResNet18_NR3'
+    return model
+
+
+def resnet18_nr32(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, True, True, [True, False]], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_NR32'
     return model
 
 
@@ -357,6 +459,45 @@ def resnet18noskip(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'ResNet18NoSkip'
+    return model
+
+def resnet34_nr1(pretrained=False, **kwargs):
+    """Constructs a ResNet-34 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [3, 4, 6, 3], noskip_by_layer=[True, False, False, False], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet34']))
+    model.name = 'ResNet34_NR1'
+
+    return model
+
+def resnet34_nr2(pretrained=False, **kwargs):
+    """Constructs a ResNet-34 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [3, 4, 6, 3], noskip_by_layer=[True, True, False, False], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet34']))
+    model.name = 'ResNet34_NR2'
+
+    return model
+
+def resnet34_nr32(pretrained=False, **kwargs):
+    """Constructs a ResNet-34 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [3, 4, 6, 3], noskip_by_layer=[True, True, [True, True, False, False, False, False], False], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet34']))
+    model.name = 'ResNet34_NR32'
+
     return model
 
 
