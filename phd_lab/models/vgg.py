@@ -77,7 +77,17 @@ cfg = {
     'D_AP6': [64, 64, 128, 128, 'M', 256, 256, 256, 512, 512, 512, 'M', 512, 512, 512, 'M'],
     'D_AP7': [64, 64, 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
 
-    'E': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
+    'ResNet':  [(64, 2, 7), 'M', 128, 128, 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512],
+    'ResNet2':  [(64, 2, 7), 'M', 128, 128, 128, 128, (256, 2), 256, 256, 256, (512, 2), 512, 512, 512, (512, 2),  512, 512, 512],
+    'E':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
+    'EP-1':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M', 512, 512, 512],
+    'EP-2':  [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 256, 512, 512, 512, 'M', 512, 512, 512,'M', 512, 512, 512],
+    'EP': [64, 64, 64, 'M', 128, 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
+    'EP1': [64, 64, 64, 'M', 128, 128, 128, 256, 'M', 256, 256, 512, 512, 'M', 512, 512, 512, 512, 'M'],
+    'EP2': [64, 64, 64, 128, 128, 'M', 128, 256, 256, 256, 512, 'M', 512, 512, 512, 512, 512, 'M'],
+    'ER': [64, 64, 64, 64, 'M', 128, 128, 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M'],
+    'ER2': [128, 128, 128, 128, 128, 128, 'M', 256, 256, 256, 256, 256, 'M', 512, 512, 512, 512, 512, 'M'],
+    'ER3': [256, 256, 256, 256, 256, 256, 256, 256, 'M', 512, 512, 512, 512, 512, 512, 512, 512, 'M'],
     'E2': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 'M'],
     'E3': [128, 128, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M'],
     'E4': [256, 256, 256, 256, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M'],
@@ -89,6 +99,120 @@ cfg = {
     'EXXS': [8, 8, 'M', 16, 16, 'M', 32, 32, 32, 32, 'M', 64, 64, 64, 64, 'M', 64, 64, 64, 64, 'M'],
     'EXXXS': [4, 4, 'M', 8, 8, 'M', 16, 16, 16, 16, 'M', 32, 32, 32, 32, 'M', 32, 32, 32, 32, 'M'],
 }
+
+
+def vggresnet(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    if "noskip" in kwargs:
+        kwargs.pop("noskip")
+    model = VGG(make_layers(cfg['ResNet']), **kwargs)
+    model.name = "VGGResNet"
+    return model
+
+
+def vggresnet2(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    if "noskip" in kwargs:
+        kwargs.pop("noskip")
+    model = VGG(make_layers(cfg['ResNet']), **kwargs)
+    model.name = "VGGResNet2"
+    return model
+
+
+def vgg19r3(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['EP-1']), **kwargs)
+    model.name = "VGG19R3"
+    return model
+
+def vgg19r4(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['EP-2']), **kwargs)
+    model.name = "VGG19R4"
+    return model
+
+
+def vgg19p0(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['EP']), **kwargs)
+    model.name = "VGG19PO"
+    return model
+
+
+def vgg19p1(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['EP1']), **kwargs)
+    model.name = "VGG19P1"
+    return model
+
+
+def vgg19p2(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['EP2']), **kwargs)
+    model.name = "VGG19P2"
+    return model
+
+
+
+def vgg19r0(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['ER']), **kwargs)
+    model.name = "VGG19R0"
+    return model
+
+
+def vgg19r1(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['ER2']), **kwargs)
+    model.name = "VGG19R1"
+    return model
+
+
+def vgg19r2(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['ER3']), **kwargs)
+    model.name = "VGG19R2"
+    return model
+
+
+def vgg19r2d3(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['ER3'], dilation=3), **kwargs)
+    model.name = "VGG19R2D3"
+    return model
 
 
 def vgg16AlteredPooling1(*args, **kwargs):
@@ -280,8 +404,13 @@ def make_layers(cfg, batch_norm=True, k_size=3, in_channels=3, pca=PCA, thresh=.
         if v == 'M':
             layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
         elif isinstance(v, list) or isinstance(v, tuple):
-            filters, stride = v
-            conv2d = nn.Conv2d(in_channels, filters, kernel_size=k_size, padding=padding, dilation=dilation,
+            if len(v) == 2:
+                filters, stride = v
+                tmp_ksize = k_size
+            else:
+                filters, stride, tmp_ksize = v
+            tmp_padding = tmp_ksize - 2
+            conv2d = nn.Conv2d(in_channels, filters, kernel_size=tmp_ksize, padding=tmp_padding, dilation=dilation,
                                stride=stride)
             if batch_norm and pca:
                 layers += [conv2d,

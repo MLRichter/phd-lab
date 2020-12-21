@@ -165,7 +165,7 @@ class ResNet(nn.Module):
             self.conv1pca = Conv2DPCALayer(64, threshold=thresh, centering=centering)
         self.bn1 = nn.BatchNorm2d(int(64 // scale_factor))
         self.relu = nn.ReLU(inplace=True)
-        if self.disable_early_pooling:
+        if not self.disable_early_pooling:
             self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, int(64 // scale_factor), layers[0], threshold=thresh, centering=centering,
                                        noskip=self.noskip_by_layer[0])
@@ -268,7 +268,7 @@ class ResNet(nn.Module):
             x = self.conv1pca(x)
         x = self.bn1(x)
         x = self.relu(x)
-        if self.disable_early_pooling:
+        if not self.disable_early_pooling:
             x = self.maxpool(x)
 
         x = self.layer1(x)
@@ -364,6 +364,8 @@ def resnet18_noskip_ep01(pretrained=False, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
+    if "noskip" in kwargs:
+        kwargs.pop("noskip")
     model = ResNet(BasicBlock, [2, 2, 2, 2], noskip=True, disable_early_downsampling=True, **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
@@ -377,6 +379,8 @@ def resnet18_noskip_ep00(pretrained=False, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
+    if "noskip" in kwargs:
+        kwargs.pop("noskip")
     model = ResNet(BasicBlock, [2, 2, 2, 2], noskip=True, disable_early_pooling=True, disable_early_downsampling=True, **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
@@ -389,6 +393,8 @@ def resnet18_noskip_ep0(pretrained=False, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
+    if "noskip" in kwargs:
+        kwargs.pop("noskip")
     model = ResNet(BasicBlock, [2, 2, 2, 2], noskip=True, disable_early_pooling=True, **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
@@ -455,6 +461,8 @@ def resnet18noskip(pretrained=False, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
+    if "noskip" in kwargs:
+        kwargs.pop("noskip")
     model = ResNet(BasicBlock, [2, 2, 2, 2], noskip=True, **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
@@ -507,7 +515,8 @@ def resnet34noskip(pretrained=False, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet(BasicBlock, [3, 4, 6, 3], noskip=True, **kwargs)
+    kwargs["noskip"] = True
+    model = ResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet34']))
     model.name = 'ResNet34NoSkip'
@@ -621,6 +630,33 @@ def resnet18_bottleneck(pretrained=False, **kwargs):
     model.name = 'ResNet18_Bottleneck'
     return model
 
+def resnet18noskip_dspl2(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    kwargs["noskip"] = True
+    model = ResNet(BasicBlock, [4, 4, None, None], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18Noskip_DSPL2'
+    return model
+
+
+def resnet18noskip_dspl3(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    kwargs["noskip"] = True
+    model = ResNet(BasicBlock, [2, 3, 3, None], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18NoSkip_DSPL3'
+    return model
+
 
 def resnet18_dspl2(pretrained=False, **kwargs):
     """Constructs a ResNet-18 model.
@@ -632,6 +668,33 @@ def resnet18_dspl2(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'ResNet18_DSPL2'
+    return model
+
+
+def resnet18_dp00_dspl2(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [4, 4, None, None], disable_early_pooling=True, disable_early_downsampling=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_dp00_DSPL2'
+    return model
+
+
+def resnet18noskip_dp00_dspl2(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    kwargs["noskip"] = True
+    model = ResNet(BasicBlock, [4, 4, None, None], disable_early_pooling=True, disable_early_downsampling=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18NoSkip_dp00_DSPL2'
     return model
 
 

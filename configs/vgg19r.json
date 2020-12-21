@@ -1,12 +1,7 @@
 {
     "model": [
 
-        "resnet18_noskip_ep0",
-        "resnet18_noskip_ep00",
-        "resnet18_noskip_ep01",
-        "resnet18_ep0",
-        "resnet18_ep01",
-        "resnet18_ep00"
+        "vgg19r0"
     ],
     "epoch": [30],
     "batch_size": [512],
