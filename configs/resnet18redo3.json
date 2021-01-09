@@ -1,21 +1,21 @@
 {
     "model": [
-        "vgg16"
+        "vggresnet3",
+        "vgg19r0"
     ],
     "epoch": [30],
     "batch_size": [64],
 
     "dataset": ["Cifar10"],
-    "resolution": [32, 160],
+    "resolution": [32],
 
     "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
-    "device": ["cuda:0"],
 
     "conv_method": ["channelwise"],
     "delta": [0.99],
     "data_parallel": false,
-    "downsampling": null
+    "downsampling": 4
 }

@@ -4,6 +4,12 @@ PCA = False
 PRETRAINED = False
 
 
+def alexnet(input_size=(32, 32), num_classes=10):
+    model = torchvision.models.alexnet()
+    model.name = "AlexNet"
+    return model
+
+
 def inception3(input_size=(32, 32), num_classes=10):
     model = torchvision.models.inception.Inception3(num_classes=num_classes)
     model.name = "Inception3"

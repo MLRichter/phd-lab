@@ -9,7 +9,7 @@ def lrs(model: Module,
         lr: float = 0.1,
         momentum: float = 0.9,
         weight_decay: float = 5e-4,
-        step_size: int = 30
+        step_size: int = 10
         ) -> OptimizerSchedulerBundle:
     optimizer = SGD(model.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
     scheduler = StepLR(optimizer, step_size=step_size)

@@ -1,21 +1,23 @@
 {
     "model": [
-        "vgg16"
+        "vgg11",
+        "vgg13",
+        "vgg16",
+        "vgg19"
     ],
     "epoch": [30],
     "batch_size": [64],
 
-    "dataset": ["Cifar10"],
-    "resolution": [32, 160],
+    "dataset": ["TinyImageNet"],
+    "resolution": [32, 224],
 
     "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
-    "device": ["cuda:0"],
 
     "conv_method": ["channelwise"],
     "delta": [0.99],
     "data_parallel": false,
-    "downsampling": null
+    "downsampling": 4
 }
