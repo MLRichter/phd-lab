@@ -9,7 +9,7 @@
     "batch_size": [64],
 
     "dataset": ["MNIST"],
-    "resolution": [32, 224],
+    "resolution": [28, 224],
 
     "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],

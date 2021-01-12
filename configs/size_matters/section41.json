@@ -16,5 +16,5 @@
     "conv_method": ["channelwise"],
     "delta": [0.99],
     "data_parallel": false,
-    "downsampling": 4
+    "downsampling": 1
 }
