@@ -403,55 +403,159 @@ def resnet18_noskip_ep0(pretrained=False, **kwargs):
 
 
 
-def resnet18_nr1(pretrained=False, **kwargs):
+def resnet18_nr1_1(pretrained=False, **kwargs):
     """Constructs a ResNet-18 model.
-
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
     model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, False, False, False], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
-    model.name = 'ResNet18_NR1'
+    model.name = 'ResNet18_NR1_1'
     return model
 
 
-def resnet18_nr2(pretrained=False, **kwargs):
+def resnet18_nr1_2(pretrained=False, **kwargs):
     """Constructs a ResNet-18 model.
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[False, True, False, False], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_NR1_2'
+    return model
 
+
+def resnet18_nr1_3(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[False, False, True, False], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_NR1_3'
+    return model
+
+
+def resnet18_nr1_4(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[False, False, False, True], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_NR1_4'
+    return model
+
+
+def resnet18_nr2_12(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
     model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, True, False, False], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
-    model.name = 'ResNet18_NR2'
+    model.name = 'ResNet18_NR2_12'
     return model
 
 
-def resnet18_nr3(pretrained=False, **kwargs):
+def resnet18_nr2_13(pretrained=False, **kwargs):
     """Constructs a ResNet-18 model.
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, False, True, False], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_NR2_13'
+    return model
 
+
+def resnet18_nr2_14(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, False, False, True], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_NR2_14'
+    return model
+
+
+def resnet18_nr2_23(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[False, True, True, False], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_NR2_23'
+    return model
+
+
+def resnet18_nr2_24(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[False, True, False, True], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_NR2_24'
+    return model
+
+
+def resnet18_nr2_34(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[False, False, True, True], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_NR2_34'
+    return model
+
+
+def resnet18_nr3_123(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
     model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, True, True, False], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
-    model.name = 'ResNet18_NR3'
+    model.name = 'ResNet18_NR3_123'
     return model
 
 
-def resnet18_nr32(pretrained=False, **kwargs):
+def resnet18_nr3_124(pretrained=False, **kwargs):
     """Constructs a ResNet-18 model.
-
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, True, True, [True, False]], **kwargs)
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[True, True, False, True], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
-    model.name = 'ResNet18_NR32'
+    model.name = 'ResNet18_NR3_124'
+    return model
+
+
+def resnet18_nr3_234(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], noskip_by_layer=[False, True, True, True], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_NR3_234'
     return model
 
 
