@@ -1,10 +1,6 @@
 {
     "model": [
-        "resnet18_nr32",
-        "resnet18_nr3",
-        "resnet18_nr1",
-        "resnet18_nr2"
-
+        "PC_ResNet34"
     ],
     "epoch": [30],
     "batch_size": [64],
@@ -12,7 +8,7 @@
     "dataset": ["Cifar10"],
     "resolution": [32],
 
-    "optimizer": ["adam"],
+    "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],

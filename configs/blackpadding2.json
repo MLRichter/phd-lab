@@ -6,9 +6,9 @@
     "batch_size": [64],
 
     "dataset": ["Cifar10SmallRandomPositioning"],
-    "resolution": [64, 128, 160],
+    "resolution": [160],
 
-    "optimizer": ["adam"],
+    "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],

@@ -259,12 +259,13 @@ class Trainer:
             inputs, labels = data
             inputs, labels = inputs.to(self.device), labels.to(self.device)
 
-            self.optimizer_bundle.optimizer.zero_grad()
-            outputs = self.model(inputs)
-            _, predicted = torch.max(outputs.data, 1)
-            self._eval_metrics(labels, outputs)
+            self.optimizer_bundle.optimizer.zero_grad(set_to_none=True)
+            with torch.cuda.amp.autocast():
+                outputs = self.model(inputs)
+                _, predicted = torch.max(outputs.data, 1)
+                self._eval_metrics(labels, outputs)
 
-            loss = self.criterion(outputs, labels)
+                loss = self.criterion(outputs, labels)
             loss.backward()
             self.optimizer_bundle.optimizer.step()
 

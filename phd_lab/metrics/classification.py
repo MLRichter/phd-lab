@@ -22,7 +22,7 @@ class Top5Accuracy:
 
         res = []
         for k in topk:
-            correct_k = correct[:k].view(-1).float().sum(0)
+            correct_k = correct[:k].contiguous().view(-1).float().sum(0)
             res.append(correct_k.mul_(100.0 / batch_size).item())
         return res
 

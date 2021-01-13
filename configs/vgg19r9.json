@@ -1,13 +1,10 @@
 {
     "model": [
-        "resnet18_nr32",
-        "resnet18_nr3",
-        "resnet18_nr1",
-        "resnet18_nr2"
-
+        "resnet18noskip_dspl2",
+        "resnet18noskip_dspl3"
     ],
     "epoch": [30],
-    "batch_size": [64],
+    "batch_size": [512],
 
     "dataset": ["Cifar10"],
     "resolution": [32],

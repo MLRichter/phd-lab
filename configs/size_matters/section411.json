@@ -1,21 +1,20 @@
 {
     "model": [
-        "vgg16"
+        "resnet50"
     ],
-    "epoch": [30],
+    "epoch": [60],
     "batch_size": [64],
 
-    "dataset": ["Cifar10"],
-    "resolution": [32, 160],
+    "dataset": ["iNaturalist", "ImageNet", "ResizediNaturalist", "ResizedImageNet"],
+    "resolution": [224],
 
-    "optimizer": ["lrs"],
+    "optimizer": ["lrs60"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
-    "device": ["cuda:0"],
 
     "conv_method": ["channelwise"],
     "delta": [0.99],
     "data_parallel": false,
-    "downsampling": null
+    "downsampling": 1
 }

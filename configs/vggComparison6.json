@@ -1,15 +1,15 @@
 {
     "model": [
 
-        "vgg16_ap7"
+        "vgg16AlteredPooling5"
     ],
     "epoch": [30],
-    "batch_size": [256],
+    "batch_size": [64],
 
     "dataset": ["Cifar10"],
     "resolution": [32],
 
-    "optimizer": ["adam"],
+    "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],

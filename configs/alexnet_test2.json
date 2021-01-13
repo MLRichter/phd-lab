@@ -1,24 +1,20 @@
 {
     "model": [
-        "resnet18_nr32",
-        "resnet18_nr3",
-        "resnet18_nr1",
-        "resnet18_nr2"
-
+        "resnet18"
     ],
     "epoch": [30],
-    "batch_size": [64],
+    "batch_size": [20 ],
 
     "dataset": ["Cifar10"],
-    "resolution": [32],
+    "resolution": [1024],
 
-    "optimizer": ["adam"],
+    "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
 
     "conv_method": ["channelwise"],
     "delta": [0.99],
-    "data_parallel": false,
+    "data_parallel": true,
     "downsampling": 4
 }

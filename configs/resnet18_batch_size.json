@@ -1,16 +1,12 @@
 {
     "model": [
-        "resnet18_nr32",
-        "resnet18_nr3",
-        "resnet18_nr1",
-        "resnet18_nr2"
-
+        "resnet18"
     ],
     "epoch": [30],
-    "batch_size": [64],
+    "batch_size": [1024, 512, 128, 32],
 
     "dataset": ["Cifar10"],
-    "resolution": [32],
+    "resolution": [128],
 
     "optimizer": ["adam"],
     "metrics": ["Accuracy", "Top5Accuracy"],
