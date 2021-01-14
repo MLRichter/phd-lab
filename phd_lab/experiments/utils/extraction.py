@@ -44,7 +44,7 @@ class LatentRepresentationCollector:
         if exists(savepath) and overwrite:
             print('Found previous extraction in folder, removing it...')
             rmtree(savepath)
-        makedirs(self.savepath)
+        makedirs(self.savepath, exists_ok=True)
         self.layers = self.get_layers_recursive(model)
         for name, layer in self.layers.items():
             if isinstance(layer, Conv2d) or isinstance(layer, Linear) \
