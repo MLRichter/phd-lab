@@ -1,6 +1,7 @@
 from typing import Tuple
 
 from PIL.Image import Image
+from skimage.color import gray2rgb
 from torch.utils.data import SubsetRandomSampler, DataLoader
 from ..experiments.domain import DataBundle
 
@@ -146,8 +147,6 @@ def Malaria(batch_size=12, output_size=150, cache_dir="tmp") -> DataBundle:
 
 
 def g2rgb(x):
-    if isinstance(x, Image):
-        x = np.array(x)
     return x.repeat(3, 1, 1)
 
 
@@ -440,6 +439,8 @@ class RandomPositioning(object):
             PIL Image: Cropped image.
         """
         img_arr = np.array(img)
+        if len(img_arr.shape) == 2:
+            img_arr = gray2rgb(img_arr)
         background = np.zeros((*self.size, 3), dtype=img_arr.dtype)
         start_x, start_y = np.random.randint(0, self.size[0]-img_arr.shape[0]), np.random.randint(0, self.size[1]-img_arr.shape[1])
         end_x, end_y = start_x + img_arr.shape[0], start_y + img_arr.shape[1]
