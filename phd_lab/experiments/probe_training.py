@@ -143,7 +143,7 @@ def train_model(data_path: str, labels_path: str, verbose: int = 0) -> LogisticR
     """
     print('Loading training data from', data_path)
     data, labels = get_data_annd_labels(data_path, labels_path)
-    print('Training data obtained with shape', data.shape)
+    print('Training data obtained with shape', data.shape, "Starting training für verbosity", verbose)
     return fit_with_cache(data, labels, verbose=verbose)
 
 
