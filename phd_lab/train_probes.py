@@ -11,6 +11,7 @@ if __name__ == '__main__':
     parser.add_argument('-mp', dest='mp', type=int, default=cpu_count(), help='Enable multiprocessing')
     parser.add_argument('--config', dest='config', type=str, default=None, help='Path to a config file')
     parser.add_argument('--prefix', dest='prefix', type=str, default=None, help='Postfix added to the result csv')
+    parser.add_argument('--verbose', dest='verbose', type=bool, default=False, help='Show Epoch counter')
     args = parser.parse_args()
     if args.prefix is not None:
         cfg.PROBE_PERFORMANCE_SAVEFILE = args.prefix + "_" + cfg.PROBE_PERFORMANCE_SAVEFILE

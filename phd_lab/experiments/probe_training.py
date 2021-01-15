@@ -30,6 +30,7 @@ class PseudoArgs:
     mp: int
     save_path: str = attrib(init=False)
     overwrite: bool = False
+    verbose: int = 0
 
     def __attrs_post_init__(self):
         self.save_path = open(os.path.join(self.folder, "model_pointer.txt"), "r").read()
@@ -125,14 +126,14 @@ def get_data_annd_labels(data_path: str, label_path: str) -> Tuple[np.ndarray, n
     return load(data_path), np.squeeze(load(label_path))
 
 @memory.cache
-def fit_with_cache(data: np.ndarray, labels: np.ndarray):
+def fit_with_cache(data: np.ndarray, labels: np.ndarray, verbose: int = 100):
     model = LogisticRegressionModel(
-        multi_class='multinomial', n_jobs=12, solver='saga',
+        multi_class='multinomial', n_jobs=12, solver='saga', verbose=verbose
     ).fit(data, labels)
     return model
 
 
-def train_model(data_path: str, labels_path: str) -> LogisticRegressionModel:
+def train_model(data_path: str, labels_path: str, verbose: int = 0) -> LogisticRegressionModel:
     """Train a logistic regression model on latent representations and labels from the original dataset.
     Args:
         data_path:      the training data
@@ -143,7 +144,7 @@ def train_model(data_path: str, labels_path: str) -> LogisticRegressionModel:
     print('Loading training data from', data_path)
     data, labels = get_data_annd_labels(data_path, labels_path)
     print('Training data obtained with shape', data.shape)
-    return fit_with_cache(data, labels)
+    return fit_with_cache(data, labels, verbose=verbose)
 
 
 
@@ -164,14 +165,14 @@ def obtain_accuracy(model: LogisticRegressionModel, data_path, label_path: str) 
     return accuracy_score(labels, preds)
 
 
-def train_model_for_data(train_set: Tuple[str, str], eval_set: Tuple[str, str]):
+def train_model_for_data(train_set: Tuple[str, str], eval_set: Tuple[str, str], verbose: int = 0):
     """Train a logistic regression model and evaluate it on the test set.
     Args:
         train_set:   the training dataset
         eval_set:    the evaluation dataset
     """
     print('Training model')
-    model = train_model(*train_set)
+    model = train_model(*train_set, verbose=verbose)
     print('Obtaining metrics')
     train_acc = obtain_accuracy(model, *train_set)
     eval_acc = obtain_accuracy(model, *eval_set)
@@ -224,7 +225,7 @@ def main(args: PseudoArgs):
                 }
             ).to_csv(os.path.join(args.save_path, config.PROBE_PERFORMANCE_SAVEFILE), sep=';')
         else:
-            fargs.append((train_data, eval_data))
+            fargs.append((train_data, eval_data, args.verbose))
 
     if args.mp != 0:
         p = Parallel(n_jobs=args.mp, verbose=1000)
