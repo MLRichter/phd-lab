@@ -30,7 +30,7 @@ class PseudoArgs:
     mp: int
     save_path: str = attrib(init=False)
     overwrite: bool = False
-    verbose: int = 0
+    verbose: int = 100
 
     def __attrs_post_init__(self):
         self.save_path = open(os.path.join(self.folder, "model_pointer.txt"), "r").read()
