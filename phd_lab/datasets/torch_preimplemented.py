@@ -146,6 +146,8 @@ def Malaria(batch_size=12, output_size=150, cache_dir="tmp") -> DataBundle:
 
 
 def g2rgb(x):
+    if isinstance(x, Image):
+        x = np.array(x)
     return x.repeat(3, 1, 1)
 
 
