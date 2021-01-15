@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from PIL.Image import Image
+from PIL import Image
 from skimage.color import gray2rgb
 from torch.utils.data import SubsetRandomSampler, DataLoader
 from ..experiments.domain import DataBundle
