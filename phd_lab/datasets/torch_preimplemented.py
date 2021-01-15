@@ -467,9 +467,9 @@ def MNISTSmallRandomPositioning(batch_size=12, output_size=32, cache_dir='tmp') 
 
 
     # Transforms object for trainset with augmentation
-    transform_with_aug = transforms.Compose([RGB, RP, RHF, TT, NRM])
+    transform_with_aug = transforms.Compose([RP, RHF, TT, NRM])
     # Transforms object for testset with NO augmentation
-    transform_no_aug = transforms.Compose([RGB, RP, TT, NRM])
+    transform_no_aug = transforms.Compose([RP, TT, NRM])
 
 
     trainset = torchvision.datasets.MNIST(root=cache_dir, train=True,
