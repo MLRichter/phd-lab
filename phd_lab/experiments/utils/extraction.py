@@ -41,11 +41,14 @@ class LatentRepresentationCollector:
         self.downsampling = downsampling
         self.save_per_position = save_per_position
         self.overwrite = overwrite
+        self.pre_exists = False
         if exists(savepath) and overwrite:
             print('Found previous extraction in folder, removing it...')
             rmtree(savepath)
         if not exists(savepath):
             makedirs(self.savepath)
+        else:
+            self.pre_exists = True
         self.layers = self.get_layers_recursive(model)
         for name, layer in self.layers.items():
             if isinstance(layer, Conv2d) or isinstance(layer, Linear) \
@@ -222,7 +225,7 @@ def extract_from_dataset(logger: LatentRepresentationCollector,
         dataset:    The dataset, may be a torch data-loader
         device:     The device the model is deployed on, maybe any torch compatible key.
     """
-    if exists(logger.savepath) and not logger.overwrite:
+    if logger.existed and not logger.overwrite:
         print("Found existing latent representations and overwrite is disabled")
         return
     mode = 'train' if train else 'eval'
