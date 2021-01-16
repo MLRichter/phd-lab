@@ -225,7 +225,7 @@ def extract_from_dataset(logger: LatentRepresentationCollector,
         dataset:    The dataset, may be a torch data-loader
         device:     The device the model is deployed on, maybe any torch compatible key.
     """
-    if logger.existed and not logger.overwrite:
+    if logger.pre_exists:
         print("Found existing latent representations and overwrite is disabled")
         return
     mode = 'train' if train else 'eval'
