@@ -5,7 +5,7 @@
     "epoch": [60],
     "batch_size": [64],
 
-    "dataset": ["Cifar10"],
+    "dataset": ["Cifar10", "MNIST"],
     "resolution": [32, 224, 1024],
 
     "optimizer": ["lrs60"],
