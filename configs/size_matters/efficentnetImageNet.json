@@ -1,17 +1,18 @@
 {
     "model": [
-        "vgg16"
+        "efficentnet_b0"
     ],
     "epoch": [30],
-    "batch_size": [64],
+    "batch_size": [128],
 
-    "dataset": ["Cifar10SmallRandomPositioningNoise","Cifar10SmallRandomPositioning", "Cifar10"],
-    "resolution": [160],
+    "dataset": ["ImageNet"],
+    "resolution": [224, 32],
 
-    "optimizer": ["lrs"],
+    "optimizer": ["adam"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
+    "device": ["cuda:0"],
 
     "conv_method": ["channelwise"],
     "delta": [0.99],

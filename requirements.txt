@@ -12,3 +12,4 @@ pandas
 ptflops
 pthflops
 click-pathlib
+efficientnet_pytorch

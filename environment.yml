@@ -15,6 +15,7 @@ dependencies:
   - torchvision
   - pip
   - pip:
-    - delve
+    - delve=0.1.41
     - ptflops
     - pthflops
+    - efficientnet_pytorch
