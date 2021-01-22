@@ -385,8 +385,15 @@ def ResizedImageNet(batch_size=12, output_size=224, cache_dir='tmp') -> DataBund
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
-    trainset = torchvision.datasets.ImageNet(root="C:\\ImageNet", transform=train_tfms, split='train')
-    testset = torchvision.datasets.ImageNet(root="C:\\ImageNet", transform=val_tfms, split='val')
+    if exists("C:\\ImageNet"):
+        path = "C:\\ImageNet"
+    elif exists("./tmp/ImageNet"):
+        path = "./tmp/ImageNet"
+    else:
+        raise ValueError("ImageNet not found")
+
+    trainset = torchvision.datasets.ImageNet(root=path, transform=train_tfms, split='train')
+    testset = torchvision.datasets.ImageNet(root=path, transform=val_tfms, split='val')
 
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
                                                shuffle=True, num_workers=6, pin_memory=True)
