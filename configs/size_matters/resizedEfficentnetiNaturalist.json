@@ -1,0 +1,21 @@
+{
+    "model": [
+        "efficentnet_b0"
+    ],
+    "epoch": [30],
+    "batch_size": [128],
+
+    "dataset": ["ResizediNaturalist"],
+    "resolution": [224],
+
+    "optimizer": ["lrs"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+    "device": ["cuda:0"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 4
+}
