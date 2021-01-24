@@ -1,4 +1,4 @@
-from os.path import exists
+from os.path import exists, join
 from typing import Tuple
 
 from PIL import Image
@@ -235,8 +235,15 @@ def iNaturalist(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
-    trainset = torchvision.datasets.ImageFolder(root="E:\\inaturalist\\train", transform=train_tfms)
-    testset = torchvision.datasets.ImageFolder(root="E:\\inaturalist\\test", transform=val_tfms)
+    if exists("E:\\inaturalist\\"):
+        path = "E:\\inaturalist\\"
+    elif exists("./tmp/inaturalist"):
+        path = "./tmp/inaturalist"
+    else:
+        raise ValueError("ImageNet not found")
+
+    trainset = torchvision.datasets.ImageFolder(root=join(path, "train"), transform=train_tfms)
+    testset = torchvision.datasets.ImageFolder(root=join(path, "test"), transform=val_tfms)
 
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
                                                shuffle=True, num_workers=6, pin_memory=True)
@@ -282,13 +289,21 @@ def ResizediNaturalist(batch_size=12, output_size=224, cache_dir='tmp') -> DataB
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
-    trainset = torchvision.datasets.ImageFolder(root="E:\\inaturalist\\train", transform=train_tfms)
-    testset = torchvision.datasets.ImageFolder(root="E:\\inaturalist\\test", transform=val_tfms)
+    if exists("E:\\inaturalist\\"):
+        path = "E:\\inaturalist\\"
+    elif exists("./tmp/inaturalist"):
+        path = "./tmp/inaturalist"
+    else:
+        raise ValueError("ImageNet not found")
+
+    trainset = torchvision.datasets.ImageFolder(root=join(path, "train"), transform=train_tfms)
+    testset = torchvision.datasets.ImageFolder(root=join(path, "test"), transform=val_tfms)
 
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
                                                shuffle=True, num_workers=6, pin_memory=True)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
                                              shuffle=False, num_workers=6, pin_memory=True)
+
     train_loader.name = "ResizediNaturalist"
     return DataBundle(
         dataset_name="ResizediNaturalist",
