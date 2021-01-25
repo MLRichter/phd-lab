@@ -967,6 +967,22 @@ def resnet50(pretrained=False, **kwargs):
     return model
 
 
+def resnet50noskip(pretrained=False, **kwargs):
+    """Constructs a ResNet-50 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    if "noskip" in kwargs:
+        kwargs.pop("noskip")
+    model = ResNet(Bottleneck, [3, 4, 6, 3], noskip=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
+    model.name = 'ResNet50NoSkip'
+
+    return model
+
+
 def resnet101(pretrained=False, **kwargs):
     """Constructs a ResNet-101 model.
 

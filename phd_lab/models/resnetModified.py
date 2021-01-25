@@ -87,6 +87,7 @@ class ResNet(nn.Module):
         self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2, noskip=noskip)
         self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2, noskip=noskip)
         self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2, noskip=noskip)
+        self.pooling = nn.AdaptiveAvgPool2d(1)
         self.linear = nn.Linear(512*block.expansion, num_classes)
 
     def _make_layer(self, block, planes, num_blocks, stride, noskip=False):
@@ -105,7 +106,9 @@ class ResNet(nn.Module):
         out = self.layer2(out)
         out = self.layer3(out)
         out = self.layer4(out)
-        out = F.avg_pool2d(out, 4)
+        #out = F.avg_pool2d(out, 4)
+        #out = out.view(out.size(0), -1)
+        out = self.pooling(out)
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
@@ -119,8 +122,8 @@ def ResNet34(**kwargs):
     return ResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
 
 
-def ResNet50():
-    return ResNet(Bottleneck, [3, 4, 6, 3])
+def ResNet50(**kwargs):
+    return ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
 
 
 def ResNet101():
@@ -131,17 +134,21 @@ def ResNet152():
     return ResNet(Bottleneck, [3, 8, 36, 3])
 
 
-def PC_ResNet18(num_classes, *args, **kwargs):
+def PC_ResNet18(**kwargs):
     net = ResNet18(**kwargs)
     net.name = 'ResNet18_PC'
     return net
 
 
-def PC_ResNet34(num_classes, *args, **kwargs):
+def PC_ResNet34(**kwargs):
     net = ResNet34(**kwargs)
     net.name = 'ResNet34_PC'
     return net
 
+def PC_ResNet50(**kwargs):
+    net = ResNet50(**kwargs)
+    net.name = 'ResNet50_PC'
+    return net
 
 def test():
     net = ResNet18()
