@@ -1,7 +1,7 @@
 {
     "model": [
-        "resnet18_noskip",
-        "resnet50_noskip"
+        "resnet18noskip",
+        "resnet50noskip"
     ],
     "epoch": [30],
     "batch_size": [64],
