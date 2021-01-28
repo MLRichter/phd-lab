@@ -3,7 +3,7 @@
         "vgg16"
     ],
     "epoch": [30],
-    "batch_size": [32],
+    "batch_size": [20],
 
     "dataset": ["Cifar10", "MNIST"],
     "resolution": [1024],
