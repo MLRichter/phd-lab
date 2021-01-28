@@ -1,0 +1,20 @@
+{
+    "model": [
+        "vgg16"
+    ],
+    "epoch": [30],
+    "batch_size": [64],
+
+    "dataset": ["Cifar10", "MNIST"],
+    "resolution": [32, 224, 1024],
+
+    "optimizer": ["lrs"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 4
+}
