@@ -155,7 +155,7 @@ class InvertedBottleneck(nn.Module):
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, threshold=.999, centering=False,
-                 noskip=False, nodownsampling=False, inner_conv=conv3x3, inner_expansion: int = 2, inner_group: int = 1):
+                 noskip=False, nodownsampling=False, inner_conv=conv3x3, inner_expansion: int = 3, inner_group: int = 1):
         super(InvertedBottleneck, self).__init__()
         inner_planes = planes * inner_expansion
         self.inner_expansion = inner_expansion
