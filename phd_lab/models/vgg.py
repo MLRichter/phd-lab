@@ -406,7 +406,7 @@ def vggO2b(*args, **kwargs):
 
 
 def make_layers(cfg, batch_norm=True, k_size=3, in_channels=3, pca=PCA, thresh=.999, centering=True, downsampling=None,
-                dilation=1):
+                dilation=1, groups: int = 1):
     layers = []
     effective_kernel_size = k_size + (k_size - 1) * (dilation - 1)
     padding = effective_kernel_size - 2
@@ -421,7 +421,7 @@ def make_layers(cfg, batch_norm=True, k_size=3, in_channels=3, pca=PCA, thresh=.
                 filters, stride, tmp_ksize = v
             tmp_padding = tmp_ksize - 2
             conv2d = nn.Conv2d(in_channels, filters, kernel_size=tmp_ksize, padding=tmp_padding, dilation=dilation,
-                               stride=stride)
+                               stride=stride, groups=groups)
             if batch_norm and pca:
                 layers += [conv2d,
                            Conv2DPCALayer(in_filters=filters, threshold=thresh, centering=centering, downsampling=True),
@@ -1347,3 +1347,24 @@ def vgg19_d3(*args, **kwargs):
     model = VGG(make_layers(cfg['E'], dilation=3), **kwargs)
     model.name = "VGG19_D3"
     return model
+
+
+def vgg19_g2(*args, **kwargs):
+    """VGG 16-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['E'], groups=2), **kwargs)
+    model.name = "VGG19_G2"
+    return model
+
+
+def vgg19_g3(*args, **kwargs):
+    """VGG 16-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['E'], groups=3), **kwargs)
+    model.name = "VGG19_G3"
+    return model
+

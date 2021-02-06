@@ -1,0 +1,23 @@
+{
+    "model": [
+        "resnet18_o1",
+        "resnet18_o3",
+        "resnet18_o5",
+        "resnet18"
+    ],
+    "epoch": [30],
+    "batch_size": [64],
+
+    "dataset": ["Cifar10"],
+    "resolution": [32],
+
+    "optimizer": ["lrs"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 4
+}
