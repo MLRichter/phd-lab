@@ -1,6 +1,8 @@
 {
     "model": [
-        "iresnet18"
+        "iresnet18",
+        "iresnet18_dw",
+        "seiresnet18_dw"
     ],
     "epoch": [60],
     "batch_size": [32],

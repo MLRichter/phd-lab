@@ -99,13 +99,34 @@ class BasicBlock(nn.Module):
         return out
 
 
+class SELayer(nn.Module):
+    def __init__(self, channel, reduction=16):
+        super(SELayer, self).__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Sequential(
+            nn.Linear(channel, channel // reduction, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(channel // reduction, channel, bias=False),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        b, c, _, _ = x.size()
+        y = self.avg_pool(x).view(b, c)
+        y = self.fc(y).view(b, c, 1, 1)
+        return x * y.expand_as(x)
+
+
 class Bottleneck(nn.Module):
     expansion = 4
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, threshold=.999, centering=False,
-                 noskip=False, nodownsampling=False, inner_conv=conv3x3):
+                 noskip=False, nodownsampling=False, inner_conv=conv3x3, has_se: bool = False):
         super(Bottleneck, self).__init__()
         self.noskip = noskip
+        self.has_se = has_se
+        if self.has_se:
+            self.se = SELayer(inplanes, reduction=max(1, int(inplanes*0.25)))
         self.conv1 = conv1x1(inplanes, planes)
         if PCA:
             self.conv1PCA = Conv2DPCALayer(planes, threshold, centering)
@@ -142,6 +163,9 @@ class Bottleneck(nn.Module):
             out = self.conv3PCA(out)
         out = self.bn3(out)
 
+        if self.has_se:
+            out = self.se(out)
+
         if self.downsample is not None:
             identity = self.downsample(x)
         if not self.noskip:
@@ -155,9 +179,13 @@ class InvertedBottleneck(nn.Module):
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, threshold=.999, centering=False,
-                 noskip=False, nodownsampling=False, inner_conv=conv3x3, inner_expansion: int = 2, inner_group: int = 1):
+                 noskip=False, nodownsampling=False, inner_conv=conv3x3, inner_expansion: int = 2,
+                 inner_group: int = 1, has_se: bool = False):
         super(InvertedBottleneck, self).__init__()
         inner_planes = planes * inner_expansion
+        self.has_se = has_se
+        if self.has_se:
+            self.se = SELayer(inplanes, reduction=max(1, int(inplanes*0.25)))
         self.inner_expansion = inner_expansion
         self.noskip = noskip
         self.conv1 = conv1x1(inplanes, inner_planes)
@@ -196,6 +224,9 @@ class InvertedBottleneck(nn.Module):
             out = self.conv3PCA(out)
         out = self.bn3(out)
 
+        if self.has_se:
+            out = self.se(out)
+
         if self.downsample is not None:
             identity = self.downsample(x)
         if not self.noskip:
@@ -203,6 +234,14 @@ class InvertedBottleneck(nn.Module):
         out = self.relu(out)
 
         return out
+
+
+def InvertedBottleneckDW(*args, **kwargs) -> InvertedBottleneck:
+    return InvertedBottleneck(*args, **kwargs, inner_group=3)
+
+
+def InvertedBottleneckDWSE(*args, **kwargs) -> InvertedBottleneck:
+    return InvertedBottleneck(*args, **kwargs, inner_group=3, has_se=True)
 
 class ResNet(nn.Module):
 
@@ -811,6 +850,32 @@ def iresnet18(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'iResNet18'
+    return model
+
+
+def iresnet18_dw(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(InvertedBottleneckDW, [2, 2, 2, 2], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'iResNet18_DW'
+    return model
+
+
+def seiresnet18_dw(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(InvertedBottleneckDWSE, [2, 2, 2, 2], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'iSEResNet18_DW'
     return model
 
 
