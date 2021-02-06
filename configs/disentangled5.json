@@ -1,15 +1,14 @@
 {
     "model": [
-        "resnet18_o5",
-        "resnet18_o7"
+        "iresnet18"
     ],
-    "epoch": [30],
-    "batch_size": [64],
+    "epoch": [60],
+    "batch_size": [32],
 
     "dataset": ["Cifar10"],
-    "resolution": [32],
+    "resolution": [224],
 
-    "optimizer": ["lrs"],
+    "optimizer": ["lrs60"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
