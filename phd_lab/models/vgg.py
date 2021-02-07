@@ -1,3 +1,5 @@
+from typing import Union
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -99,6 +101,23 @@ cfg = {
     'EXXS': [8, 8, 'M', 16, 16, 'M', 32, 32, 32, 32, 'M', 64, 64, 64, 64, 'M', 64, 64, 64, 64, 'M'],
     'EXXXS': [4, 4, 'M', 8, 8, 'M', 16, 16, 16, 16, 'M', 32, 32, 32, 32, 'M', 32, 32, 32, 32, 'M'],
 }
+
+class SELayer(nn.Module):
+    def __init__(self, channel, reduction=16):
+        super(SELayer, self).__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Sequential(
+            nn.Linear(channel, reduction, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(reduction, channel, bias=False),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        b, c, _, _ = x.size()
+        y = self.avg_pool(x).view(b, c)
+        y = self.fc(y).view(b, c, 1, 1)
+        return x * y.expand_as(x)
 
 
 def vggresnet(*args, **kwargs):
@@ -406,7 +425,7 @@ def vggO2b(*args, **kwargs):
 
 
 def make_layers(cfg, batch_norm=True, k_size=3, in_channels=3, pca=PCA, thresh=.999, centering=True, downsampling=None,
-                dilation=1, groups: int = 1):
+                dilation=1, groups: Union[int, str] = 1, has_se: bool = False):
     layers = []
     effective_kernel_size = k_size + (k_size - 1) * (dilation - 1)
     padding = effective_kernel_size - 2
@@ -421,7 +440,7 @@ def make_layers(cfg, batch_norm=True, k_size=3, in_channels=3, pca=PCA, thresh=.
                 filters, stride, tmp_ksize = v
             tmp_padding = tmp_ksize - 2
             conv2d = nn.Conv2d(in_channels, filters, kernel_size=tmp_ksize, padding=tmp_padding, dilation=dilation,
-                               stride=stride, groups=groups)
+                               stride=stride, groups=groups if groups != "X" else v)
             if batch_norm and pca:
                 layers += [conv2d,
                            Conv2DPCALayer(in_filters=filters, threshold=thresh, centering=centering, downsampling=True),
@@ -430,9 +449,12 @@ def make_layers(cfg, batch_norm=True, k_size=3, in_channels=3, pca=PCA, thresh=.
                 layers += [conv2d, nn.BatchNorm2d(filters), nn.ReLU(inplace=True)]
             else:
                 layers += [conv2d, nn.ReLU(inplace=True)]
+            if has_se:
+                se_layer = SELayer(filters, filters // 4)
+                layers += se_layer
             in_channels = filters
         else:
-            conv2d = nn.Conv2d(in_channels, v, kernel_size=k_size, padding=padding, dilation=dilation)
+            conv2d = nn.Conv2d(in_channels, v, kernel_size=k_size, padding=padding, dilation=dilation, groups=groups if groups != "X" else v)
             if batch_norm and pca:
                 layers += [conv2d,
                            Conv2DPCALayer(in_filters=v, threshold=thresh, centering=centering, downsampling=True),
@@ -441,8 +463,12 @@ def make_layers(cfg, batch_norm=True, k_size=3, in_channels=3, pca=PCA, thresh=.
                 layers += [conv2d, nn.BatchNorm2d(v), nn.ReLU(inplace=True)]
             else:
                 layers += [conv2d, nn.ReLU(inplace=True)]
+            if has_se:
+                se_layer = SELayer(v, v // 4)
+                layers += se_layer
             in_channels = v
     return nn.Sequential(*layers)
+
 
 class VGG(nn.Module):
 
@@ -1366,5 +1392,25 @@ def vgg19_g3(*args, **kwargs):
     """
     model = VGG(make_layers(cfg['E'], groups=3), **kwargs)
     model.name = "VGG19_G3"
+    return model
+
+
+def vgg19_gX(*args, **kwargs):
+    """VGG 16-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['E'], groups="X"), **kwargs)
+    model.name = "VGG19_GX"
+    return model
+
+
+def vgg19_se(*args, **kwargs):
+    """VGG 16-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['E'], has_se=True), **kwargs)
+    model.name = "VGG19_SE"
     return model
 

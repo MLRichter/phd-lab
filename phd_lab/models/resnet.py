@@ -104,9 +104,9 @@ class SELayer(nn.Module):
         super(SELayer, self).__init__()
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Sequential(
-            nn.Linear(channel, channel // reduction, bias=False),
+            nn.Linear(channel, reduction, bias=False),
             nn.ReLU(inplace=True),
-            nn.Linear(channel // reduction, channel, bias=False),
+            nn.Linear(reduction, channel, bias=False),
             nn.Sigmoid()
         )
 
@@ -180,19 +180,19 @@ class InvertedBottleneck(nn.Module):
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, threshold=.999, centering=False,
                  noskip=False, nodownsampling=False, inner_conv=conv3x3, inner_expansion: int = 2,
-                 inner_group: int = 1, has_se: bool = False):
+                 inner_group: int = False, has_se: bool = False):
         super(InvertedBottleneck, self).__init__()
         inner_planes = planes * inner_expansion
         self.has_se = has_se
         if self.has_se:
-            self.se = SELayer(inplanes, reduction=max(1, int(inplanes*0.25)))
+            self.se = SELayer(planes, reduction=max(1, int(planes // 4)))
         self.inner_expansion = inner_expansion
         self.noskip = noskip
         self.conv1 = conv1x1(inplanes, inner_planes)
         if PCA:
             self.conv1PCA = Conv2DPCALayer(inner_planes, threshold, centering)
         self.bn1 = nn.BatchNorm2d(inner_planes)
-        self.conv2 = inner_conv(inner_planes, inner_planes, stride, inner_group)
+        self.conv2 = inner_conv(inner_planes, inner_planes, stride, inner_planes if inner_group else 1)
         if PCA:
             self.conv2PCA = Conv2DPCALayer(inner_planes, threshold, centering)
         self.bn2 = nn.BatchNorm2d(inner_planes)
@@ -237,11 +237,25 @@ class InvertedBottleneck(nn.Module):
 
 
 def InvertedBottleneckDW(*args, **kwargs) -> InvertedBottleneck:
-    return InvertedBottleneck(*args, **kwargs, inner_group=3)
+    return InvertedBottleneck(*args, **kwargs, inner_group=True)
+
+
+setattr(InvertedBottleneckDW, "expansion", 1)
 
 
 def InvertedBottleneckDWSE(*args, **kwargs) -> InvertedBottleneck:
-    return InvertedBottleneck(*args, **kwargs, inner_group=3, has_se=True)
+    return InvertedBottleneck(*args, **kwargs, inner_group=True, has_se=True)
+
+
+setattr(InvertedBottleneckDWSE, "expansion", 1)
+
+
+def InvertedBottleneckSE(*args, **kwargs) -> InvertedBottleneck:
+    return InvertedBottleneck(*args, **kwargs, has_se=True)
+
+
+setattr(InvertedBottleneckDWSE, "expansion", 1)
+
 
 class ResNet(nn.Module):
 
@@ -876,6 +890,19 @@ def seiresnet18_dw(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'iSEResNet18_DW'
+    return model
+
+
+def seiresnet18(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(InvertedBottleneckSE, [2, 2, 2, 2], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'iSEResNet18'
     return model
 
 
