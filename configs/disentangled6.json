@@ -1,15 +1,13 @@
 {
     "model": [
-        "iresnet18",
-        "iresnet18_dw",
-        "seiresnet18_dw",
-        "seiresnet18",
+        "vgg19_gx",
+        "vgg19_se"
     ],
     "epoch": [60],
-    "batch_size": [32],
+    "batch_size": [64],
 
     "dataset": ["Cifar10"],
-    "resolution": [32],
+    "resolution": [32, 224],
 
     "optimizer": ["lrs60"],
     "metrics": ["Accuracy", "Top5Accuracy"],

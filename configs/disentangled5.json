@@ -4,8 +4,6 @@
         "iresnet18_dw",
         "seiresnet18_dw",
         "seiresnet18",
-        "vgg19_gx",
-        "vgg19_se"
     ],
     "epoch": [60],
     "batch_size": [32],
