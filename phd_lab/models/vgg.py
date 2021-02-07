@@ -1395,7 +1395,7 @@ def vgg19_g3(*args, **kwargs):
     return model
 
 
-def vgg19_gX(*args, **kwargs):
+def vgg19_gx(*args, **kwargs):
     """VGG 16-layer model (configuration "D")
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
