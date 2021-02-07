@@ -451,7 +451,7 @@ def make_layers(cfg, batch_norm=True, k_size=3, in_channels=3, pca=PCA, thresh=.
                 layers += [conv2d, nn.ReLU(inplace=True)]
             if has_se:
                 se_layer = SELayer(filters, filters // 4)
-                layers += se_layer
+                layers += [se_layer]
             in_channels = filters
         else:
             grp = groups if groups != "X" else v if in_channels%v == 0 else 1
@@ -467,7 +467,7 @@ def make_layers(cfg, batch_norm=True, k_size=3, in_channels=3, pca=PCA, thresh=.
                 layers += [conv2d, nn.ReLU(inplace=True)]
             if has_se:
                 se_layer = SELayer(v, v // 4)
-                layers += se_layer
+                layers += [se_layer]
             in_channels = v
     return nn.Sequential(*layers)
 
