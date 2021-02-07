@@ -3,7 +3,7 @@
         "iresnet18",
         "iresnet18_dw",
         "seiresnet18_dw",
-        "seiresnet18",
+        "seiresnet18"
     ],
     "epoch": [60],
     "batch_size": [32],
