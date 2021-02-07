@@ -454,7 +454,9 @@ def make_layers(cfg, batch_norm=True, k_size=3, in_channels=3, pca=PCA, thresh=.
                 layers += se_layer
             in_channels = filters
         else:
-            conv2d = nn.Conv2d(in_channels, v, kernel_size=k_size, padding=padding, dilation=dilation, groups=groups if groups != "X" else v)
+            grp = groups if groups != "X" else v if in_channels%v == 0 else 1
+            #print(grp)
+            conv2d = nn.Conv2d(in_channels, v, kernel_size=k_size, padding=padding, dilation=dilation, groups=grp )
             if batch_norm and pca:
                 layers += [conv2d,
                            Conv2DPCALayer(in_filters=v, threshold=thresh, centering=centering, downsampling=True),
