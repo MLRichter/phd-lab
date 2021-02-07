@@ -254,7 +254,7 @@ def InvertedBottleneckSE(*args, **kwargs) -> InvertedBottleneck:
     return InvertedBottleneck(*args, **kwargs, has_se=True)
 
 
-setattr(InvertedBottleneckDWSE, "expansion", 1)
+setattr(InvertedBottleneckSE, "expansion", 1)
 
 
 class ResNet(nn.Module):
