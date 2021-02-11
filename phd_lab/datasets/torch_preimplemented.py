@@ -14,6 +14,60 @@ from torchvision import transforms
 from attr import attrs
 
 
+def make_weights_for_balanced_classes(images, nclasses):
+    count = [0] * nclasses
+    for item in images:
+        count[item[1]] += 1
+    weight_per_class = [0.] * nclasses
+    N = float(sum(count))
+    for i in range(nclasses):
+        weight_per_class[i] = N/float(count[i])
+    weight = [0] * len(images)
+    for idx, val in enumerate(images):
+        weight[idx] = weight_per_class[val[1]]
+    return weight
+
+
+def AgeFace(batch_size=12,
+            output_size=256,
+            cache_dir='tmp') -> DataBundle:
+
+    RS = transforms.Resize(output_size)
+    RC = transforms.RandomCrop(output_size, padding=output_size//8)
+    RHF = transforms.RandomHorizontalFlip()
+    NRM = transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
+    TT = transforms.ToTensor()
+
+
+    # Transforms object for trainset with augmentation
+    transform_with_aug = transforms.Compose([RS, RC, RHF, TT, NRM])
+    # Transforms object for testset with NO augmentation
+    transform_no_aug = transforms.Compose([RS, TT, NRM])
+
+    train_dataset = torchvision.datasets.ImageFolder(root='./tmp/AgeFace/train', transform=transform_with_aug)
+    test_dataset = torchvision.datasets.ImageFolder(root='./tmp/AgeFace/valid', transform=transform_no_aug)
+
+    weights = make_weights_for_balanced_classes(train_dataset.imgs, len(train_dataset.classes))
+
+    weights = torch.DoubleTensor(weights)
+    sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, len(weights))
+
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, num_workers=4, pin_memory=True, sampler=sampler)
+    test_weights = make_weights_for_balanced_classes(test_dataset.imgs, len(test_dataset.classes))
+
+    test_weights = torch.DoubleTensor(test_weights)
+    sampler = torch.utils.data.sampler.WeightedRandomSampler(test_weights, len(test_weights))
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, pin_memory=True, shuffle=False, num_workers=4)
+    return DataBundle(
+        dataset_name="AgeFace",
+        train_dataset=train_loader,
+        test_dataset=test_loader,
+        cardinality=4,
+        output_resolution=output_size,
+        is_classifier=True
+    )
+
+
 def Food101(batch_size=12,
             output_size=256,
             cache_dir='tmp') -> DataBundle:

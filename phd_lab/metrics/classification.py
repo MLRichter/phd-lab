@@ -1,7 +1,13 @@
+from pathlib import Path
+
 from attr import attrs
+from sklearn.base import ClassifierMixin
+from sklearn.metrics import balanced_accuracy_score, plot_confusion_matrix
+from matplotlib import pyplot as plt
 from torch import Tensor
-from typing import Union, Tuple
+from typing import Union, Tuple, Optional
 import torch
+import numpy as np
 
 
 @attrs(auto_attribs=True, slots=True)
@@ -59,3 +65,68 @@ class Accuracy:
     def reset(self) -> None:
         self.total = 0
         self.correct = 0
+
+
+@attrs(auto_attribs=True, slots=True)
+class BalancedAccuracy:
+
+    y_true: Optional[np.ndarray] = None
+    y_pred: Optional[np.ndarray] = None
+    adjusted: bool = False
+    name: str = "balanced accuracy"
+
+    @property
+    def value(self) -> float:
+        return balanced_accuracy_score(self.y_true, self.y_pred, adjusted=self.adjusted)
+
+    def update(self, y_true: Tensor, y_pred: Tensor) -> None:
+        predicted = torch.max(y_pred.data, 1)[1].detach().cpu().numpy()
+        ground_truth = y_true.detach().cpu().numpy()
+        self.y_true = ground_truth if self.y_true is None else np.hstack((self.y_true, ground_truth))
+        self.y_pred = predicted if self.y_pred is None else np.hstack((self.y_pred, predicted))
+
+    def reset(self) -> None:
+        self.y_true, self.y_pred = None, None
+
+
+def AdjustedBalancedAccuracy():
+    return BalancedAccuracy(adjusted=True, name="adjusted balanced accuracy")
+
+
+@attrs(auto_attribs=True, slots=True)
+class ConfusionMatrix:
+
+    y_true: Optional[np.ndarray] = None
+    y_pred: Optional[np.ndarray] = None
+    step: int = 0
+    adjusted: bool = False
+    savepath: Path = Path("./logs/ConfusionMatrices")
+    savename_template = "confusion_matrix_{}_{}"
+    name: str = "balanced accuracy"
+
+    @property
+    def value(self) -> float:
+        return (self.step) // 2
+
+    def update(self, y_true: Tensor, y_pred: Tensor) -> None:
+        predicted = torch.max(y_pred.data, 1)[1].detach().cpu().numpy()
+        ground_truth = y_true.detach().cpu().numpy()
+        self.y_true = ground_truth if self.y_true is None else np.hstack((self.y_true, ground_truth))
+        self.y_pred = predicted if self.y_pred is None else np.hstack((self.y_pred, predicted))
+
+    def reset(self) -> None:
+        if self.y_true is not None:
+            mode = "eval" if self.step%2 == 1 else "train"
+            epoch = self.step // 2
+
+            class DummyModel(ClassifierMixin):
+
+                classes_ = np.unique(self.y_true)
+
+                def predict(self, X):
+                    return X
+            plot_confusion_matrix(DummyModel(), self.y_pred, self.y_true, normalize="true")
+            self.savepath.mkdir(exist_ok=True, parents=True)
+            plt.savefig(self.savepath / self.savename_template.format(mode, epoch))
+            self.step += 1
+        self.y_true, self.y_pred = None, None
