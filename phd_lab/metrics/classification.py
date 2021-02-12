@@ -5,7 +5,7 @@ from sklearn.base import ClassifierMixin
 from sklearn.metrics import balanced_accuracy_score, plot_confusion_matrix
 from matplotlib import pyplot as plt
 from torch import Tensor
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, List
 import torch
 import numpy as np
 
@@ -16,6 +16,7 @@ class Top5Accuracy:
     accuracy_accumulator: Union[int, float, Tensor] = 0
     total: int = 0
     name: str = "top5-accuracy"
+    classes: List[str] = None
 
     def _accuracy(self, output: Tensor, target: Tensor, topk: Tuple[int] = (1,)):
         """Computes the precision@k for the specified values of k"""
@@ -52,6 +53,8 @@ class Accuracy:
     total: Union[int, float, Tensor] = 0
     correct: Union[int, float, Tensor] = 0
     name: str = "accuracy"
+    classes: List[str] = None
+
 
     @property
     def value(self) -> float:
@@ -74,6 +77,11 @@ class BalancedAccuracy:
     y_pred: Optional[np.ndarray] = None
     adjusted: bool = False
     name: str = "balanced accuracy"
+    savepath: Path = Path("./logs/ConfusionMatrices")
+    savename_template = "confusion_matrix_{}_{}.png"
+    classes: List[str] = None
+    step: int = 0
+
 
     @property
     def value(self) -> float:
@@ -86,6 +94,21 @@ class BalancedAccuracy:
         self.y_pred = predicted if self.y_pred is None else np.hstack((self.y_pred, predicted))
 
     def reset(self) -> None:
+        if self.y_true is not None:
+            print("Saving Confusion Matrix")
+            mode = "eval" if self.step % 2 == 1 else "train"
+            epoch = self.step / 2
+
+            class DummyModel(ClassifierMixin):
+                classes_ = np.unique(self.y_true)
+
+                def predict(self, X):
+                    return X
+
+            plot_confusion_matrix(DummyModel(), self.y_pred, self.y_true, normalize="true", display_labels=getattr(self, "classes", None))
+            self.savepath.mkdir(exist_ok=True, parents=True)
+            plt.savefig(self.savepath / self.savename_template.format(mode, epoch))
+            self.step += 1
         self.y_true, self.y_pred = None, None
 
 
@@ -100,32 +123,34 @@ class ConfusionMatrix:
     y_pred: Optional[np.ndarray] = None
     step: int = 0
     adjusted: bool = False
-    savepath: Path = Path("./logs/ConfusionMatrices")
-    savename_template = "confusion_matrix_{}_{}"
-    name: str = "balanced accuracy"
+    name: str = "confusion matrix"
+    classes: List[str] = None
+
 
     @property
     def value(self) -> float:
-        return (self.step) // 2
+        return 0.0
 
     def update(self, y_true: Tensor, y_pred: Tensor) -> None:
         predicted = torch.max(y_pred.data, 1)[1].detach().cpu().numpy()
         ground_truth = y_true.detach().cpu().numpy()
         self.y_true = ground_truth if self.y_true is None else np.hstack((self.y_true, ground_truth))
         self.y_pred = predicted if self.y_pred is None else np.hstack((self.y_pred, predicted))
+        #print(self.y_true.shape, self.y_pred.shape)
 
     def reset(self) -> None:
         if self.y_true is not None:
-            mode = "eval" if self.step%2 == 1 else "train"
-            epoch = self.step // 2
+            print("Saving Confusion Matrix")
+            mode = "eval" if self.step % 2 == 1 else "train"
+            epoch = self.step / 2
 
             class DummyModel(ClassifierMixin):
-
                 classes_ = np.unique(self.y_true)
 
                 def predict(self, X):
                     return X
-            plot_confusion_matrix(DummyModel(), self.y_pred, self.y_true, normalize="true")
+
+            plot_confusion_matrix(DummyModel(), self.y_pred, self.y_true, normalize="true", display_labels=getattr(self, "classes", None))
             self.savepath.mkdir(exist_ok=True, parents=True)
             plt.savefig(self.savepath / self.savename_template.format(mode, epoch))
             self.step += 1

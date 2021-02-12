@@ -156,6 +156,7 @@ class Trainer:
 
     def __attrs_post_init__(self):
         self.device_sat = self.device if self.device_sat is None else self.device_sat
+        [setattr(metric, "classes", self.data_bundle.train_dataset.dataset.classes) for metric in self.metrics]
         self._enable_benchmark_mode_if_cuda()
         self._initialize_saving_structure()
         self._checkpointing()
