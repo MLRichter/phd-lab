@@ -95,6 +95,7 @@ class BalancedAccuracy:
 
     def reset(self) -> None:
         if self.y_true is not None:
+            plt.clf()
             print("Saving Confusion Matrix")
             mode = "eval" if self.step % 2 == 1 else "train"
             epoch = self.step / 2

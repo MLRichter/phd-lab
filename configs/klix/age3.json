@@ -1,0 +1,20 @@
+{
+    "model": [
+        "vgg16"
+    ],
+    "epoch": [180],
+    "batch_size": [64],
+
+    "dataset": ["AgeFaceV2"],
+    "resolution": [180],
+
+    "optimizer": ["lrs180"],
+    "metrics": ["Accuracy", "BalancedAccuracy", "AdjustedBalancedAccuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 4
+}
