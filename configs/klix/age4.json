@@ -5,7 +5,7 @@
     "epoch": [180],
     "batch_size": [64],
 
-    "dataset": ["AgeFaceV2"],
+    "dataset": ["AgeFaceV3"],
     "resolution": [224],
 
     "optimizer": ["lrs180"],
