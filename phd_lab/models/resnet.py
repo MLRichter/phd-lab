@@ -53,6 +53,42 @@ def conv1x1(in_planes, out_planes, stride=1, group: int = 1):
     return nn.Conv2d(int(in_planes), int(out_planes), kernel_size=1, stride=stride, bias=False, groups=group)
 
 
+
+class SELayer(nn.Module):
+    def __init__(self, channel, reduction=16):
+        super(SELayer, self).__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Sequential(
+            nn.Linear(channel, reduction, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(reduction, channel, bias=False),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        b, c, _, _ = x.size()
+        y = self.avg_pool(x).view(b, c)
+        y = self.fc(y).view(b, c, 1, 1)
+        return x * y.expand_as(x)
+
+
+class SpatialAttention(nn.Module):
+    def __init__(self, kernel_size=7):
+        super(SpatialAttention, self).__init__()
+
+        self.conv1 = nn.Conv2d(2, 1, kernel_size, padding=kernel_size//2, bias=False)
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        x1 = x
+        avg_out = torch.mean(x, dim=1, keepdim=True)
+        max_out, _ = torch.max(x, dim=1, keepdim=True)
+        x = torch.cat([avg_out, max_out], dim=1)
+        x = self.conv1(x)
+        x = self.sigmoid(x)
+        return x1 * x.expand_as(x1)
+
+
 class BasicBlock(nn.Module):
     expansion = 1
 
@@ -99,34 +135,19 @@ class BasicBlock(nn.Module):
         return out
 
 
-class SELayer(nn.Module):
-    def __init__(self, channel, reduction=16):
-        super(SELayer, self).__init__()
-        self.avg_pool = nn.AdaptiveAvgPool2d(1)
-        self.fc = nn.Sequential(
-            nn.Linear(channel, reduction, bias=False),
-            nn.ReLU(inplace=True),
-            nn.Linear(reduction, channel, bias=False),
-            nn.Sigmoid()
-        )
-
-    def forward(self, x):
-        b, c, _, _ = x.size()
-        y = self.avg_pool(x).view(b, c)
-        y = self.fc(y).view(b, c, 1, 1)
-        return x * y.expand_as(x)
-
-
 class Bottleneck(nn.Module):
     expansion = 4
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, threshold=.999, centering=False,
-                 noskip=False, nodownsampling=False, inner_conv=conv3x3, has_se: bool = False):
+                 noskip=False, nodownsampling=False, inner_conv=conv3x3, has_se: bool = False, has_sa: bool = False):
         super(Bottleneck, self).__init__()
         self.noskip = noskip
         self.has_se = has_se
+        self.has_sa = has_sa
         if self.has_se:
             self.se = SELayer(inplanes, reduction=max(1, int(inplanes*0.25)))
+        if self.has_sa:
+            self.sa = SpatialAttention(kernel_size=7)
         self.conv1 = conv1x1(inplanes, planes)
         if PCA:
             self.conv1PCA = Conv2DPCALayer(planes, threshold, centering)
@@ -165,6 +186,8 @@ class Bottleneck(nn.Module):
 
         if self.has_se:
             out = self.se(out)
+        if self.has_sa:
+            out = self.sa(out)
 
         if self.downsample is not None:
             identity = self.downsample(x)
@@ -173,6 +196,27 @@ class Bottleneck(nn.Module):
         out = self.relu(out)
 
         return out
+
+
+def BottleneckSE(*args, **kwargs) -> Bottleneck:
+    return Bottleneck(*args, **kwargs, has_se=True)
+
+
+setattr(BottleneckSE, "expansion", 4)
+
+
+def BottleneckSA(*args, **kwargs) -> Bottleneck:
+    return Bottleneck(*args, **kwargs, has_sa=True)
+
+
+setattr(BottleneckSE, "expansion", 4)
+
+
+def BottleneckSESA(*args, **kwargs) -> Bottleneck:
+    return Bottleneck(*args, **kwargs, has_sa=True, has_se=True)
+
+
+setattr(BottleneckSE, "expansion", 4)
 
 
 class InvertedBottleneck(nn.Module):
@@ -852,6 +896,59 @@ def resnet18(pretrained=False, **kwargs):
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'ResNet18'
     return model
+
+
+def resnet24(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(Bottleneck, [2, 2, 2, 2], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet24'
+    return model
+
+
+def resnet24_se(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BottleneckSE, [2, 2, 2, 2], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet24_SE'
+    return model
+
+
+def resnet24_sa(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BottleneckSA, [2, 2, 2, 2], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet24_SA'
+    return model
+
+
+def resnet24_sesa(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BottleneckSESA, [2, 2, 2, 2], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet24_SESA'
+    return model
+
 
 
 def iresnet18(pretrained=False, **kwargs):
