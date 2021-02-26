@@ -145,7 +145,7 @@ class Bottleneck(nn.Module):
         self.has_se = has_se
         self.has_sa = has_sa
         if self.has_se:
-            self.se = SELayer(inplanes, reduction=max(1, int(inplanes*0.25)))
+            self.se = SELayer(planes * self.expansion, reduction=max(1, int(inplanes*0.25)))
         if self.has_sa:
             self.sa = SpatialAttention(kernel_size=7)
         self.conv1 = conv1x1(inplanes, planes)
@@ -209,14 +209,14 @@ def BottleneckSA(*args, **kwargs) -> Bottleneck:
     return Bottleneck(*args, **kwargs, has_sa=True)
 
 
-setattr(BottleneckSE, "expansion", 4)
+setattr(BottleneckSA, "expansion", 4)
 
 
 def BottleneckSESA(*args, **kwargs) -> Bottleneck:
     return Bottleneck(*args, **kwargs, has_sa=True, has_se=True)
 
 
-setattr(BottleneckSE, "expansion", 4)
+setattr(BottleneckSESA, "expansion", 4)
 
 
 class InvertedBottleneck(nn.Module):
