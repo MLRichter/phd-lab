@@ -255,8 +255,8 @@ def _densenet(
     return model
 
 
-def densenet18(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> DenseNet:
-    r"""Densenet-18 model
+def densenet9(pretrained: bool = False, progress: bool = True, input_size: Tuple[int, int, int] = None, **kwargs: Any) -> DenseNet:
+    r"""Densenet-9 model
 
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
@@ -265,7 +265,38 @@ def densenet18(pretrained: bool = False, progress: bool = True, **kwargs: Any) -
           but slower. Default: *False*. See `"paper" <https://arxiv.org/pdf/1707.06990.pdf>`_.
     """
     model = _densenet('', 32, (2, 2, 2, 2), 64, pretrained, progress, **kwargs)
+    model.name = "DenseNet9"
+    return model
+
+
+
+
+def densenet18(pretrained: bool = False, progress: bool = True, input_size: Tuple[int, int, int] = None, **kwargs: Any) -> DenseNet:
+    r"""Densenet-18 model
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+        progress (bool): If True, displays a progress bar of the download to stderr
+        memory_efficient (bool) - If True, uses checkpointing. Much more memory efficient,
+          but slower. Default: *False*. See `"paper" <https://arxiv.org/pdf/1707.06990.pdf>`_.
+    """
+    model = _densenet('', 32, (4, 4, 4, 4), 64, pretrained, progress, **kwargs)
     model.name = "DenseNet18"
+    return model
+
+
+def densenet65(pretrained: bool = False, progress: bool = True, input_size: Tuple[int, int, int] = None, **kwargs: Any) -> DenseNet:
+    r"""Densenet-50 model
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+        progress (bool): If True, displays a progress bar of the download to stderr
+        memory_efficient (bool) - If True, uses checkpointing. Much more memory efficient,
+          but slower. Default: *False*. See `"paper" <https://arxiv.org/pdf/1707.06990.pdf>`_.
+    """
+    model = _densenet('', 32, (6, 8, 12, 6), 64, pretrained, progress, **kwargs)
+    model.name = "DenseNet65"
+    return model
 
 
 def densenet121(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> DenseNet:
@@ -281,6 +312,7 @@ def densenet121(pretrained: bool = False, progress: bool = True, **kwargs: Any) 
     model =  _densenet('densenet121', 32, (6, 12, 24, 16), 64, pretrained, progress,
                      **kwargs)
     model.name = "DenseNet121"
+    return model
 
 
 def densenet161(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> DenseNet:
@@ -296,6 +328,7 @@ def densenet161(pretrained: bool = False, progress: bool = True, **kwargs: Any) 
     model = _densenet('densenet161', 48, (6, 12, 36, 24), 96, pretrained, progress,
                      **kwargs)
     model.name = "DenseNet161"
+    return model
     return model
 
 

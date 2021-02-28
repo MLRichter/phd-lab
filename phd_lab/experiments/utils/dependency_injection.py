@@ -12,6 +12,7 @@ _TARGET = {
     'metric': phd_lab.experiments.utils.config.METRICS_REGISTRY
 }
 
+
 def _get_registry(registry: Union[str, ModuleType]) -> ModuleType:
     if isinstance(registry, ModuleType):
         return registry

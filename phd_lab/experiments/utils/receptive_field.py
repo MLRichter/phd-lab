@@ -50,11 +50,11 @@ def receptive_field(model, input_size, batch_size=-1, device="cuda"):
                 p_r = receptive_field[p_key]["r"]
                 p_start = receptive_field[p_key]["start"]
 
-                if class_name == "Conv2d" or class_name == "MaxPool2d":
+                if class_name == "Conv2d" or class_name == "MaxPool2d" or class_name == "AvgPool2d":
                     kernel_size = module.kernel_size
                     stride = module.stride
                     padding = module.padding
-                    dilation = module.dilation
+                    dilation = getattr(module, "dilation", 1)
                     kernel_size, stride, padding, dilation = map(check_same, [kernel_size, stride, padding, dilation])
                     effective_kernel_size = kernel_size + (kernel_size - 1) * (dilation - 1)
                     receptive_field[m_key]["j"] = p_j * stride
@@ -70,10 +70,12 @@ def receptive_field(model, input_size, batch_size=-1, device="cuda"):
                     receptive_field[m_key]["r"] = 0
                     receptive_field[m_key]["start"] = 0
                 elif class_name == 'AdaptiveAvgPool2d' or class_name == 'Linear':
+                    print(class_name, "pool")
                     receptive_field[m_key]["j"] = np.nan
                     receptive_field[m_key]["r"] = np.nan
                     receptive_field[m_key]["start"] = np.nan
                 else:
+                    print(class_name)
                     receptive_field[m_key]["j"] = np.nan
                     receptive_field[m_key]["r"] = np.nan
                     receptive_field[m_key]["start"] = np.nan
