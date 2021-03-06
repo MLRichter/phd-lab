@@ -464,11 +464,11 @@ def ImageNet(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
 
     train_tfms = transforms.Compose([
         transforms.Resize(output_size),
-        transforms.CenterCrop(output_size),
+        #transforms.CenterCrop(output_size),
         transforms.RandomHorizontalFlip(),
-        transforms.ColorJitter(.4,.4,.4),
+        #transforms.ColorJitter(.4,.4,.4),
         transforms.ToTensor(),
-        Lighting(0.1, __imagenet_pca['eigval'], __imagenet_pca['eigvec']),
+        #Lighting(0.1, __imagenet_pca['eigval'], __imagenet_pca['eigvec']),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 

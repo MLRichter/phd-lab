@@ -29,20 +29,20 @@ class LinearTransitionLayer(nn.Module):
         return out
 
 
-def conv(in_planes: int, planes: int, k_size: int, downsample) -> nn.Module:
+def conv(in_planes: int, planes: int, k_size: int, downsample, act) -> nn.Module:
     return nn.Sequential(*[
         nn.Conv2d(in_planes, planes, k_size, stride=1 if not downsample else 2, padding=1),
         nn.BatchNorm2d(planes),
-        nn.ReLU()
+        act()
     ])
 
 
 class ConvolutionalBlock(nn.Module):
 
-    def __init__(self, in_planes: int, planes: int, k_size: int = 3, downsample: bool = False):
+    def __init__(self, in_planes: int, planes: int, k_size: int = 3, downsample: bool = False, act = nn.ReLU):
         super().__init__()
-        self.conv1 = conv(in_planes, planes, k_size, False)
-        self.conv2 = conv(planes, planes, k_size, downsample)
+        self.conv1 = conv(in_planes, planes, k_size, False, act)
+        self.conv2 = conv(planes, planes, k_size, downsample, act)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -52,33 +52,36 @@ class ConvolutionalBlock(nn.Module):
 
 class MSNet2(nn.Module):
 
-    def __init__(self, design_resolution: int, num_classes: int = 10, low_res: bool = False, blocks: List[int] = [2,2,2,2], trans: bool = True, trans1: bool = True):
+    def __init__(self, design_resolution: int, num_classes: int = 10, low_res: bool = False,
+                 blocks: List[int] = [2,2,2,2], trans: bool = True, trans1: bool = True,
+                 act = nn.ReLU):
         super().__init__()
         self.design_resolution = design_resolution
         self.num_classes = num_classes
         self.low_res = low_res
         self.trans = trans
+        self.trans1 = trans1
         if not self.low_res:
             self.stem = nn.Sequential(
                 nn.Conv2d(in_channels=3, out_channels=64, kernel_size=7, stride=2, padding=3, bias=False),
                 nn.BatchNorm2d(64),
-                nn.ReLU(inplace=True),
+                act(inplace=True),
                 nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
             )
         else:
             self.stem = nn.Sequential(
                 nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, stride=1, padding=1, bias=False),
                 nn.BatchNorm2d(64),
-                nn.ReLU(inplace=True)
+                act(inplace=True)
             )
 
         # Stage 1
         self.stage1 = nn.Sequential(
-            *[ConvolutionalBlock(64, 64, 3) for i in range(blocks[0])]
+            *[ConvolutionalBlock(64, 64, 3, act=act) for i in range(blocks[0])]
         )
         # Stage 2
         self.stage2 = nn.Sequential(
-            *[ConvolutionalBlock(64 if i == 0 else 128, 128, 3, i == 0) for i in range(blocks[1])]
+            *[ConvolutionalBlock(64 if i == 0 else 128, 128, 3, i == 0, act=act) for i in range(blocks[1])]
 
         )
         # Stage 3
@@ -89,7 +92,7 @@ class MSNet2(nn.Module):
             self.transition1 = LinearTransitionLayer(1, [1.0], 128, out_features=256)
 
         self.stage3 = nn.Sequential(
-            *[ConvolutionalBlock(256, 256, 3, i == 0) for i in range(blocks[2])]
+            *[ConvolutionalBlock(256, 256, 3, i == 0, act=act) for i in range(blocks[2])]
 
         )
         # Stage 4
@@ -98,7 +101,7 @@ class MSNet2(nn.Module):
         else:
             self.transition2 = LinearTransitionLayer(1, [1.0], 256, 512)
         self.stage4 = nn.Sequential(
-            *[ConvolutionalBlock(512, 512, 3, i == 0) for i in range(blocks[3])]
+            *[ConvolutionalBlock(512, 512, 3, i == 0, act=act) for i in range(blocks[3])]
         )
         self.pool = nn.AdaptiveAvgPool2d(1)
         self.classifier = nn.Linear(512, num_classes)
@@ -108,7 +111,7 @@ class MSNet2(nn.Module):
             x = self.stem(x)
         x1 = self.stage1(x)
         x2 = self.stage2(x1)
-        if self.trans:
+        if self.trans and self.trans1:
             t1 = self.transition1(x1, x2)
         else:
             t1 = self.transition1(x2)
@@ -134,6 +137,13 @@ def msnet22(pretrained: bool = False, progress: bool = True, input_size: Tuple[i
     model = MSNet2(224, num_classes=kwargs["num_classes"], low_res=True, blocks=[2, 2, 3, 3], trans=True)
     model.name = "MSNet22"
     return model
+
+
+def msnet22_swish(pretrained: bool = False, progress: bool = True, input_size: Tuple[int, int, int] = None, **kwargs):
+    model = MSNet2(224, num_classes=kwargs["num_classes"], low_res=True, blocks=[2, 2, 3, 3], trans=True, act=nn.Hardswish)
+    model.name = "MSNet22_Swish"
+    return model
+
 
 def msnet22fpn(pretrained: bool = False, progress: bool = True, input_size: Tuple[int, int, int] = None, **kwargs):
     model = MSNet2(224, num_classes=kwargs["num_classes"], low_res=True, blocks=[2, 2, 3, 3], trans=True, trans1=False)

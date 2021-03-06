@@ -5,15 +5,24 @@ from torch.nn.modules import Module
 from .custom_optimizers import RAdam
 
 
-def lrs(model: Module,
+def noopt(model: Module,
         lr: float = 0.1,
         momentum: float = 0.9,
         weight_decay: float = 5e-4,
         step_size: int = 10
         ) -> OptimizerSchedulerBundle:
-    optimizer = SGD(model.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
+    optimizer = SGD(model.parameters(), lr=0, momentum=0)
     scheduler = StepLR(optimizer, step_size=step_size)
     return OptimizerSchedulerBundle(optimizer=optimizer, scheduler=scheduler)
+
+
+def lrs(model: Module,
+        lr: float = 0.01,
+        momentum: float = 0.9,
+        weight_decay: float = 5e-4,
+        ) -> OptimizerSchedulerBundle:
+    optimizer = SGD(model.parameters(), lr=0, momentum=0, weight_decay=0)
+    return OptimizerSchedulerBundle(optimizer=optimizer)
 
 
 def lrs60(model: Module,

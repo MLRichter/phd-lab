@@ -1,5 +1,6 @@
 {
     "model": [
+        "msnet22_swish",
         "msnet22fpn",
         "msnet22_nt",
         "msnet22"
