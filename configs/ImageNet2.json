@@ -4,7 +4,7 @@
         "resnet152"
     ],
     "epoch": [90],
-    "batch_size": [256],
+    "batch_size": [300],
 
     "dataset": ["ImageNet"],
     "resolution": [224],
