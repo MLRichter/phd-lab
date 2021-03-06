@@ -13,7 +13,6 @@
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
-    "device": ["cuda:0"],
 
     "conv_method": ["channelwise"],
     "delta": [0.99],
