@@ -463,8 +463,9 @@ def ImageNet(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
 
 
     train_tfms = transforms.Compose([
-        transforms.Resize(output_size),
+        #transforms.Resize(output_size),
         #transforms.CenterCrop(output_size),
+        transforms.RandomResizedCrop(output_size),
         transforms.RandomHorizontalFlip(),
         #transforms.ColorJitter(.4,.4,.4),
         transforms.ToTensor(),
