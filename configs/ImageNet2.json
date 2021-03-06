@@ -2,7 +2,7 @@
     "model": [
         "resnet152"
     ],
-    "epoch": [30],
+    "epoch": [90],
     "batch_size": [256],
 
     "dataset": ["ImageNet"],
