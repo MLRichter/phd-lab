@@ -1,5 +1,6 @@
 {
     "model": [
+        "resnet18",
         "resnet152"
     ],
     "epoch": [90],
