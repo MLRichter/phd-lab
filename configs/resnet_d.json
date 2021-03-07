@@ -3,13 +3,13 @@
         "resnet1001",
         "resnet152"
     ],
-    "epoch": [90],
+    "epoch": [30],
     "batch_size": [16],
 
     "dataset": ["Cifar10"],
     "resolution": [224],
 
-    "optimizer": ["lrs90"],
+    "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
