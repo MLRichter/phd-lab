@@ -1209,7 +1209,7 @@ def resnet36(pretrained=False, **kwargs):
     model = ResNet(BasicBlock, [4, 4, 4, 4], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
-    model.name = 'ResNet36_DSPL8'
+    model.name = 'ResNet36'
     return model
 
 
