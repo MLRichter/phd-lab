@@ -2,8 +2,8 @@
     "model": [
         "resnet18_dspl8",
         "resnet18",
-        "resnet34",
-        "resnet34_dspl8"
+        "resnet36",
+        "resnet36_dspl8"
     ],
     "epoch": [30],
     "batch_size": [256],

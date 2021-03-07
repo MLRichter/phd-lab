@@ -28,7 +28,7 @@ class ReceptiveField:
     def _reload_model_as_sequential(self, trainer: Trainer) -> None:
         with open(trainer._save_path.replace(".csv", "_config.json")) as fp:
             model_setup = json.load(fp)
-            trainer.model = get_model(model_setup['model'], num_classes=10, noskip=True)
+            trainer.model = get_model(model_setup['model'], num_classes=1000, noskip=True)
             trainer.model.to(trainer.device)
 
     def __call__(self, trainer: Trainer):

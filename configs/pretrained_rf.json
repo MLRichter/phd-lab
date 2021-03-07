@@ -1,0 +1,31 @@
+{
+    "model": [
+        "resnet18",
+        "resnet18_dspl8",
+        "resnet36_dspl8",
+        "resnet1001",
+        "resnet34",
+        "resnet50",
+        "resnet101",
+        "resnet152",
+        "densenet121",
+        "densenet161",
+        "densenet169",
+        "densenet201"
+    ],
+    "epoch": [0],
+    "batch_size": [16],
+
+    "dataset": ["Cifar10"],
+    "resolution": [224],
+
+    "optimizer": ["noopt"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 4
+}

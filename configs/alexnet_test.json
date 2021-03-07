@@ -1,14 +1,14 @@
 {
     "model": [
-        "resnet18"
+        "alexnet"
     ],
     "epoch": [30],
-    "batch_size": [64],
+    "batch_size": [256],
 
     "dataset": ["Cifar10"],
-    "resolution": [32, 224],
+    "resolution": [64, 224],
 
-    "optimizer": ["lrs"],
+    "optimizer": ["adam"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
