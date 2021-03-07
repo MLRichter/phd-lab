@@ -1342,6 +1342,18 @@ def resnet152(pretrained=False, **kwargs):
     model.name = 'ResNet152'
     return model
 
+def resnet152_r(pretrained=False, **kwargs):
+    """Constructs a ResNet-152 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [3, 8, 36, 3], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet152']))
+    model.name = 'ResNet152_R'
+    return model
+
 
 def resnet152_d6(pretrained=False, **kwargs):
     """Constructs a ResNet-152 model.

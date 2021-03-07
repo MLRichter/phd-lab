@@ -1,6 +1,6 @@
 {
     "model": [
-        "resnet152_d6",
+        "resnet152_r",
         "resnet152"
     ],
     "epoch": [30],
