@@ -7,8 +7,10 @@ from PIL import Image
 import torch.utils.data
 import numpy as np
 from skimage.io import imshow, show
-from torchvision.transforms.autoaugment import AutoAugment, AutoAugmentPolicy
-
+try:
+    from torchvision.transforms.autoaugment import AutoAugment, AutoAugmentPolicy
+except:
+    AutoAugmentPolicy, AutoAugment = None, None
 import torchvision
 from torchvision import transforms
 
