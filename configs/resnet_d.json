@@ -1,7 +1,9 @@
 {
     "model": [
-        "resnet152",
-        "resnet152_r"
+        "resnet18_dspl8",
+        "resnet18",
+        "resnet34",
+        "resnet34_dspl8"
     ],
     "epoch": [30],
     "batch_size": [256],
@@ -9,7 +11,7 @@
     "dataset": ["Cifar10"],
     "resolution": [224],
 
-    "optimizer": ["lrs"],
+    "optimizer": ["adam"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
