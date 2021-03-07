@@ -1,0 +1,21 @@
+{
+    "model": [
+        "resnet1001",
+        "resnet152"
+    ],
+    "epoch": [90],
+    "batch_size": [16],
+
+    "dataset": ["Cifar10"],
+    "resolution": [224],
+
+    "optimizer": ["lrs90"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 4
+}
