@@ -1349,7 +1349,7 @@ def resnet152_d6(pretrained=False, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet(Bottleneck, [3, 4, 4, 18, 18, 3], **kwargs)
+    model = ResNet(Bottleneck, [3, 4, 4, 9, 9, 9, 9, 3], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet152']))
     model.name = 'ResNet152_D6'
