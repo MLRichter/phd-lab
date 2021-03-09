@@ -1,14 +1,15 @@
 {
     "model": [
-        "resnet18"
+        "resnet18",
+        "ResNet18_PC"
     ],
-    "epoch": [30],
+    "epoch": [90],
     "batch_size": [256],
 
     "dataset": ["Cifar10AA"],
     "resolution": [32],
 
-    "optimizer": ["lrs"],
+    "optimizer": ["lrs90"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
