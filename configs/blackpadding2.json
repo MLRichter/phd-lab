@@ -6,7 +6,7 @@
     "batch_size": [64],
 
     "dataset": ["Cifar10SmallRandomPositioning"],
-    "resolution": [160],
+    "resolution": [32, 160],
 
     "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],

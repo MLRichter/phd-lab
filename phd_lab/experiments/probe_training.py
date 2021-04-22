@@ -8,6 +8,8 @@ from sklearn.linear_model import LogisticRegression as LogisticRegressionModel
 import pickle
 from multiprocessing import Pool
 from attr import attrs, attrib
+from tqdm import tqdm
+
 from phd_lab.experiments.utils import config
 from joblib import Parallel, delayed
 from joblib import Memory
@@ -112,8 +114,18 @@ def load(filename: str) -> np.ndarray:
     Returns:
         the data as numpy array
     """
-    return np.vstack([batch for batch in loadall(filename)])
 
+    try:
+        try:
+            batches = [batch for batch in loadall(filename)]
+            batches = np.vstack(batches)
+        except:
+            pass
+    except:
+        batches = None
+        for batch in tqdm(loadall(filename)):
+            batches = batch if batches is None else np.append(batches, batch, axis=0)
+    return batches
 
 def get_data_annd_labels(data_path: str, label_path: str) -> Tuple[np.ndarray, np.ndarray]:
     """Load the dataset and labels ready for training.

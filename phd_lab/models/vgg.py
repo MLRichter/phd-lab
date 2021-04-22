@@ -69,6 +69,7 @@ cfg = {
     'DXXS': [8, 8, 'M', 16, 16, 'M', 32, 32, 32, 'M', 64, 64, 64, 'M', 64, 64, 64, 'M'],
     'DXS': [16, 16, 'M', 32, 32, 'M', 64, 64, 64, 'M', 128, 128, 128, 'M', 128, 128, 128, 'M'],
     'D': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
+    'D_pruned': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512],
     'D_P': [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 256, 512, 'M', 512, 512, 512, 512, 512, 'M'],
     'D_P2': [64, 'M', 64, 'M', 128, 'M', 128, 'M', 256, 256, 256, 512,  512, 512, 512, 512, 512, 'M'],
     'D_AP1': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 512, 512, 512, 'M'],
@@ -152,6 +153,15 @@ def vggresnet3(*args, **kwargs):
         kwargs.pop("noskip")
     model = VGG(make_layers(cfg['ResNet']), init_weights=False, **kwargs)
     model.name = "VGGResNet3"
+    return model
+
+def vgg16_pruned(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['D_pruned']), **kwargs)
+    model.name = "VGG16_Pruned"
     return model
 
 def vgg19r3(*args, **kwargs):
