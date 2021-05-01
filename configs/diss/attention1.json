@@ -9,7 +9,7 @@
         "resnet18_sa",
         "resnet18_sa_noskip",
         "resnet18",
-        "resnet18_noskip"
+        "resnet18noskip"
     ],
     "epoch": [60],
     "batch_size": [128],
