@@ -116,16 +116,15 @@ def load(filename: str) -> np.ndarray:
     """
 
     try:
-        try:
-            batches = [batch for batch in loadall(filename)]
-            batches = np.vstack(batches)
-        except:
-            pass
+
+        batches = [batch for batch in loadall(filename)]
+        batches = np.vstack(batches)
+        return batches
     except:
         batches = None
         for batch in tqdm(loadall(filename)):
             batches = batch if batches is None else np.append(batches, batch, axis=0)
-    return batches
+        return batches
 
 def get_data_annd_labels(data_path: str, label_path: str) -> Tuple[np.ndarray, np.ndarray]:
     """Load the dataset and labels ready for training.
@@ -172,7 +171,7 @@ def obtain_accuracy(model: LogisticRegressionModel, data_path, label_path: str) 
     """
     data, labels = get_data_annd_labels(data_path, label_path)
     print('Loaded data:', data_path)
-    print('Evaluating with data of shape', data.shape)
+    print('Evaluating with data of shape', np.asarray(data).shape)
     preds = model.predict(data)
     return accuracy_score(labels, preds)
 
