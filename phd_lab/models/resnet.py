@@ -93,8 +93,14 @@ class BasicBlock(nn.Module):
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None,
-                 thresh=.99, centering=False, noskip=False, nodownsampling=False, inner_conv=conv3x3):
+                 thresh=.99, centering=False, noskip=False, nodownsampling=False, inner_conv=conv3x3, has_se: bool = False, has_sa: bool = False):
         super(BasicBlock, self).__init__()
+        self.has_se = has_se
+        self.has_sa = has_sa
+        if self.has_se:
+            self.se = SELayer(planes * self.expansion, reduction=max(1, int(inplanes*0.25)))
+        if self.has_sa:
+            self.sa = SpatialAttention(kernel_size=7)
         self.noskip = noskip
         self.nodownsampling = nodownsampling
         self.thresh = thresh
@@ -124,6 +130,11 @@ class BasicBlock(nn.Module):
         if PCA:
             out = self.convpca2(out)
         out = self.bn2(out)
+
+        if self.has_se:
+            out = self.se(out)
+        if self.has_sa:
+            out = self.sa(out)
 
         if self.downsample is not None and not self.noskip:
             identity = self.downsample(x)
@@ -196,6 +207,27 @@ class Bottleneck(nn.Module):
         out = self.relu(out)
 
         return out
+
+
+def BasicBlokSE(*args, **kwargs) -> Bottleneck:
+    return BasicBlock(*args, **kwargs, has_se=True)
+
+
+setattr(BasicBlokSE, "expansion", 1)
+
+
+def BasicBlokSA(*args, **kwargs) -> Bottleneck:
+    return BasicBlock(*args, **kwargs, has_sa=True)
+
+
+setattr(BasicBlokSA, "expansion", 1)
+
+
+def BasicBlokSESA(*args, **kwargs) -> Bottleneck:
+    return BasicBlock(*args, **kwargs, has_se=True, has_sa=True)
+
+
+setattr(BasicBlokSESA, "expansion", 1)
 
 
 def BottleneckSE(*args, **kwargs) -> Bottleneck:
@@ -895,6 +927,83 @@ def resnet18(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'ResNet18'
+    return model
+
+
+def resnet18_se(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlokSE, [2, 2, 2, 2], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_SE'
+    return model
+
+
+def resnet18_se_noskip(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlokSE, [2, 2, 2, 2], noskip=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_SE_NoSkip'
+    return model
+
+def resnet18_sa(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlokSA, [2, 2, 2, 2], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_SA'
+    return model
+
+
+def resnet18_sa_noskip(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlokSA, [2, 2, 2, 2], noskip=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_SA_NoSkip'
+    return model
+
+
+def resnet18_sesa(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlokSESA, [2, 2, 2, 2], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_SESA'
+    return model
+
+
+def resnet18_sesa_noskip(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlokSESA, [2, 2, 2, 2], noskip=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_SESA_NoSkip'
     return model
 
 
