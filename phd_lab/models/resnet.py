@@ -911,6 +911,19 @@ def resnet24(pretrained=False, **kwargs):
     return model
 
 
+def resnet24_noskip(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(Bottleneck, [2, 2, 2, 2], noskip=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet24_NoSkip'
+    return model
+
+
 def resnet24_se(pretrained=False, **kwargs):
     """Constructs a ResNet-18 model.
 
@@ -924,6 +937,18 @@ def resnet24_se(pretrained=False, **kwargs):
     return model
 
 
+def resnet24_se_noskip(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BottleneckSE, [2, 2, 2, 2], noskip=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet24_SE_NoSkip'
+    return model
+
 def resnet24_sa(pretrained=False, **kwargs):
     """Constructs a ResNet-18 model.
 
@@ -934,6 +959,19 @@ def resnet24_sa(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'ResNet24_SA'
+    return model
+
+
+def resnet24_sa_noskip(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BottleneckSA, [2, 2, 2, 2], noskip=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet24_SA_NoSkip'
     return model
 
 
@@ -949,7 +987,17 @@ def resnet24_sesa(pretrained=False, **kwargs):
     model.name = 'ResNet24_SESA'
     return model
 
+def resnet24_sesa_noskip(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
 
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BottleneckSESA, [2, 2, 2, 2], noskip=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet24_SESA_NoSkip'
+    return model
 
 def iresnet18(pretrained=False, **kwargs):
     """Constructs a ResNet-18 model.
