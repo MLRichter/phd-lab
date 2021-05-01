@@ -2,14 +2,12 @@
     "model": [
         "resnet18_sesa",
         "resnet18_sesa_noskip",
-        "resnet18_noskip",
+        "resnet18noskip",
         "resnet18",
         "resnet18_se",
         "resnet18_se_noskip",
         "resnet18_sa",
-        "resnet18_sa_noskip",
-        "resnet18",
-        "resnet18noskip"
+        "resnet18_sa_noskip"
     ],
     "epoch": [60],
     "batch_size": [128],
