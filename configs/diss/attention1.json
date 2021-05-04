@@ -15,7 +15,7 @@
     "dataset": ["Cifar10"],
     "resolution": [32],
 
-    "optimizer": ["adam"],
+    "optimizer": ["lrs60"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
