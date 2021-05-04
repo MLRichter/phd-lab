@@ -9,13 +9,13 @@
         "resnet18_sa",
         "resnet18_sa_noskip"
     ],
-    "epoch": [60],
+    "epoch": [30],
     "batch_size": [64],
 
     "dataset": ["Cifar10"],
     "resolution": [224],
 
-    "optimizer": ["lrs60"],
+    "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
