@@ -104,7 +104,7 @@ class MPNet(nn.Module):
         return out
 
 
-def mpnet18_1_2_3_7(num_classes, noskip=True, **kwargs):
+def mpnet18_1_2_3_7(num_classes, noskip=False, **kwargs):
     model = MPNet(
         stage_seq=[2, 2, 2, 2],
         block_layout=[1, 2],
@@ -117,7 +117,7 @@ def mpnet18_1_2_3_7(num_classes, noskip=True, **kwargs):
     return model
 
 
-def mpnet18_2_7(num_classes, noskip=True, **kwargs):
+def mpnet18_2_7(num_classes, noskip=False, **kwargs):
     model = MPNet(
         stage_seq=[2, 2, 2, 2],
         block_layout=[2],
@@ -130,7 +130,7 @@ def mpnet18_2_7(num_classes, noskip=True, **kwargs):
     return model
 
 
-def mpnet18_1_3(num_classes, noskip=True, **kwargs):
+def mpnet18_1_3(num_classes, noskip=False, **kwargs):
     model = MPNet(
         stage_seq=[2, 2, 2, 2],
         block_layout=[1],
@@ -143,7 +143,7 @@ def mpnet18_1_3(num_classes, noskip=True, **kwargs):
     return model
 
 
-def mpnet18_1_2_1_7(num_classes, noskip=True, **kwargs):
+def mpnet18_1_2_1_7(num_classes, noskip=False, **kwargs):
     model = MPNet(
         stage_seq=[2, 2, 2, 2],
         block_layout=[1, 2],
@@ -156,7 +156,7 @@ def mpnet18_1_2_1_7(num_classes, noskip=True, **kwargs):
     return model
 
 
-def mpnet18_1_2_1_3(num_classes, noskip=True, **kwargs):
+def mpnet18_1_2_1_3(num_classes, noskip=False, **kwargs):
     model = MPNet(
         stage_seq=[2, 2, 2, 2],
         block_layout=[1, 2],
