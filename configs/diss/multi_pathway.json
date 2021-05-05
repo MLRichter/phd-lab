@@ -1,9 +1,12 @@
 {
     "model": [
-        "mpnet18_1_3",
-        "mpnet18_2_7",
+        "mpnet18_2_2_1_7",
+        "mpnet18_1_2_1_7",
         "mpnet18_1_2_3_7",
-        "mpnet18_1_2_1_7"
+        "mpnet18_2_2_3_7",
+        "mpnet18_1_3",
+        "mpnet18_2_3",
+        "mpnet18_2_7"
     ],
     "epoch": [30],
     "batch_size": [64],
