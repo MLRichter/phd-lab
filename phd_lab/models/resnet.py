@@ -30,10 +30,18 @@ def pretrainedResNet151(num_classes, *args, **kwargs):
     return net
 
 
+def two_conv7x7(in_planes, out_planes, stride=1, group: int = 1):
+    """7x7 convolution with padding"""
+    return nn.Sequential(
+        nn.Conv2d(int(in_planes), int(out_planes), kernel_size=7, stride=stride, padding=3, bias=False, group=group),
+        nn.Conv2d(int(in_planes), int(out_planes), kernel_size=7, stride=1, padding=3, bias=False, group=group)
+                         )
+
+
 def conv7x7(in_planes, out_planes, stride=1, group: int = 1):
     """7x7 convolution with padding"""
     return nn.Conv2d(int(in_planes), int(out_planes), kernel_size=7, stride=stride,
-                     padding=3, bias=False, group=group)
+                     padding=3, bias=False)
 
 
 def conv5x5(in_planes, out_planes, stride=1, group: int = 1):
@@ -1209,6 +1217,19 @@ def resnet18_o7(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'ResNet18_O7'
+    return model
+
+
+def resnet18_i7_o3(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 2, 2], highway=True, inner_conv=conv7x7, outer_conv=conv3x3, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_I7_O3'
     return model
 
 

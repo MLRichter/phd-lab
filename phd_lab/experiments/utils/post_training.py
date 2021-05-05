@@ -32,7 +32,7 @@ class ReceptiveField:
             trainer.model.to(trainer.device)
 
     def __call__(self, trainer: Trainer):
-        if "ResNet" in trainer.model.name:
+        if "ResNet" in trainer.model.name or "MPNet" in trainer.model.name:
             print("Detected ResNet-style network, "
                   "reloading model without skip connections "
                   "for receptive field computation")
