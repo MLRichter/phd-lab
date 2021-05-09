@@ -156,7 +156,6 @@ def mpnet18_2_3(num_classes, noskip=False, **kwargs):
     return model
 
 
-
 def mpnet18_1_2_1_7(num_classes, noskip=False, **kwargs):
     model = MPNet(
         stage_seq=[2, 2, 2, 2],
@@ -223,16 +222,16 @@ def mpnet18_4_4_3_7(num_classes, noskip=False, **kwargs):
     return model
 
 
-def mpnet18_4_4_2_7(num_classes, noskip=False, **kwargs):
+def mpnet18_4_4_1_7(num_classes, noskip=False, **kwargs):
     model = MPNet(
         stage_seq=[1, 1, 1, 1],
         block_layout=[4, 4],
-        layout_kernels=[2, 7],
+        layout_kernels=[1, 7],
         concat=False,
         num_classes=num_classes,
         max_path=noskip
     )
-    model.name = "MPNet18_4_4_2_7"
+    model.name = "MPNet18_4_4_1_7"
     return model
 
 
@@ -249,16 +248,16 @@ def mpnet18_4_7(num_classes, noskip=False, **kwargs):
     return model
 
 
-def mpnet18_4_2(num_classes, noskip=False, **kwargs):
+def mpnet18_4_1(num_classes, noskip=False, **kwargs):
     model = MPNet(
         stage_seq=[1, 1, 1, 1],
         block_layout=[4],
-        layout_kernels=[2],
+        layout_kernels=[1],
         concat=False,
         num_classes=num_classes,
         max_path=noskip
     )
-    model.name = "MPNet18_4_2"
+    model.name = "MPNet18_4_1"
     return model
 
 
