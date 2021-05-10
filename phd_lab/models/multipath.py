@@ -107,6 +107,73 @@ class MPNet(nn.Module):
         return out
 
 
+def mpnet36_1_4_3_7(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[2, 2, 2, 2],
+        block_layout=[1, 4],
+        layout_kernels=[3, 7],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet36_1_4_3_7"
+    return model
+
+
+def mpnet36_4_7(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[2, 2, 2, 2],
+        block_layout=[4],
+        layout_kernels=[7],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet36_4_7"
+    return model
+
+
+def mpnet36_1_2_3_7(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[4, 4, 4, 4],
+        block_layout=[1, 2],
+        layout_kernels=[3, 7],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet36_1_2_3_7"
+    return model
+
+
+def mpnet36_2_7(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[4, 4, 4, 4],
+        block_layout=[2],
+        layout_kernels=[7],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet36_2_7"
+    return model
+
+
+def mpnet36_1_3(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[4, 4, 4, 4],
+        block_layout=[1],
+        layout_kernels=[3],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet36_1_3"
+    return model
+
+
+
+
 def mpnet18_1_2_3_7(num_classes, noskip=False, **kwargs):
     model = MPNet(
         stage_seq=[2, 2, 2, 2],
