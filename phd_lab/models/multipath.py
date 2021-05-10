@@ -44,12 +44,15 @@ class BasicBlock(nn.Module):
             setattr(self, f"pathway{i}", Pathway(num_layers, in_planes, planes, kernel_size, stride))
         self.num_pathways = len(num_layers_per_path)
         self.concat = concat
+        if self.concat:
+            self.cat_conv = nn.Conv2d(planes*len(num_layers_per_path), out_channels=planes, kernel_size=(1, 1), bias=False)
+            self.cat_conv_act = nn.ReLU(inplace=True)
         assert len(num_layers_per_path) == len(kernel_sizes_per_path)
 
     def forward(self, x):
         outputs = [getattr(self, f"pathway{i}")(x) for i in range(self.num_pathways)]
         if self.concat:
-            return torch.cat(outputs, 1)
+            return self.cat_conv_act(self.cat_conv(torch.cat(outputs, 1)))
         else:
             accumulator = None
             for out in outputs:
@@ -114,6 +117,32 @@ def mpnet18_1_2_3_7(num_classes, noskip=False, **kwargs):
         max_path=noskip
     )
     model.name = "MPNet18_1_2_3_7"
+    return model
+
+
+def mpnet18_1_4_3_7(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[1, 1, 1, 1],
+        block_layout=[1, 4],
+        layout_kernels=[3, 7],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet18_1_4_3_7"
+    return model
+
+
+def mpnet18_1_4_1_7(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[1, 1, 1, 1],
+        block_layout=[1, 4],
+        layout_kernels=[3, 7],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet18_1_4_1_7"
     return model
 
 
