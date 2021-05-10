@@ -159,6 +159,20 @@ def mpnet18_2_7(num_classes, noskip=False, **kwargs):
     return model
 
 
+def mpnet18_1_7(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[1, 1, 1, 1],
+        block_layout=[1],
+        layout_kernels=[7],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet18_1_7"
+    return model
+
+
+
 def mpnet18_1_3(num_classes, noskip=False, **kwargs):
     model = MPNet(
         stage_seq=[2, 2, 2, 2],
