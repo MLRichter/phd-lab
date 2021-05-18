@@ -789,6 +789,34 @@ def resnet18noskip(pretrained=False, **kwargs):
     model.name = 'ResNet18NoSkip'
     return model
 
+
+def resnet18t(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 1, None], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18T'
+    return model
+
+
+def resnet18tnoskip(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    if "noskip" in kwargs:
+        kwargs.pop("noskip")
+    model = ResNet(BasicBlock, [2, None, None, None], noskip=True, **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18TNoSkip'
+    return model
+
 def resnet34_nr1(pretrained=False, **kwargs):
     """Constructs a ResNet-34 model.
 

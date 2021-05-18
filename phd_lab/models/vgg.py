@@ -83,6 +83,8 @@ cfg = {
     'ResNet':  [(64, 2, 7), 'M', 128, 128, 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512],
     'ResNet2':  [(64, 2, 7), 'M', 128, 128, 128, 128, (256, 2), 256, 256, 256, (512, 2), 512, 512, 512, (512, 2),  512, 512, 512],
     'E':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
+    'ET':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M'],
+    'ET2':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M'],
     'EP-1':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M', 512, 512, 512],
     'EP-2':  [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 256, 512, 512, 512, 'M', 512, 512, 512,'M', 512, 512, 512],
     'EP': [64, 64, 64, 'M', 128, 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
@@ -1236,6 +1238,25 @@ def vgg19(*args, **kwargs):
     """
     model = VGG(make_layers(cfg['E']), **kwargs)
     model.name = "VGG19"
+    return model
+
+
+def vgg19t(*args, **kwargs):
+    """VGG 16-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['ET']), final_filter=256, **kwargs)
+    model.name = "VGG19T"
+    return model
+
+def vgg19t2(*args, **kwargs):
+    """VGG 16-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['ET2']), final_filter=256, **kwargs)
+    model.name = "VGG19T2"
     return model
 
 
