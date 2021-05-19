@@ -803,6 +803,19 @@ def resnet18t(pretrained=False, **kwargs):
     return model
 
 
+def resnet18t2(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, None, None, None], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18T2'
+    return model
+
+
 def resnet18tnoskip(pretrained=False, **kwargs):
     """Constructs a ResNet-18 model.
 
@@ -1516,6 +1529,35 @@ def resnet34(pretrained=False, **kwargs):
     model.name = 'ResNet34'
 
     return model
+
+
+def resnet34t(pretrained=False, **kwargs):
+    """Constructs a ResNet-34 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [3, 3, None, None], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet34']))
+    model.name = 'ResNet34T'
+
+    return model
+
+
+def resnet34t2(pretrained=False, **kwargs):
+    """Constructs a ResNet-34 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, None, None, None], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet34']))
+    model.name = 'ResNet34T2'
+
+    return model
+
 
 
 def resnet50(pretrained=False, **kwargs):

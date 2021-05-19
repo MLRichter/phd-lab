@@ -1,15 +1,15 @@
 {
     "model": [
-        "resnet18t",
-        "resnet18tnoskip",
-        "vgg19t",
-        "vgg19t2"
+        "vgg19",
+        "vgg16",
+        "vgg13",
+        "vgg11"
     ],
     "epoch": [30],
     "batch_size": [64],
 
     "dataset": ["Cifar10"],
-    "resolution": [32],
+    "resolution": [134, 140, 196, 252.0],
 
     "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],

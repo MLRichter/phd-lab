@@ -1,9 +1,10 @@
 {
     "model": [
-        "resnet18t",
-        "resnet18tnoskip",
-        "vgg19t",
-        "vgg19t2"
+        "PC_ResNet34T",
+        "PC_ResNet18T",
+        "resnet34t",
+        "resnet34t2",
+        "resnet18t2"
     ],
     "epoch": [30],
     "batch_size": [64],
