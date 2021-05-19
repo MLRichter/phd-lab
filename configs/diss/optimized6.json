@@ -1,12 +1,12 @@
 {
     "model": [
-        "vgg19",
+        "vgg13"
     ],
     "epoch": [30],
     "batch_size": [64],
 
     "dataset": ["Cifar10"],
-    "resolution": [252],
+    "resolution": [140],
 
     "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],
