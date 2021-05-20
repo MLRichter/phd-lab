@@ -1,6 +1,6 @@
 {
     "model": [
-        "resnet34",
+        "resnet34"
     ],
     "epoch": [30],
     "batch_size": [64],
