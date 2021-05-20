@@ -80,7 +80,9 @@ class MPNet(nn.Module):
         self.stage3 = self._make_stage(stage_seq[2], block_layout, layout_kernels, 2, 128, 256)
         self.stage4 = self._make_stage(stage_seq[3], block_layout, layout_kernels, 2, 256, 512)
         self.pooling = nn.AdaptiveAvgPool2d(1)
-        self.linear = nn.Linear(512, num_classes)
+        final_filter_size = [i for i, e in enumerate(stage_seq) if e != 0][-1]
+
+        self.linear = nn.Linear((2 ** (6 + final_filter_size)), num_classes)
 
     def _make_stage(self, num_blocks: int, num_layer_per_path: List[int], kernel_size_per_path: List[int], stride: int = 1, in_planes: int = 64, planes: int = 64):
         layers = []
@@ -329,6 +331,45 @@ def mpnet18_2_2_3_7(num_classes, noskip=False, **kwargs):
         max_path=noskip
     )
     model.name = "MPNet18_2_2_3_7"
+    return model
+
+
+def mpnet12_2_2_3_7(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[2, 2, 1, 0],
+        block_layout=[2, 2],
+        layout_kernels=[3, 7],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet12_2_2_3_7"
+    return model
+
+
+def mpnet12_2_3(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[2, 2, 1, 0],
+        block_layout=[2],
+        layout_kernels=[3],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet12_2_3"
+    return model
+
+
+def mpnet12_2_7(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[2, 2, 1, 0],
+        block_layout=[2],
+        layout_kernels=[7],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet12_2_7"
     return model
 
 
