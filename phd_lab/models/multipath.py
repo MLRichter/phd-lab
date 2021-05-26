@@ -148,6 +148,19 @@ def mpnet36_1_2_3_7(num_classes, noskip=False, **kwargs):
     return model
 
 
+def mpnet29_1_2_3_7(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[4, 4, 3, 0],
+        block_layout=[1, 2],
+        layout_kernels=[3, 7],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet29_1_2_3_7"
+    return model
+
+
 def mpnet36_2_7(num_classes, noskip=False, **kwargs):
     model = MPNet(
         stage_seq=[4, 4, 4, 4],
