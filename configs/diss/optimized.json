@@ -1,6 +1,7 @@
 {
     "model": [
         "resnet18t",
+        "resnet18noskip",
         "resnet18tnoskip",
         "vgg19t",
         "vgg19t2"

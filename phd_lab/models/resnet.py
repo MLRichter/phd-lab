@@ -341,6 +341,49 @@ def InvertedBottleneckSE(*args, **kwargs) -> InvertedBottleneck:
 setattr(InvertedBottleneckSE, "expansion", 1)
 
 
+class ResNetShortestPath(nn.Module):
+
+    def __init__(self, block_size, layout, conv_layer=conv1x1, num_classes=10, **kwargs):
+        self.conv1 = nn.Conv2d(3, int(64), kernel_size=7, stride=2, padding=3, bias=False)
+        self.bn1 = nn.BatchNorm2d(int(64))
+        self.relu = nn.ReLU(inplace=True)
+        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+
+        def block(strides=1):
+            return nn.Sequential(
+                *[
+                    conv_layer(64, 64, stride=strides if i == 0 else 1)
+                    for i in block_size
+                ]
+            )
+
+        def stage(stage_size, downsample):
+            return nn.Sequential(
+                *[
+                block(2 if downsample and i == 0 else 1)
+                for i in range(stage_size)
+                ]
+            )
+
+        self.stages = nn.Sequential(*[
+            stage(size, True if i != 0 else False)
+            for i, size in enumerate(layout)
+        ])
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.fc = nn.Linear(64, num_classes)
+
+    def forward(self, x):
+        x = self.avgpool(self.stages(x))
+        x = x.view(x.size(0), -1)
+        return self.fc(x)
+
+
+def test_network18(num_classes, **kwargs):
+    net = ResNetShortestPath(block_size=2, layout=[2, 2, 2, 2], conv_layer=conv3x3, num_classes=num_classes)
+    net.name = "TestNet"
+    return net
+
+
 class ResNet(nn.Module):
 
     def __init__(self, block, layers, num_classes=1000, zero_init_residual=False, thresh=.999, centering=False,
@@ -1531,13 +1574,14 @@ def resnet34(pretrained=False, **kwargs):
     return model
 
 
+
 def resnet34t(pretrained=False, **kwargs):
     """Constructs a ResNet-34 model.
 
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet(BasicBlock, [3, 3, None, None], **kwargs)
+    model = ResNet(BasicBlock, [3, 4, 1, None], **kwargs)
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet34']))
     model.name = 'ResNet34T'
@@ -1570,6 +1614,20 @@ def resnet50(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
     model.name = 'ResNet50'
+
+    return model
+
+
+def resnet50t(pretrained=False, **kwargs):
+    """Constructs a ResNet-50 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(Bottleneck, [3, 4, 1, None], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
+    model.name = 'ResNet50T'
 
     return model
 
