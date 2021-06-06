@@ -1,9 +1,19 @@
 {
     "model": [
-        "ResNet18_PC",
-        "ResNet34_PC"
+        "vgg19_XXXS",
+        "vgg16_XXXS",
+        "vgg13_XXXS",
+        "vgg11_XXXS",
+        "vgg11_XXS",
+        "vgg13_XXS",
+        "vgg16_XXS",
+        "vgg19_XXS",
+        "vgg19",
+        "vgg16",
+        "vgg13",
+        "vgg11"
     ],
-    "epoch": [1],
+    "epoch": [60],
     "batch_size": [64],
 
     "dataset": ["Cifar10"],
