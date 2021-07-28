@@ -126,6 +126,7 @@ def load(filename: str) -> np.ndarray:
             batches = batch if batches is None else np.append(batches, batch, axis=0)
         return batches
 
+
 def get_data_annd_labels(data_path: str, label_path: str) -> Tuple[np.ndarray, np.ndarray]:
     """Load the dataset and labels ready for training.
     Args:
@@ -134,10 +135,15 @@ def get_data_annd_labels(data_path: str, label_path: str) -> Tuple[np.ndarray, n
     Returns:
         training data and labels, ready for training
     """
-    return load(data_path), np.squeeze(load(label_path))
-
+    data, labels = load(data_path), np.squeeze(load(label_path))
+    if len(data.shape) == 3:
+        print("Detected Multi-Head-Attention data with shape", data.shape)
+        data = data.reshape((data.shape[0], (data.shape[1]*data.shape[2])))
+        print("Reshaped into", data.shape)
+    return data, labels
 @memory.cache
-def fit_with_cache(data: np.ndarray, labels: np.ndarray, verbose: int = 100):
+def fit_with_cache(data: np.ndarray, labels: np.ndarray, verbose: int = 0):
+    print("Start training with", data.shape, labels.shape)
     model = LogisticRegressionModel(
         multi_class='multinomial', n_jobs=12, solver='saga', verbose=verbose
     ).fit(data, labels)

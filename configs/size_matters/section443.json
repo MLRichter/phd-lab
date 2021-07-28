@@ -5,11 +5,11 @@
         "vgg16",
         "vgg19"
     ],
-    "epoch": [30],
+    "epoch": [60],
     "batch_size": [64],
 
-    "dataset": ["MNIST"],
-    "resolution": [32, 224],
+    "dataset": ["Cifar10"],
+    "resolution": [32],
 
     "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],

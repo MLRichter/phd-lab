@@ -7,7 +7,7 @@ from tqdm import tqdm
 import torch.nn as nn
 from typing import Optional, List, Dict, Tuple
 from delve import CheckLayerSat
-from delve.writers import CSVandPlottingWriter
+from delve.writers import CSVandPlottingWriter, NPYWriter
 from .domain import DataBundle, OptimizerSchedulerBundle, Metric
 from .utils.config import build_saving_structure
 import os
@@ -75,8 +75,11 @@ class Trainer:
             primary_metric='test_accuracy'
         )
 
+        writer2 = "npy"
+
         self._tracker = CheckLayerSat(
             self._save_path.replace('.csv', ''),
+            #[writer, writer2],
             [writer],
             self.model,
             ignore_layer_names='convolution',

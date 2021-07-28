@@ -3,7 +3,7 @@
         "resnet18noskip",
         "resnet50noskip"
     ],
-    "epoch": [30],
+    "epoch": [60],
     "batch_size": [128],
 
     "dataset": ["Cifar10", "MNIST"],

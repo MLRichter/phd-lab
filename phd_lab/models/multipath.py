@@ -14,6 +14,47 @@ import torch.nn.functional as F
 import numpy as np
 
 
+class AlainFC(nn.Module):
+
+    def __init__(self, num_classes: int, *args, **kwargs):
+        super(AlainFC, self).__init__()
+        self.first_layer = nn.Sequential(
+            nn.Linear(784, 128),
+            nn.ReLU(inplace=True)
+        )
+        self.layers1 = nn.Sequential(
+            *(
+                nn.Sequential(
+                    nn.Linear(128, 128),
+                    nn.ReLU(inplace=True)
+                )
+                for i in range(128)
+             )
+        )
+        self.layers2 = nn.Sequential(
+            *(
+                nn.Sequential(
+                    nn.Linear(128, 128),
+                    nn.ReLU(inplace=True)
+                )
+                for i in range(8)
+            )
+        )
+        self.output = nn.Linear(128, num_classes)
+        self.name = "AlainFC"
+
+    def forward(self, x):
+        out = x[:, 0, :, :].squeeze()
+        out = torch.flatten(out, start_dim=1)
+        first = self.first_layer(out)
+        out = self.layers1(first)
+        out = self.layers2(first + out)
+        return self.output(out)
+
+
+def alainfc(num_classes, *args, **kwargs):
+    return AlainFC(num_classes)
+
 class Pathway(nn.Module):
 
     def __init__(self, num_layers: int, in_planes, planes, kernel: int = 3, stride: int = 1):
