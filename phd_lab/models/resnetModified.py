@@ -75,7 +75,7 @@ class Bottleneck(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=10, resolution=32, noskip=False, **kwargs):
+    def __init__(self, block, num_blocks, num_classes=10, resolution=32, noskip=False, scale_factor=1, **kwargs):
         self.resolution = resolution
         super(ResNet, self).__init__()
         self.in_planes = 64
@@ -83,13 +83,13 @@ class ResNet(nn.Module):
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3,
                                stride=1, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
-        self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1, noskip=noskip)
-        self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2, noskip=noskip)
-        self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2, noskip=noskip)
-        self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2, noskip=noskip)
+        self.layer1 = self._make_layer(block, 64 // scale_factor, num_blocks[0], stride=1, noskip=noskip)
+        self.layer2 = self._make_layer(block, 128 // scale_factor, num_blocks[1], stride=2, noskip=noskip)
+        self.layer3 = self._make_layer(block, 256 // scale_factor, num_blocks[2], stride=2, noskip=noskip)
+        self.layer4 = self._make_layer(block, 512 // scale_factor, num_blocks[3], stride=2, noskip=noskip)
         self.pooling = nn.AdaptiveAvgPool2d(1)
 
-        final_filter_size = [i for i, e in enumerate(num_blocks) if e != 0][-1]
+        final_filter_size = [i for i, e in enumerate(num_blocks) if e != 0][-1] // scale_factor
 
         self.linear = nn.Linear((2**(6+final_filter_size))*block.expansion, num_classes)
 
@@ -157,9 +157,57 @@ def PC_ResNet18(**kwargs):
     return net
 
 
+def PC_ResNet18_S(**kwargs):
+    net = ResNet18(scale_factor=2, **kwargs)
+    net.name = 'ResNet18_S_PC'
+    return net
+
+
+def PC_ResNet18_XS(**kwargs):
+    net = ResNet18(scale_factor=4, **kwargs)
+    net.name = 'ResNet18_XS_PC'
+    return net
+
+
+def PC_ResNet18_XXS(**kwargs):
+    net = ResNet18(scale_factor=8, **kwargs)
+    net.name = 'ResNet18_XXS_PC'
+    return net
+
+
+def PC_ResNet18_XXXS(**kwargs):
+    net = ResNet18(scale_factor=16, **kwargs)
+    net.name = 'ResNet18_XXXS_PC'
+    return net
+
+
 def PC_ResNet34(**kwargs):
     net = ResNet34(**kwargs)
     net.name = 'ResNet34_PC'
+    return net
+
+
+def PC_ResNet34_S(**kwargs):
+    net = ResNet34(scale_factor=2, **kwargs)
+    net.name = 'ResNet34_S_PC'
+    return net
+
+
+def PC_ResNet34_XS(**kwargs):
+    net = ResNet34(scale_factor=4, **kwargs)
+    net.name = 'ResNet34_XS_PC'
+    return net
+
+
+def PC_ResNet34_XXS(**kwargs):
+    net = ResNet34(scale_factor=8, **kwargs)
+    net.name = 'ResNet34_XXS_PC'
+    return net
+
+
+def PC_ResNet34_XXXS(**kwargs):
+    net = ResNet34(scale_factor=16, **kwargs)
+    net.name = 'ResNet34_XXXS_PC'
     return net
 
 
