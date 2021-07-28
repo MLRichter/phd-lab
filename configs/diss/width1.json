@@ -19,7 +19,7 @@
         "vgg11",
         "vgg13",
         "vgg16",
-        "vgg19",
+        "vgg19"
     ],
     "epoch": [30],
     "batch_size": [128],
