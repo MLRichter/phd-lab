@@ -13,10 +13,10 @@ from .resnetModified import \
     PC_ResNet18_XS as ResNet18_PC_XS, \
     PC_ResNet18_XXS as ResNet18_PC_XXS, \
     PC_ResNet18_XXXS as ResNet18_PC_XXXS, \
-    PC_ResNet34_S as ResNet18_PC_XS, \
-    PC_ResNet34_XS as ResNet18_PC_XXS, \
-    PC_ResNet34_XXS as ResNet18_PC_XXS, \
-    PC_ResNet34_XXXS as ResNet18_PC_XXXS, \
+    PC_ResNet34_S as ResNet34_PC_XS, \
+    PC_ResNet34_XS as ResNet34_PC_XXS, \
+    PC_ResNet34_XXS as ResNet34_PC_XXS, \
+    PC_ResNet34_XXXS as ResNet34_PC_XXXS, \
     PC_ResNet18T, \
     PC_ResNet34T
 from .msnet import msnet18, msnet18nt, msnet18_ntns, msnet18_ns
