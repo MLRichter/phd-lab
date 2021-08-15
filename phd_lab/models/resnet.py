@@ -406,55 +406,55 @@ class ResNet(nn.Module):
         self.nodownsampling = nodownsampling
         self.highway = highway
         self.noskip = noskip
-        self.inplanes = 64 // scale_factor
+        self.inplanes = 64 / scale_factor
         self.thresh = thresh
         self.centering = centering
-        self.conv1 = nn.Conv2d(3, int(64 // scale_factor), kernel_size=7, stride=2 if not disable_early_downsampling else 1, padding=3,
+        self.conv1 = nn.Conv2d(3, int(64 / scale_factor), kernel_size=7, stride=2 if not disable_early_downsampling else 1, padding=3,
                                bias=False)
         if PCA:
             self.conv1pca = Conv2DPCALayer(64, threshold=thresh, centering=centering)
-        self.bn1 = nn.BatchNorm2d(int(64 // scale_factor))
+        self.bn1 = nn.BatchNorm2d(int(64 / scale_factor))
         self.relu = nn.ReLU(inplace=True)
         if not self.disable_early_pooling:
             self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-        self.layer1 = self._make_layer(block, int(64 // scale_factor), layers[0], threshold=thresh, centering=centering,
+        self.layer1 = self._make_layer(block, int(64 / scale_factor), layers[0], threshold=thresh, centering=centering,
                                        noskip=self.noskip_by_layer[0], inner_conv=inner_conv, outer_conv=outer_conv)
-        self.layer2 = None if layers[1] is None else self._make_layer(block, int(128 // scale_factor), layers[1],
+        self.layer2 = None if layers[1] is None else self._make_layer(block, int(128 / scale_factor), layers[1],
                                                                       stride=2, threshold=thresh, centering=centering,
                                                                       nodownsampling=nodownsampling,
                                                                       noskip=self.noskip_by_layer[1],
                                                                       inner_conv=inner_conv, outer_conv=outer_conv)
-        self.layer3 = None if layers[2] is None else self._make_layer(block, int(256 // scale_factor), layers[2],
+        self.layer3 = None if layers[2] is None else self._make_layer(block, int(256 / scale_factor), layers[2],
                                                                       stride=2, threshold=thresh, centering=centering,
                                                                       nodownsampling=nodownsampling,
                                                                       noskip=self.noskip_by_layer[2],
                                                                       inner_conv=inner_conv, outer_conv=outer_conv)
-        self.layer4 = None if layers[3] is None else self._make_layer(block, int(512 // scale_factor), layers[3],
+        self.layer4 = None if layers[3] is None else self._make_layer(block, int(512 / scale_factor), layers[3],
                                                                       stride=2, threshold=thresh, centering=centering,
                                                                       nodownsampling=nodownsampling,
                                                                       noskip=self.noskip_by_layer[3],
                                                                       inner_conv=inner_conv, outer_conv=outer_conv)
-        self.layer5 = None if layers[4] is None else self._make_layer(block, int(512 // scale_factor), layers[4],
+        self.layer5 = None if layers[4] is None else self._make_layer(block, int(512 / scale_factor), layers[4],
                                                                       stride=2, threshold=thresh, centering=centering,
                                                                       nodownsampling=nodownsampling,
                                                                       noskip=self.noskip_by_layer[4],
                                                                       inner_conv=inner_conv, outer_conv=outer_conv)
-        self.layer6 = None if layers[5] is None else self._make_layer(block, int(512 // scale_factor), layers[5],
+        self.layer6 = None if layers[5] is None else self._make_layer(block, int(512 / scale_factor), layers[5],
                                                                       stride=2, threshold=thresh, centering=centering,
                                                                       nodownsampling=nodownsampling,
                                                                       noskip=self.noskip_by_layer[5])
-        self.layer7 = None if layers[6] is None else self._make_layer(block, int(512 // scale_factor), layers[6],
+        self.layer7 = None if layers[6] is None else self._make_layer(block, int(512 / scale_factor), layers[6],
                                                                       stride=2, threshold=thresh, centering=centering,
                                                                       nodownsampling=nodownsampling,
                                                                       noskip=self.noskip_by_layer[6],
                                                                       inner_conv=inner_conv, outer_conv=outer_conv)
-        self.layer8 = None if layers[7] is None else self._make_layer(block, int(512 // scale_factor), layers[7],
+        self.layer8 = None if layers[7] is None else self._make_layer(block, int(512 / scale_factor), layers[7],
                                                                       stride=2, threshold=thresh, centering=centering,
                                                                       nodownsampling=nodownsampling,
                                                                       noskip=self.noskip_by_layer[7],
                                                                       inner_conv=inner_conv, outer_conv=outer_conv)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(int(self.get_fully_connected_units(layers) // scale_factor) * block.expansion, num_classes)
+        self.fc = nn.Linear(int(self.get_fully_connected_units(layers) / scale_factor) * block.expansion, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):

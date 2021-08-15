@@ -83,15 +83,15 @@ class ResNet(nn.Module):
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3,
                                stride=1, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
-        self.layer1 = self._make_layer(block, 64 // scale_factor, num_blocks[0], stride=1, noskip=noskip)
-        self.layer2 = self._make_layer(block, 128 // scale_factor, num_blocks[1], stride=2, noskip=noskip)
-        self.layer3 = self._make_layer(block, 256 // scale_factor, num_blocks[2], stride=2, noskip=noskip)
-        self.layer4 = self._make_layer(block, 512 // scale_factor, num_blocks[3], stride=2, noskip=noskip)
+        self.layer1 = self._make_layer(block, int(64 / scale_factor), num_blocks[0], stride=1, noskip=noskip)
+        self.layer2 = self._make_layer(block, int(128 / scale_factor), num_blocks[1], stride=2, noskip=noskip)
+        self.layer3 = self._make_layer(block, int(256 / scale_factor), num_blocks[2], stride=2, noskip=noskip)
+        self.layer4 = self._make_layer(block, int(512 / scale_factor), num_blocks[3], stride=2, noskip=noskip)
         self.pooling = nn.AdaptiveAvgPool2d(1)
 
         final_filter_size = [i for i, e in enumerate(num_blocks) if e != 0][-1]
 
-        self.linear = nn.Linear((2**(6+final_filter_size))*block.expansion // scale_factor, num_classes)
+        self.linear = nn.Linear(int((2**(6+final_filter_size))*block.expansion / scale_factor), num_classes)
 
     def _make_layer(self, block, planes, num_blocks, stride, noskip=False):
         if num_blocks == 0:
