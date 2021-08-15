@@ -1,9 +1,9 @@
 {
     "model": [
+        "vgg19_XXL",
         "vgg11_XXL",
         "vgg13_XXL",
         "vgg16_XXL",
-        "vgg19_XXL",
         "vgg11_XL",
         "vgg13_XL",
         "vgg16_XL",
@@ -14,7 +14,7 @@
         "vgg19_L"
     ],
     "epoch": [30],
-    "batch_size": [128],
+    "batch_size": [64],
 
     "dataset": ["MNIST", "Cifar10", "Cifar100", "TinyImageNet"],
     "resolution": [32],

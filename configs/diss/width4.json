@@ -1,7 +1,7 @@
 {
     "model": [
-        "ResNet18_PC_XXL",
         "ResNet34_PC_XXL",
+        "ResNet18_PC_XXL",
         "ResNet18_PC_XL",
         "ResNet34_PC_XL",
         "ResNet18_PC_L",
@@ -16,7 +16,7 @@
         "resnet34_L"
     ],
     "epoch": [30],
-    "batch_size": [128],
+    "batch_size": [64],
 
     "dataset": ["MNIST", "Cifar10", "Cifar100", "TinyImageNet"],
     "resolution": [32],
