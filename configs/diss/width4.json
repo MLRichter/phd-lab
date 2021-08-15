@@ -1,7 +1,5 @@
 {
     "model": [
-        "ResNet18_PC_XXXL",
-        "ResNet34_PC_XXXL",
         "ResNet18_PC_XXL",
         "ResNet34_PC_XXL",
         "ResNet18_PC_XL",
@@ -10,8 +8,6 @@
         "ResNet34_PC_L",
         "ResNet18_PC",
         "ResNet34_PC",
-        "resnet18_XXXL",
-        "resnet34_XXXL",
         "resnet18_XXL",
         "resnet34_XXL",
         "resnet18_XL",
