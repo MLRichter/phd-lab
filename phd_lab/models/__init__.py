@@ -13,10 +13,14 @@ from .resnetModified import \
     PC_ResNet18_XS as ResNet18_PC_XS, \
     PC_ResNet18_XXS as ResNet18_PC_XXS, \
     PC_ResNet18_XXXS as ResNet18_PC_XXXS, \
-    PC_ResNet34_S as ResNet34_PC_S, \
-    PC_ResNet34_XS as ResNet34_PC_XS, \
-    PC_ResNet34_XXS as ResNet34_PC_XXS, \
-    PC_ResNet34_XXXS as ResNet34_PC_XXXS, \
+    PC_ResNet18_L as ResNet18_PC_L, \
+    PC_ResNet18_XL as ResNet18_PC_XL, \
+    PC_ResNet18_XXL as ResNet18_PC_XXL, \
+    PC_ResNet18_XXXL as ResNet18_PC_XXXL, \
+    PC_ResNet34_L as ResNet34_PC_L, \
+    PC_ResNet34_XL as ResNet34_PC_XL, \
+    PC_ResNet34_XXL as ResNet34_PC_XXL, \
+    PC_ResNet34_XXXL as ResNet34_PC_XXXL, \
     PC_ResNet18T, \
     PC_ResNet34T
 print()

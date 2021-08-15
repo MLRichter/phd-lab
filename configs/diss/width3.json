@@ -1,0 +1,31 @@
+{
+    "model": [
+        "vgg11_XXL",
+        "vgg13_XXL",
+        "vgg16_XXL",
+        "vgg19_XXL",
+        "vgg11_XL",
+        "vgg13_XL",
+        "vgg16_XL",
+        "vgg19_XL",
+        "vgg11_L",
+        "vgg13_L",
+        "vgg16_L",
+        "vgg19_L"
+    ],
+    "epoch": [30],
+    "batch_size": [128],
+
+    "dataset": ["MNIST", "Cifar10", "Cifar100", "TinyImageNet"],
+    "resolution": [32],
+
+    "optimizer": ["adam"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 4
+}

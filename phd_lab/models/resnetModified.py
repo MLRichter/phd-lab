@@ -181,6 +181,30 @@ def PC_ResNet18_XXXS(**kwargs):
     return net
 
 
+def PC_ResNet18_L(**kwargs):
+    net = ResNet18(scale_factor=1/2, **kwargs)
+    net.name = 'ResNet18_L_PC'
+    return net
+
+
+def PC_ResNet18_XL(**kwargs):
+    net = ResNet18(scale_factor=1/4, **kwargs)
+    net.name = 'ResNet18_XL_PC'
+    return net
+
+
+def PC_ResNet18_XXL(**kwargs):
+    net = ResNet18(scale_factor=1/8, **kwargs)
+    net.name = 'ResNet18_XXL_PC'
+    return net
+
+
+def PC_ResNet18_XXXL(**kwargs):
+    net = ResNet18(scale_factor=1/16, **kwargs)
+    net.name = 'ResNet18_XXXL_PC'
+    return net
+
+
 def PC_ResNet34(**kwargs):
     net = ResNet34(**kwargs)
     net.name = 'ResNet34_PC'
@@ -209,6 +233,31 @@ def PC_ResNet34_XXXS(**kwargs):
     net = ResNet34(scale_factor=16, **kwargs)
     net.name = 'ResNet34_XXXS_PC'
     return net
+
+
+def PC_ResNet34_L(**kwargs):
+    net = ResNet34(scale_factor=1/2, **kwargs)
+    net.name = 'ResNet34_L_PC'
+    return net
+
+
+def PC_ResNet34_XL(**kwargs):
+    net = ResNet34(scale_factor=1/4, **kwargs)
+    net.name = 'ResNet34_XL_PC'
+    return net
+
+
+def PC_ResNet34_XXL(**kwargs):
+    net = ResNet34(scale_factor=1/8, **kwargs)
+    net.name = 'ResNet34_XXL_PC'
+    return net
+
+
+def PC_ResNet34_XXXL(**kwargs):
+    net = ResNet34(scale_factor=1/16, **kwargs)
+    net.name = 'ResNet34_XXXL_PC'
+    return net
+
 
 
 def PC_ResNet18T(**kwargs):

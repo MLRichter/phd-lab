@@ -48,6 +48,8 @@ cfg = {
     'AXS': [16, 'M', 32, 'M', 64, 64, 'M', 128, 128, 'M', 128, 128, 'M'],
     'AXXS': [8, 'M', 16, 'M', 32, 32, 'M', 64, 64, 'M', 64, 64, 'M'],
     'AXXXS': [4, 'M', 8, 'M', 16, 16, 'M', 32, 32, 'M', 32, 32, 'M'],
+    'AXL': [256, 'M', 512, 'M', 1024, 1024, 'M', 2048, 2048, 'M', 2048, 2048, 'M'],
+    'AL': [128, 'M', 256, 'M', 512, 512, 'M', 1024, 1024, 'M', 1024, 1024, 'M'],
     'A': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
     'AT': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M'],
     'BS': [32, 32, 'M', 64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 256, 256, 'M'],
@@ -55,6 +57,8 @@ cfg = {
     'BXXS': [8, 8, 'M', 16, 16, 'M', 32, 32, 'M', 64, 64, 'M', 64, 64, 'M'],
     'BXXXS': [4, 4, 'M', 8, 8, 'M', 16, 16, 'M', 32, 32, 'M', 32, 32, 'M'],
 
+    'BXL': [256, 256, 'M', 512, 512, 'M', 1024, 1024, 'M', 2048, 2048, 'M', 2048, 2048, 'M'],
+    'BL': [128, 128, 'M', 256, 256, 'M', 512, 512, 'M', 1024, 1024, 'M', 1024, 1024, 'M'],
     'B': [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
     'BT': [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 512, 512, 'M'],
     'B_Strides': [64, (64, 2), 128, (128, 2), 256, (256, 2), 512, (512, 2), 512, (512, 2)],
@@ -70,6 +74,8 @@ cfg = {
     'DXXXS': [4, 4, 'M', 8, 8, 'M', 16, 16, 16, 'M', 32, 32, 32, 'M', 32, 32, 32, 'M'],
     'DXXS': [8, 8, 'M', 16, 16, 'M', 32, 32, 32, 'M', 64, 64, 64, 'M', 64, 64, 64, 'M'],
     'DXS': [16, 16, 'M', 32, 32, 'M', 64, 64, 64, 'M', 128, 128, 128, 'M', 128, 128, 128, 'M'],
+    'DXL': [256, 256, 'M', 512, 512, 'M', 1024, 1024, 1024, 'M', 2048, 2048, 2048, 'M', 2048, 2048, 2048, 'M'],
+    'DL': [128, 128, 'M', 256, 256, 'M', 512, 512, 512, 'M', 1024, 1024, 1024, 'M', 1024, 1024, 1024, 'M'],
     'D': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
     'DT': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512],
     'D_pruned': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512],
@@ -85,6 +91,9 @@ cfg = {
 
     'ResNet':  [(64, 2, 7), 'M', 128, 128, 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512],
     'ResNet2':  [(64, 2, 7), 'M', 128, 128, 128, 128, (256, 2), 256, 256, 256, (512, 2), 512, 512, 512, (512, 2),  512, 512, 512],
+    'EL':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
+    'EXL':  [128, 128, 'M', 256, 256, 'M', 512, 512, 512, 512, 'M', 1024, 1024, 1024, 1024, 'M', 1024, 1024, 1024, 1024, 'M'],
+    'EXXL':  [256, 256, 'M', 512, 512, 'M', 1024, 1024, 1024, 1024, 'M', 2048, 2048, 2048, 2048, 'M', 2048, 2048, 2048, 2048, 'M'],
     'E':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
     'ET':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M'],
     'ET2':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M'],
@@ -107,6 +116,127 @@ cfg = {
     'EXXS': [8, 8, 'M', 16, 16, 'M', 32, 32, 32, 32, 'M', 64, 64, 64, 64, 'M', 64, 64, 64, 64, 'M'],
     'EXXXS': [4, 4, 'M', 8, 8, 'M', 16, 16, 16, 16, 'M', 32, 32, 32, 32, 'M', 32, 32, 32, 32, 'M'],
 }
+
+
+def vgg11_XXL(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['AXXL']), **kwargs)
+    model.name = "VGG11_XXL"
+    return model
+
+
+def vgg11_XL(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['AXL']), **kwargs)
+    model.name = "VGG11_XL"
+    return model
+
+
+def vgg11_L(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['AL']), **kwargs)
+    model.name = "VGG11_L"
+    return model
+
+
+def vgg13_XXL(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['BXXL']), **kwargs)
+    model.name = "VGG13_XXL"
+    return model
+
+
+def vgg13_XL(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['BXL']), **kwargs)
+    model.name = "VGG13_XL"
+    return model
+
+
+def vgg13_L(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['BL']), **kwargs)
+    model.name = "VGG13_L"
+    return model
+
+
+def vgg16_XXL(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['DXXL']), **kwargs)
+    model.name = "VGG16_XXL"
+    return model
+
+
+def vgg16_XL(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['DXL']), **kwargs)
+    model.name = "VGG16_XL"
+    return model
+
+
+def vgg16_L(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['DL']), **kwargs)
+    model.name = "VGG16_L"
+    return model
+
+
+def vgg19_XXL(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['EXXL']), **kwargs)
+    model.name = "VGG19_XXL"
+    return model
+
+
+def vgg19_XL(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['EXL']), **kwargs)
+    model.name = "VGG19_XL"
+    return model
+
+
+def vgg19_L(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['EL']), **kwargs)
+    model.name = "VGG19_L"
+    return model
+
 
 class SELayer(nn.Module):
     def __init__(self, channel, reduction=16):

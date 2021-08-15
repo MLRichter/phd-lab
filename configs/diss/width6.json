@@ -1,0 +1,37 @@
+{
+    "model": [
+        "resnet18_XXXL",
+        "resnet34_XXXL",
+        "resnet18_XXL",
+        "resnet34_XXL",
+        "resnet18_XL",
+        "resnet34_XL",
+        "resnet18_L",
+        "resnet34_L",
+        "resnet18_XXXS",
+        "resnet34_XXXS",
+        "resnet18_XXS",
+        "resnet34_XXS",
+        "resnet18_XS",
+        "resnet34_XS",
+        "resnet18_S",
+        "resnet34_S",
+        "resnet18",
+        "resnet34"
+    ],
+    "epoch": [30],
+    "batch_size": [128],
+
+    "dataset": ["MNIST", "Cifar10", "Cifar100", "TinyImageNet"],
+    "resolution": [224],
+
+    "optimizer": ["adam"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 4
+}
