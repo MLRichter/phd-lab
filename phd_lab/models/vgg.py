@@ -126,7 +126,7 @@ def vgg11_XXL(*args, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = VGG(make_layers(cfg['AXXL']), **kwargs)
+    model = VGG(make_layers(cfg['AXXL']), final_filter=4096,  **kwargs)
     model.name = "VGG11_XXL"
     return model
 
@@ -136,7 +136,7 @@ def vgg11_XL(*args, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = VGG(make_layers(cfg['AXL']), **kwargs)
+    model = VGG(make_layers(cfg['AXL']), final_filter=2048, **kwargs)
     model.name = "VGG11_XL"
     return model
 
@@ -146,7 +146,7 @@ def vgg11_L(*args, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = VGG(make_layers(cfg['AL']), **kwargs)
+    model = VGG(make_layers(cfg['AL']), final_filter=1024, **kwargs)
     model.name = "VGG11_L"
     return model
 
@@ -156,7 +156,7 @@ def vgg13_XXL(*args, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = VGG(make_layers(cfg['BXXL']), **kwargs)
+    model = VGG(make_layers(cfg['BXXL']), final_filter=4096, **kwargs)
     model.name = "VGG13_XXL"
     return model
 
@@ -166,7 +166,7 @@ def vgg13_XL(*args, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = VGG(make_layers(cfg['BXL']), **kwargs)
+    model = VGG(make_layers(cfg['BXL']), final_filter=2048, **kwargs)
     model.name = "VGG13_XL"
     return model
 
@@ -176,7 +176,7 @@ def vgg13_L(*args, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = VGG(make_layers(cfg['BL']), **kwargs)
+    model = VGG(make_layers(cfg['BL']), final_filter=1024, **kwargs)
     model.name = "VGG13_L"
     return model
 
@@ -186,7 +186,7 @@ def vgg16_XXL(*args, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = VGG(make_layers(cfg['DXXL']), **kwargs)
+    model = VGG(make_layers(cfg['DXXL']), final_filter=4096, **kwargs)
     model.name = "VGG16_XXL"
     return model
 
@@ -196,7 +196,7 @@ def vgg16_XL(*args, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = VGG(make_layers(cfg['DXL']), **kwargs)
+    model = VGG(make_layers(cfg['DXL']), final_filter=2048, **kwargs)
     model.name = "VGG16_XL"
     return model
 
@@ -206,7 +206,7 @@ def vgg16_L(*args, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = VGG(make_layers(cfg['DL']), **kwargs)
+    model = VGG(make_layers(cfg['DL']), final_filter=1024, **kwargs)
     model.name = "VGG16_L"
     return model
 
@@ -216,7 +216,7 @@ def vgg19_XXL(*args, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = VGG(make_layers(cfg['EXXL']), **kwargs)
+    model = VGG(make_layers(cfg['EXXL']), final_filter=4096, **kwargs)
     model.name = "VGG19_XXL"
     return model
 
@@ -226,7 +226,7 @@ def vgg19_XL(*args, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = VGG(make_layers(cfg['EXL']), **kwargs)
+    model = VGG(make_layers(cfg['EXL']), final_filter=2048, **kwargs)
     model.name = "VGG19_XL"
     return model
 
@@ -236,7 +236,7 @@ def vgg19_L(*args, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = VGG(make_layers(cfg['EL']), **kwargs)
+    model = VGG(make_layers(cfg['EL']), final_filter=1024, **kwargs)
     model.name = "VGG19_L"
     return model
 
