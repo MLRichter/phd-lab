@@ -10,7 +10,7 @@
         "vgg19_L"
     ],
     "epoch": [30],
-    "batch_size": [64],
+    "batch_size": [128],
 
     "dataset": ["MNIST", "Cifar10", "Cifar100", "TinyImageNet"],
     "resolution": [32],
