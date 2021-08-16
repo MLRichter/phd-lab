@@ -1,15 +1,11 @@
 {
     "model": [
-        "ResNet34_PC_XXL",
-        "ResNet18_PC_XXL",
         "ResNet18_PC_XL",
         "ResNet34_PC_XL",
         "ResNet18_PC_L",
         "ResNet34_PC_L",
         "ResNet18_PC",
         "ResNet34_PC",
-        "resnet18_XXL",
-        "resnet34_XXL",
         "resnet18_XL",
         "resnet34_XL",
         "resnet18_L",

@@ -1,9 +1,5 @@
 {
     "model": [
-        "vgg19_XXL",
-        "vgg11_XXL",
-        "vgg13_XXL",
-        "vgg16_XXL",
         "vgg11_XL",
         "vgg13_XL",
         "vgg16_XL",
