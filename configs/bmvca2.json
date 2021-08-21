@@ -3,7 +3,7 @@
         "resnet18"
     ],
     "epoch": [30],
-    "batch_size": [64],
+    "batch_size": [256],
 
     "dataset": ["ImageNet"],
     "resolution": [32, 224],
