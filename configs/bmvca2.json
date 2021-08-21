@@ -6,7 +6,7 @@
     "batch_size": [64],
 
     "dataset": ["ImageNet"],
-    "resolution": [224, 32],
+    "resolution": [32, 224],
 
     "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],
