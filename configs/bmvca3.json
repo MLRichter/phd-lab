@@ -1,8 +1,8 @@
 {
     "model": [
+        "vgg16_XXS",
         "vgg16_L",
-        "vgg16",
-        "vgg16_XXS"
+        "vgg16"
     ],
     "epoch": [30],
     "batch_size": [64],
