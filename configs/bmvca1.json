@@ -1,6 +1,6 @@
 {
     "model": [
-        "ResNet18"
+        "resnet18"
     ],
     "epoch": [30],
     "batch_size": [256],
