@@ -1,6 +1,8 @@
 {
     "model": [
-        "vgg16"
+        "densenet18",
+        "vgg16",
+        "resnet18"
     ],
     "epoch": [30],
     "batch_size": [64],
