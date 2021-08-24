@@ -1,14 +1,16 @@
 {
     "model": [
-        "resnet18", "densenet18"
+        "vgg16",
+        "resnet18",
+        "densenet18"
     ],
     "epoch": [30],
-    "batch_size": [64],
+    "batch_size": [32],
 
-    "dataset": ["TinyImageNet"],
-    "resolution": [32, 224, 1024],
+    "dataset": ["MNIST", "Cifar10", "ImageWoof", "ImageNette"],
+    "resolution": [150],
 
-    "optimizer": ["lrs"],
+    "optimizer": ["adam"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],

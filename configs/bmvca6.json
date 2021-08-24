@@ -1,7 +1,5 @@
 {
     "model": [
-        "densenet18",
-        "vgg16",
         "resnet18"
     ],
     "epoch": [30],

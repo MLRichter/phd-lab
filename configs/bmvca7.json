@@ -1,12 +1,15 @@
 {
     "model": [
-        "resnet18", "densenet18"
+        "resnet18",
+        "resnet18_S",
+        "resnet18_XS",
+        "resnet18_XXS"
     ],
     "epoch": [30],
-    "batch_size": [64],
+    "batch_size": [32],
 
-    "dataset": ["TinyImageNet"],
-    "resolution": [32, 224, 1024],
+    "dataset": ["ImageWoof", "ImageNette"],
+    "resolution": [224],
 
     "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],
