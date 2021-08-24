@@ -1,18 +1,19 @@
 {
     "model": [
-        "resnet18_L",
-        "resnet18",
-        "resnet18_S",
-        "resnet18_XS",
-        "resnet18_XXS"
+        "vgg11t",
+        "vgg11",
+        "vgg11_3",
+        "vgg13t",
+        "vgg13",
+        "vgg13_3"
     ],
     "epoch": [30],
     "batch_size": [64],
 
     "dataset": ["Cifar10"],
-    "resolution": [224],
+    "resolution": [32],
 
-    "optimizer": ["adam"],
+    "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],

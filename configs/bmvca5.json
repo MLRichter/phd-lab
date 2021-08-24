@@ -1,16 +1,16 @@
 {
     "model": [
-        "resnet18_L",
-        "resnet18",
-        "resnet18_S",
-        "resnet18_XS",
-        "resnet18_XXS"
+        "vgg16_XXS",
+        "vgg16_L",
+        "vgg16_S",
+        "vgg16_XS",
+        "vgg16"
     ],
     "epoch": [30],
     "batch_size": [64],
 
     "dataset": ["Cifar10"],
-    "resolution": [224],
+    "resolution": [160],
 
     "optimizer": ["adam"],
     "metrics": ["Accuracy", "Top5Accuracy"],

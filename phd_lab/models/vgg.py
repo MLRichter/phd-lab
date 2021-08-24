@@ -52,6 +52,7 @@ cfg = {
     'AXL': [256, 'M', 512, 'M', 1024, 1024, 'M', 2048, 2048, 'M', 2048, 2048, 'M'],
     'AL': [128, 'M', 256, 'M', 512, 512, 'M', 1024, 1024, 'M', 1024, 1024, 'M'],
     'A': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
+    'A_3': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 512, 512, 512, 'M'],
     'AT': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M'],
     'BS': [32, 32, 'M', 64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 256, 256, 'M'],
     'BXS': [16, 16, 'M', 32, 32, 'M', 64, 64, 'M', 128, 128, 'M', 128, 128, 'M'],
@@ -62,6 +63,7 @@ cfg = {
     'BXL': [256, 256, 'M', 512, 512, 'M', 1024, 1024, 'M', 2048, 2048, 'M', 2048, 2048, 'M'],
     'BL': [128, 128, 'M', 256, 256, 'M', 512, 512, 'M', 1024, 1024, 'M', 1024, 1024, 'M'],
     'B': [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
+    'B_3': [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 512, 512, 512, 'M'],
     'BT': [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 512, 512, 'M'],
     'B_Strides': [64, (64, 2), 128, (128, 2), 256, (256, 2), 512, (512, 2), 512, (512, 2)],
     'B_Early': [64, 64, 128, 128, 256, 256, 'M', 512, 'M', 512, 'M', 512, 'M', 512, 'M'],
@@ -971,6 +973,16 @@ def vgg9(*args, **kwargs):
     return model
 
 
+def vgg11_3(*args, **kwargs):
+    """VGG 16-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['A_3']), **kwargs)
+    model.name = "VGG11-3"
+    return model
+
+
 def vgg11(*args, **kwargs):
     """VGG 16-layer model (configuration "D")
     Args:
@@ -1028,6 +1040,16 @@ def vgg13(*args, **kwargs):
     """
     model = VGG(make_layers(cfg['B']), **kwargs)
     model.name = "VGG13"
+    return model
+
+
+def vgg13_3(*args, **kwargs):
+    """VGG 16-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['B_3']), **kwargs)
+    model.name = "VGG13-3"
     return model
 
 

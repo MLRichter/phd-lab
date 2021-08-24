@@ -525,6 +525,114 @@ def ResizediNaturalist(batch_size=12, output_size=224, cache_dir='tmp') -> DataB
 
 
 
+def ImageNette(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
+    size = output_size
+    __imagenet_pca = {
+        'eigval': torch.Tensor([0.2175, 0.0188, 0.0045]),
+        'eigvec': torch.Tensor([
+            [-0.5675, 0.7192, 0.4009],
+            [-0.5808, -0.0045, -0.8140],
+            [-0.5836, -0.6948, 0.4203],
+        ])
+    }
+
+
+    train_tfms = transforms.Compose([
+        #transforms.Resize(output_size),
+        #transforms.CenterCrop(output_size),
+        transforms.RandomResizedCrop(output_size),
+        transforms.RandomHorizontalFlip(),
+        #transforms.ColorJitter(.4,.4,.4),
+        transforms.ToTensor(),
+        #Lighting(0.1, __imagenet_pca['eigval'], __imagenet_pca['eigvec']),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    val_tfms = transforms.Compose([
+        transforms.Resize(int(output_size*1.14)),
+        transforms.CenterCrop(output_size),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+
+    if exists("../tmp/imagenette2"):
+        path = "../tmp/imagenette2"
+    else:
+        raise ValueError("imagenette2 not found at " + "./tmp/imagenette2")
+
+    trainset = torchvision.datasets.ImageFolder(root=path+"/train", transform=train_tfms)
+    testset = torchvision.datasets.ImageFolder(root=path+"/val", transform=val_tfms)
+
+    train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                               shuffle=True, num_workers=6, pin_memory=True)
+    test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                             shuffle=False, num_workers=6, pin_memory=True)
+    train_loader.name = "ImageNette"
+    return DataBundle(
+        dataset_name="ImageNette",
+        train_dataset=train_loader,
+        test_dataset=test_loader,
+        cardinality=10,
+        output_resolution=output_size,
+        is_classifier=True
+    )
+
+
+def ImageWoof(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
+    size = output_size
+    __imagenet_pca = {
+        'eigval': torch.Tensor([0.2175, 0.0188, 0.0045]),
+        'eigvec': torch.Tensor([
+            [-0.5675, 0.7192, 0.4009],
+            [-0.5808, -0.0045, -0.8140],
+            [-0.5836, -0.6948, 0.4203],
+        ])
+    }
+
+
+    train_tfms = transforms.Compose([
+        #transforms.Resize(output_size),
+        #transforms.CenterCrop(output_size),
+        transforms.RandomResizedCrop(output_size),
+        transforms.RandomHorizontalFlip(),
+        #transforms.ColorJitter(.4,.4,.4),
+        transforms.ToTensor(),
+        #Lighting(0.1, __imagenet_pca['eigval'], __imagenet_pca['eigvec']),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    val_tfms = transforms.Compose([
+        transforms.Resize(int(output_size*1.14)),
+        transforms.CenterCrop(output_size),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+
+    if exists("../tmp/imagewoof2"):
+        path = "../tmp/imagewoof2"
+    else:
+        raise ValueError("imagewoof2 not found")
+
+    trainset = torchvision.datasets.ImageFolder(root=path+"/train", transform=train_tfms)
+    testset = torchvision.datasets.ImageFolder(root=path+"/val", transform=val_tfms)
+
+    train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                               shuffle=True, num_workers=6, pin_memory=True, drop_last=True)
+    test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                             shuffle=False, num_workers=6, pin_memory=True)
+    train_loader.name = "ImageWoof"
+    return DataBundle(
+        dataset_name="ImageWoof",
+        train_dataset=train_loader,
+        test_dataset=test_loader,
+        cardinality=10,
+        output_resolution=output_size,
+        is_classifier=True
+    )
+
+
 def ImageNet(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
     size = output_size
     __imagenet_pca = {
