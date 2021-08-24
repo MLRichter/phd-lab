@@ -5,7 +5,7 @@
         "resnet18"
     ],
     "epoch": [30],
-    "batch_size": [64],
+    "batch_size": [32],
 
     "dataset": ["ImageWoof", "ImageNette"],
     "resolution": [32, 224, 1024],
