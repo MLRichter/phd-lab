@@ -558,6 +558,9 @@ def ImageNette(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
 
     if exists("../tmp/imagenette2"):
         path = "../tmp/imagenette2"
+    elif exists("./tmp/imagenette2"):
+        path = "./tmp/imagenette2"
+
     else:
         raise ValueError("imagenette2 not found at " + "./tmp/imagenette2")
 
@@ -612,6 +615,8 @@ def ImageWoof(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
 
     if exists("../tmp/imagewoof2"):
         path = "../tmp/imagewoof2"
+    elif exists("./tmp/imagewoof2"):
+        path = "./tmp/imagewoof2"
     else:
         raise ValueError("imagewoof2 not found")
 
