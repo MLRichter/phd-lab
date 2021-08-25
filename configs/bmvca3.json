@@ -7,12 +7,12 @@
         "resnet18_XXS"
     ],
     "epoch": [30],
-    "batch_size": [64],
+    "batch_size": [128],
 
     "dataset": ["Cifar10"],
     "resolution": [224],
 
-    "optimizer": ["adam"],
+    "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],

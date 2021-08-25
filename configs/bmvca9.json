@@ -10,7 +10,7 @@
     "dataset": ["MNIST", "Cifar10", "ImageWoof", "ImageNette"],
     "resolution": [150],
 
-    "optimizer": ["adam"],
+    "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
