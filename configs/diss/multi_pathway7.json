@@ -1,0 +1,22 @@
+{
+    "model": [
+        "mpnet36_4_1_3_7",
+        "mpnet36_4_3",
+        "mpnet36_1_7"
+    ],
+    "epoch": [30],
+    "batch_size": [64],
+
+    "dataset": ["Cifar10"],
+    "resolution": [150],
+
+    "optimizer": ["lrs"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 4
+}

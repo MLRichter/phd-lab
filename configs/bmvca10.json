@@ -1,0 +1,23 @@
+{
+    "model": [
+        "resnet18",
+        "vgg16",
+        "resnet18_XXS",
+        "vgg16_XXS"
+    ],
+    "epoch": [30],
+    "batch_size": [32],
+
+    "dataset": ["Cifar10", "ImageWoof", "ImageNette"],
+    "resolution": [32],
+
+    "optimizer": ["lrs"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 1
+}

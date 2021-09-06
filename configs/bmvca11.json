@@ -1,0 +1,20 @@
+{
+    "model": [
+        "ResNet18_PC", "resnet18", "densenet18", "resnet34"
+    ],
+    "epoch": [30],
+    "batch_size": [128],
+
+    "dataset": ["Food101"],
+    "resolution": [32],
+
+    "optimizer": ["lrs"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 1
+}

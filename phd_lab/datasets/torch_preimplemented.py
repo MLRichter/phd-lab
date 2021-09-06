@@ -192,7 +192,7 @@ def Food101(batch_size=12,
             output_size=256,
             cache_dir='tmp') -> DataBundle:
 
-    RS = transforms.Resize(output_size)
+    RS = transforms.Resize((output_size, output_size))
     RC = transforms.RandomCrop(output_size, padding=output_size//8)
     RHF = transforms.RandomHorizontalFlip()
     NRM = transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
