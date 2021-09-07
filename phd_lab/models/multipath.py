@@ -150,6 +150,19 @@ class MPNet(nn.Module):
         return out
 
 
+def mpnet36_8_1_3_7(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[2, 2, 2, 2],
+        block_layout=[8, 1],
+        layout_kernels=[3, 7],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet36_8_1_3_7"
+    return model
+
+
 def mpnet36_4_1_3_7(num_classes, noskip=False, **kwargs):
     model = MPNet(
         stage_seq=[2, 2, 2, 2],
@@ -161,6 +174,7 @@ def mpnet36_4_1_3_7(num_classes, noskip=False, **kwargs):
     )
     model.name = "MPNet36_4_1_3_7"
     return model
+
 
 def mpnet36_1_4_3_7(num_classes, noskip=False, **kwargs):
     model = MPNet(
@@ -280,6 +294,19 @@ def mpnet36_4_3(num_classes, noskip=False, **kwargs):
     return model
 
 
+def mpnet36_8_3(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[2, 2, 2, 2],
+        block_layout=[8],
+        layout_kernels=[3],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet36_8_3"
+    return model
+
+
 def mpnet36_1_7(num_classes, noskip=False, **kwargs):
     model = MPNet(
         stage_seq=[2, 2, 2, 2],
@@ -291,8 +318,6 @@ def mpnet36_1_7(num_classes, noskip=False, **kwargs):
     )
     model.name = "MPNet36_1_7"
     return model
-
-
 
 
 def mpnet18_1_2_3_7(num_classes, noskip=False, **kwargs):
@@ -331,6 +356,32 @@ def mpnet18_4_1_3_7(num_classes, noskip=False, **kwargs):
         max_path=noskip
     )
     model.name = "MPNet18_4_1_3_7"
+    return model
+
+
+def mpnet18_8_1_3_7(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[1, 1, 1, 1],
+        block_layout=[8, 1],
+        layout_kernels=[3, 7],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet18_8_1_3_7"
+    return model
+
+
+def mpnet18_8_3(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[1, 1, 1, 1],
+        block_layout=[8],
+        layout_kernels=[3],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet18_8_3"
     return model
 
 
