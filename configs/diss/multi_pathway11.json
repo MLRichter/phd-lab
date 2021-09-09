@@ -1,18 +1,14 @@
 {
     "model": [
-        "mpnet18_1_4_3_7",
-        "mpnet18_4_1_3_7",
-        "mpnet18_1_3",
-        "mpnet18_4_3",
-        "mpnet18_4_7",
-        "mpnet18_1_7"
-
+        "mpnet36_4_1_3_7d3",
+        "mpnet36_4_3",
+        "mpnet36_1_7d3"
     ],
     "epoch": [30],
     "batch_size": [64],
 
-    "dataset": ["Cifar10"],
-    "resolution": [64],
+    "dataset": ["ImageNette"],
+    "resolution": [250],
 
     "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],

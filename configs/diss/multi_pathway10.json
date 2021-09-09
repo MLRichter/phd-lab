@@ -2,7 +2,8 @@
     "model": [
         "mpnet36_8_1_3_7",
         "mpnet36_8_3",
-        "mpnet36_1_7"
+        "mpnet36_1_7",
+        "mpnet72_2_2_3_3"
     ],
     "epoch": [30],
     "batch_size": [64],

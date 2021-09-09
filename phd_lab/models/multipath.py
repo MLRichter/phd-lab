@@ -55,16 +55,20 @@ class AlainFC(nn.Module):
 def alainfc(num_classes, *args, **kwargs):
     return AlainFC(num_classes)
 
+
 class Pathway(nn.Module):
 
-    def __init__(self, num_layers: int, in_planes, planes, kernel: int = 3, stride: int = 1):
+    def __init__(self, num_layers: int, in_planes, planes, kernel: int = 3, stride: int = 1, dilation: int = 1):
         super(Pathway, self).__init__()
+        effective_kernel_size = kernel + (kernel - 1) * (dilation - 1)
+        padding = effective_kernel_size // 2
+
         self.layers = nn.Sequential(
             *(
                 nn.Sequential(
                     nn.Conv2d(in_planes if i == 0 else planes, planes,
                               kernel_size=kernel, stride=stride if i == num_layers-1 else 1,
-                              padding=(kernel-1)//2, bias=False),
+                              padding=padding, bias=False, dilation=dilation),
                     nn.BatchNorm2d(planes),
                     nn.ReLU(inplace=True)
                 )
@@ -79,10 +83,10 @@ class Pathway(nn.Module):
 class BasicBlock(nn.Module):
     expansion = 1
 
-    def __init__(self, num_layers_per_path: List[int], kernel_sizes_per_path: List[int], in_planes, planes, stride=1, concat: bool = False):
+    def __init__(self, num_layers_per_path: List[int], kernel_sizes_per_path: List[int], in_planes, planes, stride=1, concat: bool = False, dilations: List[int] = [1, 1]):
         super(BasicBlock, self).__init__()
-        for i, (num_layers, kernel_size) in enumerate(zip(num_layers_per_path, kernel_sizes_per_path)):
-            setattr(self, f"pathway{i}", Pathway(num_layers, in_planes, planes, kernel_size, stride))
+        for i, (num_layers, kernel_size, dilation) in enumerate(zip(num_layers_per_path, kernel_sizes_per_path, dilations)):
+            setattr(self, f"pathway{i}", Pathway(num_layers, in_planes, planes, kernel_size, stride, dilation=dilation))
         self.num_pathways = len(num_layers_per_path)
         self.concat = concat
         if self.concat:
@@ -107,12 +111,13 @@ class MPNet(nn.Module):
         expansion_per_path = [seq_length * ((kernel-1) // 2) for seq_length, kernel in zip(block_layout, layout_kernels)]
         return np.argmax(expansion_per_path)
 
-    def __init__(self, stage_seq: List[int], block_layout: List[int], layout_kernels: List[int], concat: bool = False, num_classes: int = 10, max_path: bool = False):
+    def __init__(self, stage_seq: List[int], block_layout: List[int], layout_kernels: List[int], concat: bool = False, num_classes: int = 10, max_path: bool = False, dilation: List[int] = [1, 1]):
         if max_path:
             max_path_idx = self._get_max_path_idx(block_layout, layout_kernels)
             layout_kernels = [layout_kernels[max_path_idx]]
             block_layout = [block_layout[max_path_idx]]
         super(MPNet, self).__init__()
+        self.dilation = dilation
         self.concat = concat
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
@@ -133,7 +138,8 @@ class MPNet(nn.Module):
                 kernel_size_per_path,
                 in_planes if i == 0 else planes,
                 planes,
-                1 if i != num_blocks-1 else stride, self.concat
+                1 if i != num_blocks-1 else stride, self.concat,
+                dilations=self.dilation
             )
             layers.append(block)
         return nn.Sequential(*layers)
@@ -163,6 +169,19 @@ def mpnet36_8_1_3_7(num_classes, noskip=False, **kwargs):
     return model
 
 
+def mpnet72_2_2_3_3(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[4,4,4,4],
+        block_layout=[3,3],
+        layout_kernels=[3, 7],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip
+    )
+    model.name = "MPNet72_2_2_3_3"
+    return model
+
+
 def mpnet36_4_1_3_7(num_classes, noskip=False, **kwargs):
     model = MPNet(
         stage_seq=[2, 2, 2, 2],
@@ -173,6 +192,48 @@ def mpnet36_4_1_3_7(num_classes, noskip=False, **kwargs):
         max_path=noskip
     )
     model.name = "MPNet36_4_1_3_7"
+    return model
+
+
+def mpnet36_4_1_3_7d3(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[2, 2, 2, 2],
+        block_layout=[4, 1],
+        layout_kernels=[3, 7],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip,
+        dilation=[1, 3]
+    )
+    model.name = "MPNet36_4_1_3_7d3"
+    return model
+
+
+def mpnet36_1_7d3(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[2, 2, 2, 2],
+        block_layout=[1],
+        layout_kernels=[7],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip,
+        dilation=[3]
+    )
+    model.name = "MPNet36_1_7d3"
+    return model
+
+
+def mpnet36_4_3(num_classes, noskip=False, **kwargs):
+    model = MPNet(
+        stage_seq=[2, 2, 2, 2],
+        block_layout=[4],
+        layout_kernels=[3],
+        concat=False,
+        num_classes=num_classes,
+        max_path=noskip,
+        dilation=[1]
+    )
+    model.name = "MPNet36_4_3"
     return model
 
 
