@@ -7,7 +7,7 @@
         "mpnet36_1_7d3",
         "mpnet36_1_11d3"
     ],
-    "epoch": [0],
+    "epoch": [30],
     "batch_size": [64],
 
     "dataset": ["ImageNette"],
