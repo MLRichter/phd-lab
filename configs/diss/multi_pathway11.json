@@ -1,14 +1,14 @@
 {
     "model": [
-        "mpnet36_1_1_3_11d3",
+        "mpnet36_1_1_3_11d2",
         "mpnet36_1_3",
-        "mpnet36_1_11d3"
+        "mpnet36_1_11d2"
     ],
     "epoch": [30],
     "batch_size": [64],
 
     "dataset": ["ImageNette"],
-    "resolution": [256],
+    "resolution": [250],
 
     "optimizer": ["lrs"],
     "metrics": ["Accuracy", "Top5Accuracy"],
