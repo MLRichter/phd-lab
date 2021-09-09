@@ -213,7 +213,7 @@ def mpnet36_1_1_3_11d3(num_classes, noskip=False, **kwargs):
     model = MPNet(
         stage_seq=[2, 2, 2, 2],
         block_layout=[1, 1],
-        layout_kernels=[2, 11],
+        layout_kernels=[3, 11],
         concat=False,
         num_classes=num_classes,
         max_path=noskip,
@@ -245,7 +245,7 @@ def mpnet36_1_11d3(num_classes, noskip=False, **kwargs):
         concat=False,
         num_classes=num_classes,
         max_path=noskip,
-        dilation=[13]
+        dilation=[3]
     )
     model.name = "MPNet36_1_11d3"
     return model
