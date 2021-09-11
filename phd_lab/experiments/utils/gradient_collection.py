@@ -72,6 +72,7 @@ class GradientCollector:
 
         def record_layer_history(layer: torch.nn.Module, grad_input, grad_output):
             """Hook to register in `layer` module."""
+            return
             #print('Inside ' + layer.name)
             #print('Inside class:' + self.__class__.__name__)
             #print('')
