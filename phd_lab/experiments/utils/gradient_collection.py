@@ -191,7 +191,7 @@ def extract_gradient_from_dataset(logger: GradientCollector, model: Module,
         print("ITER")
         inputs, labels = data
         inputs, labels = inputs.to(device), labels.to(device)
-        optimizer.zero_grad(set_to_none=True)
+        #optimizer.zero_grad(set_to_none=True)
         with torch.cuda.amp.autocast():
             outputs = model(inputs)
             loss = criterion(outputs, labels)
