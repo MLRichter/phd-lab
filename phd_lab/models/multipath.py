@@ -247,7 +247,7 @@ def mpnet36_1_1_3_11d2(num_classes, noskip=False, **kwargs):
         max_path=noskip,
         dilation=[1, 2]
     )
-    model.name = "MPNet36_4_1_3_11d3"
+    model.name = "MPNet36_1_1_3_11d2"
     return model
 
 

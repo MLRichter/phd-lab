@@ -12,7 +12,7 @@ import click
 @click.option("--repeat", type=int, required=False, default=1, help="number of repetitions")
 def main(config: List[str], device: str, run_id: str, repeat: int):
     for i in range(repeat):
-        main = Main(mode='flops')
+        main = Main(mode='grad')
         main(config_path=Path(config), run_id=run_id if repeat == 1 else f"{run_id}{i}", device=device)
 
 

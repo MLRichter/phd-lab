@@ -1,4 +1,7 @@
+from pathlib import Path
 from typing import List, Union, Dict, Optional
+
+from .gradient_collection import GradientCollector, extract_gradient_from_dataset
 from .pca_layers import change_all_pca_layer_thresholds, change_all_pca_layer_thresholds_and_inject_random_directions
 from time import time
 from ..trainer import Trainer
@@ -218,3 +221,50 @@ class ComputeFLOPS:
 
         with open(savefile, "w+") as fp:
             json.dump(results, fp)
+
+
+@attrs(auto_attribs=True, slots=True, frozen=True)
+class ComputeAndPlotGradientSizes:
+
+    @staticmethod
+    def plot_grad_flow_v2(named_parameters):
+        '''Plots the gradients flowing through different layers in the net during training.
+        Can be used for checking for possible gradient vanishing / exploding problems.
+
+        Usage: Plug this function in Trainer class after loss.backwards() as
+        "plot_grad_flow(self.model.named_parameters())" to visualize the gradient flow'''
+        ave_grads = []
+        max_grads = []
+        layers = []
+        for n, p in named_parameters:
+            if (p.requires_grad) and ("bias" not in n):
+                layers.append(n)
+                ave_grads.append(p.grad.abs().mean())
+                max_grads.append(p.grad.abs().max())
+        from matplotlib import pyplot as plt
+        plt.bar(np.arange(len(max_grads)), max_grads, alpha=0.1, lw=1, color="c")
+        plt.bar(np.arange(len(max_grads)), ave_grads, alpha=0.1, lw=1, color="b")
+        plt.hlines(0, 0, len(ave_grads) + 1, lw=2, color="k")
+        plt.xticks(range(0, len(ave_grads), 1), layers, rotation="vertical")
+        plt.xlim(left=0, right=len(ave_grads))
+        plt.ylim(bottom=-0.001, top=0.02)  # zoom in on the lower gradient regions
+        plt.xlabel("Layers")
+        plt.ylabel("average gradient")
+        plt.title("Gradient flow")
+        plt.grid(True)
+        from matplotlib.lines import Line2D
+        plt.legend([Line2D([0], [0], color="c", lw=4),
+                    Line2D([0], [0], color="b", lw=4),
+                    Line2D([0], [0], color="k", lw=4)], ['max-gradient', 'mean-gradient', 'zero-gradient'])
+
+    def __call__(self, trainer: Trainer):
+        trainer._tracker.stop()
+        model = trainer.model if not isinstance(trainer.model, DataParallel) else trainer.model.module
+        print('Initializing logger')
+        logger = GradientCollector(
+            model,
+            savepath=os.path.dirname(trainer._save_path)
+            )
+        print('Extracting training')
+        model.train()
+        extract_gradient_from_dataset(logger, model=model, dataset=trainer.data_bundle.train_dataset, device=trainer.device, criterion=trainer.criterion)
