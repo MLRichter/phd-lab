@@ -88,14 +88,14 @@ class GradientCollector:
             out_norm = grad_output[0].norm()
             in_norm = grad_input[0].norm()
             if layer.name+"-input" not in self.logs:
-                self.logs[layer.name+"-input"] = in_norm.cpu().item()
+                self.logs[layer.name+"-input"] = in_norm.detach().cpu().item()
             else:
-                self.logs[layer.name+"-input"] += in_norm.cpu().item()
+                self.logs[layer.name+"-input"] += in_norm.detach().cpu().item()
 
             if layer.name+"-output" not in self.logs:
-                self.logs[layer.name+"-output"] = out_norm.cpu().item()
+                self.logs[layer.name+"-output"] = out_norm.detach().cpu().item()
             else:
-                self.logs[layer.name+"-output"] += out_norm.cpu().item()
+                self.logs[layer.name+"-output"] += out_norm.detach().cpu().item()
 
 
         layer.register_backward_hook(record_layer_history)
@@ -185,17 +185,23 @@ def extract_gradient_from_dataset(logger: GradientCollector, model: Module,
         device:     The device the model is deployed on, maybe any torch compatible key.
     """
     correct, total = 0, 0
+    #acc_loss = None
     for batch, data in enumerate(tqdm(dataset,  "Accumulating Gradients")):
+        print("ITER")
         inputs, labels = data
         inputs, labels = inputs.to(device), labels.to(device)
         outputs = model(inputs)
         loss = criterion(outputs, labels)
+        #acc_loss = loss if acc_loss is None else acc_loss + loss
         loss.backward()
         #FIXME: Add backward pass to properly compute gradients
         #FIXME: Add saving functionality
+        optimizer.step()
         optimizer.zero_grad(set_to_none=True)
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
         correct += (predicted == labels.long()).sum().item()
+    #acc_loss.backward()
+
     logger.save(n_batches=len(dataset))
     print('accuracy:', correct/total)
