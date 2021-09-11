@@ -98,7 +98,7 @@ class GradientCollector:
                 self.logs[layer.name+"-output"] += out_norm
 
 
-        #layer.register_backward_hook(record_layer_history)
+        layer.register_backward_hook(record_layer_history)
 
     def get_layer_from_submodule(self, submodule: torch.nn.Module,
                                  layers: dict, name_prefix: str = '') -> Dict[str, Module]:
