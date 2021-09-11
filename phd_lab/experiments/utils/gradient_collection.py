@@ -190,17 +190,17 @@ def extract_gradient_from_dataset(logger: GradientCollector, model: Module,
         print("ITER")
         inputs, labels = data
         inputs, labels = inputs.to(device), labels.to(device)
-        outputs = model(inputs)
-        loss = criterion(outputs, labels)
+        #outputs = model(inputs)
+        #loss = criterion(outputs, labels)
         #acc_loss = loss if acc_loss is None else acc_loss + loss
-        loss.backward()
+        #loss.backward()
         #FIXME: Add backward pass to properly compute gradients
         #FIXME: Add saving functionality
-        optimizer.step()
-        optimizer.zero_grad(set_to_none=True)
-        _, predicted = torch.max(outputs.data, 1)
-        total += labels.size(0)
-        correct += (predicted == labels.long()).sum().item()
+        #optimizer.step()
+        #optimizer.zero_grad(set_to_none=True)
+        #_, predicted = torch.max(outputs.data, 1)
+        #total += labels.size(0)
+        #correct += (predicted == labels.long()).sum().item()
     #acc_loss.backward()
 
     logger.save(n_batches=len(dataset))
