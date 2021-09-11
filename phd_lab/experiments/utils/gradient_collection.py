@@ -197,8 +197,9 @@ def extract_gradient_from_dataset(logger: GradientCollector, model: Module,
             loss = criterion(outputs, labels)
         #FIXME: Add backward pass to properly compute gradients
         #FIXME: Add saving functionality
+
+            loss.backward()
             optimizer.step()
-        loss.backward()
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
         correct += (predicted == labels.long()).sum().item()
