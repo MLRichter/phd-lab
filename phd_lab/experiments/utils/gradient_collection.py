@@ -86,17 +86,17 @@ class GradientCollector:
             #print('grad_input norm:', grad_input[0].norm())
 
             #activations_batch = output
-            out_norm = grad_output[0].norm()
-            in_norm = grad_input[0].norm()
+            out_norm = grad_output[0].data.detach().cpu().item().norm().item()
+            in_norm = grad_input[0].data.detach().cpu().item().norm().item()
             if layer.name+"-input" not in self.logs:
-                self.logs[layer.name+"-input"] = in_norm.detach().cpu().item()
+                self.logs[layer.name+"-input"] = in_norm
             else:
-                self.logs[layer.name+"-input"] += in_norm.detach().cpu().item()
+                self.logs[layer.name+"-input"] += in_norm
 
             if layer.name+"-output" not in self.logs:
-                self.logs[layer.name+"-output"] = out_norm.detach().cpu().item()
+                self.logs[layer.name+"-output"] = out_norm
             else:
-                self.logs[layer.name+"-output"] += out_norm.detach().cpu().item()
+                self.logs[layer.name+"-output"] += out_norm
 
 
         layer.register_backward_hook(record_layer_history)
