@@ -85,7 +85,7 @@ class GradientCollector:
             #print('grad_input norm:', grad_input[0].norm())
 
             #activations_batch = output
-            out_norm = grad_output[0].data..clone().norm().cpu().item()
+            out_norm = grad_output[0].data.clone().norm().cpu().item()
             in_norm = -1 if grad_input[0] is None else grad_input[0].data.clone().norm().cpu().item()
             if layer.name+"-input" not in self.logs:
                 self.logs[layer.name+"-input"] = in_norm
