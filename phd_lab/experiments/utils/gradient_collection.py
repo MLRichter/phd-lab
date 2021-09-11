@@ -186,6 +186,7 @@ def extract_gradient_from_dataset(logger: GradientCollector, model: Module,
     """
     correct, total = 0, 0
     #acc_loss = None
+    model.train()
     for batch, data in enumerate(tqdm(dataset,  "Accumulating Gradients")):
         print("ITER")
         inputs, labels = data
