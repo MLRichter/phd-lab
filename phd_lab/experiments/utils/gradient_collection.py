@@ -174,7 +174,7 @@ class GradientCollector:
 
 
 def extract_gradient_from_dataset(logger: GradientCollector, model: Module,
-                                  dataset: DataLoader, device: str, criterion) -> None:
+                                  dataset: DataLoader, device: str, criterion, optimizer) -> None:
     """Extract latent representations from a given classification dataset.
 
     Args:
@@ -193,6 +193,7 @@ def extract_gradient_from_dataset(logger: GradientCollector, model: Module,
         loss.backward()
         #FIXME: Add backward pass to properly compute gradients
         #FIXME: Add saving functionality
+        optimizer.zero_grad(set_to_none=True)
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
         correct += (predicted == labels.long()).sum().item()

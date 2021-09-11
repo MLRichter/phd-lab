@@ -267,4 +267,4 @@ class ComputeAndPlotGradientSizes:
             )
         print('Extracting training')
         model.train()
-        extract_gradient_from_dataset(logger, model=model, dataset=trainer.data_bundle.train_dataset, device=trainer.device, criterion=trainer.criterion)
+        extract_gradient_from_dataset(logger, model=model, dataset=trainer.data_bundle.train_dataset, device=trainer.device, criterion=trainer.criterion, optimizer=trainer.optimizer_bundle.optimizer)
