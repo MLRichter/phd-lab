@@ -85,8 +85,8 @@ class GradientCollector:
             #print('grad_input norm:', grad_input[0].norm())
 
             #activations_batch = output
-            out_norm = grad_output[0].data.clone().norm().cpu().item()
-            in_norm = -1 if grad_input[0] is None else grad_input[0].data.clone().norm().cpu().item()
+            out_norm = grad_output[0].data.clone().abs().mean().cpu().item()
+            in_norm = -1 if grad_input[0] is None else grad_input[0].data.clone().abs().mean().cpu().item()
             if layer.name+"-input" not in self.logs:
                 self.logs[layer.name+"-input"] = in_norm
             else:
@@ -188,15 +188,12 @@ def extract_gradient_from_dataset(logger: GradientCollector, model: Module,
     #acc_loss = None
     model.train()
     for batch, data in enumerate(tqdm(dataset,  "Accumulating Gradients")):
-        print("ITER")
         inputs, labels = data
         inputs, labels = inputs.to(device), labels.to(device)
         optimizer.zero_grad()
         with torch.cuda.amp.autocast():
             outputs = model(inputs)
             loss = criterion(outputs, labels)
-        #FIXME: Add backward pass to properly compute gradients
-        #FIXME: Add saving functionality
 
             loss.backward()
             optimizer.step()
