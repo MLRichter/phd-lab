@@ -1,0 +1,22 @@
+{
+    "model": [
+        "mpnet18_8_1_3_11d2",
+        "mpnet18_8_3",
+        "mpnet18_1_11d2"
+    ],
+    "epoch": [30],
+    "batch_size": [64],
+
+    "dataset": ["ImageNette"],
+    "resolution": [160],
+
+    "optimizer": ["lrs"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 4
+}
