@@ -229,10 +229,10 @@ class Trainer:
             return
         old_time = time()
         for epoch in range(self._initial_epoch, self.epochs):
-            if epoch%5 == 0 or epoch == self.epochs-1:
-                self._tracker.resume()
-            else:
-                self._tracker.stop()
+            #if epoch%5 == 0 or epoch == self.epochs-1:
+            #    self._tracker.resume()
+            #else:
+            #    self._tracker.stop()
             print('Start training epoch', epoch+1)
             train_metric = self.train_epoch()
             test_metric = self.test()

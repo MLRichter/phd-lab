@@ -5,6 +5,7 @@ from .squeeze import *
 from .efficentnet import *
 from .densenet import densenet18, densenet65
 from .multipath import *
+from .linear import *
 from .resnetModified import \
     PC_ResNet18 as ResNet18_PC, \
     PC_ResNet34 as ResNet34_PC, \

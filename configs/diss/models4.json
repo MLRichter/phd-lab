@@ -1,0 +1,27 @@
+{
+    "model": [
+        "ThreeNet1024",
+        "ThreeNet512",
+        "ThreeNet256",
+        "ThreeNet128",
+        "ThreeNet8",
+        "ThreeNet16",
+        "ThreeNet32",
+        "ThreeNet64"
+    ],
+    "epoch": [30],
+    "batch_size": [128],
+
+    "dataset": ["Cifar10A"],
+    "resolution": [32],
+
+    "optimizer": ["adam"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 4
+}
