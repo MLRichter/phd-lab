@@ -43,9 +43,9 @@ Remarks:
 * if no longer needed, the environment can be removed by typing
 `conda remove --name phd-lab --all`
 * at the institute of cognitive science (IKW), the currently installed
-  nvidia driver (418.67) allows at best CUDA toolkit vesrion 10.1.
-  Use the file `environment-ikw.yml` instead of `environment.yml`
-  for an adapted environment.
+  nvidia driver (460.27.04) allows at best CUDA toolkit version CUDA
+  11.2.0 GA.  Use the file `environment-ikw.yml` instead of
+  `environment.yml` for an adapted environment.
 * To check if torch can use your CUDA version, you can run the following command:
 ```sh
 python -c "import torch; print(torch.cuda.is_available())"
