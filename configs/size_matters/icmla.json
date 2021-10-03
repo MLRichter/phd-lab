@@ -1,0 +1,29 @@
+{
+    "model": [
+        "vgg11",
+        "vgg13",
+        "vgg16",
+        "vgg19",
+        "vgg19d3",
+        "resnet18",
+        "resnet34",
+        "resnet18noskip",
+        "mpnet18_2_2_3_7",
+        "mpnet36_1_2_3_7"
+    ],
+    "epoch": [30],
+    "batch_size": [64],
+
+    "dataset": ["Cifar10"],
+    "resolution": [32],
+
+    "optimizer": ["lrs"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 4
+}
