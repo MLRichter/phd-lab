@@ -4,7 +4,7 @@
         "vgg13",
         "vgg16",
         "vgg19",
-        "vgg19d3",
+        "vgg19_d3",
         "resnet18",
         "resnet34",
         "resnet18noskip",
