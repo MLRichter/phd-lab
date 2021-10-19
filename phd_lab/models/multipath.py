@@ -80,6 +80,19 @@ class Pathway(nn.Module):
         return self.layers(x)
 
 
+class Adder(nn.Module):
+
+    def __init__(self):
+        super(Adder, self).__init__()
+
+    def forward(self, x):
+        accumulator = None
+        for out in x:
+            accumulator = out if accumulator is None else accumulator + out
+        return accumulator
+
+
+
 class BasicBlock(nn.Module):
     expansion = 1
 
@@ -92,6 +105,8 @@ class BasicBlock(nn.Module):
         if self.concat:
             self.cat_conv = nn.Conv2d(planes*len(num_layers_per_path), out_channels=planes, kernel_size=(1, 1), bias=False)
             self.cat_conv_act = nn.ReLU(inplace=True)
+        else:
+            self.adder = Adder()
         assert len(num_layers_per_path) == len(kernel_sizes_per_path)
 
     def forward(self, x):
@@ -99,10 +114,11 @@ class BasicBlock(nn.Module):
         if self.concat:
             return self.cat_conv_act(self.cat_conv(torch.cat(outputs, 1)))
         else:
-            accumulator = None
-            for out in outputs:
-                accumulator = out if accumulator is None else accumulator + out
-            return accumulator
+            return self.adder(outputs)
+            #accumulator = None
+            #for out in outputs:
+            #    accumulator = out if accumulator is None else accumulator + out
+            #return accumulator
 
 
 class MPNet(nn.Module):

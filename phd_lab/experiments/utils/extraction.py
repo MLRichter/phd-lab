@@ -51,8 +51,10 @@ class LatentRepresentationCollector:
             self.pre_exists = True
         self.layers = self.get_layers_recursive(model)
         for name, layer in self.layers.items():
-            if isinstance(layer, Conv2d) or isinstance(layer, Linear) \
-                                  or isinstance(layer, LSTM):
+            if isinstance(layer, Conv2d) \
+                    or isinstance(layer, Linear) \
+                    or isinstance(layer, LSTM) \
+                    or "adder" in type(layer).__name__.lower():
                 self._register_hooks(layer=layer,
                                      layer_name=name,
                                      interval=1)
@@ -123,7 +125,7 @@ class LatentRepresentationCollector:
                 return
 
             # Increment step counter
-            layer.forward_iter += 1
+            # layer.forward_iter += 1
 
             training_state = 'train' if layer.training else 'eval'
             activations_batch = output.data
@@ -158,7 +160,7 @@ class LatentRepresentationCollector:
             layer_type = layer_name
             if not isinstance(submodule, Conv2d) and not \
                    isinstance(submodule, Linear) and not \
-                   isinstance(submodule, LSTM):
+                   isinstance(submodule, LSTM) and not "adder" in type(submodule).__name__.lower():
                 print(f"Skipping {layer_type}")
                 return layers
             layers[layer_name] = submodule
