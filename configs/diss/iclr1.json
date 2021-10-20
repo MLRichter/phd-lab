@@ -4,7 +4,7 @@
         "mpnet36_8_3",
         "mpnet36_1_7"
     ],
-    "epoch": [1],
+    "epoch": [30],
     "batch_size": [64],
 
     "dataset": ["Cifar10"],
