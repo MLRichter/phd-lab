@@ -1,14 +1,20 @@
 import os
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 from typing import List, Tuple
 from itertools import product
-from sklearn.metrics import accuracy_score
+
+from matplotlib import pyplot as plt
+from sklearn.metrics import accuracy_score, plot_confusion_matrix, confusion_matrix
 from sklearn.linear_model import LogisticRegression as LogisticRegressionModel
 import pickle
 from multiprocessing import Pool
 from attr import attrs, attrib
 from tqdm import tqdm
+import seaborn as sns
+
 
 from phd_lab.experiments.utils import config
 from joblib import Parallel, delayed
@@ -182,6 +188,23 @@ def obtain_accuracy(model: LogisticRegressionModel, data_path, label_path: str) 
     return accuracy_score(labels, preds)
 
 
+def obtain_confusion_matrix(model: LogisticRegressionModel, data_path, label_path: str) -> np.ndarray:
+    """Optain the probe performance from a fitted logistic regression models.
+
+    Args:
+        model:          the fitted model
+        data_path:      the path to the evaluation data
+        label_path:     the path to the evaluation labels
+    Returns:
+         the confusion matrix
+    """
+    data, labels = get_data_annd_labels(data_path, label_path)
+    print('Loaded data:', data_path)
+    print('Evaluating with data of shape', np.asarray(data).shape)
+    preds = model.predict(data)
+    return confusion_matrix(labels, preds, normalize="true")
+
+
 def train_model_for_data(train_set: Tuple[str, str], eval_set: Tuple[str, str], verbose: int = 0):
     """Train a logistic regression model and evaluate it on the test set.
     Args:
@@ -193,10 +216,11 @@ def train_model_for_data(train_set: Tuple[str, str], eval_set: Tuple[str, str], 
     print('Obtaining metrics')
     train_acc = obtain_accuracy(model, *train_set)
     eval_acc = obtain_accuracy(model, *eval_set)
+    cm = obtain_confusion_matrix(model, *eval_set)
     print(os.path.basename(train_set[0]))
     print('Train acc', train_acc)
     print('Eval acc:', eval_acc)
-    return train_acc, eval_acc
+    return train_acc, eval_acc, cm
 
 
 def train_model_for_data_mp(args):
@@ -205,6 +229,32 @@ def train_model_for_data_mp(args):
         args: PseudodoArgs
     """
     return train_model_for_data(*args)
+
+
+def _obtain_savefile(data_file_name: str, target_file_name: str) -> Tuple[Path, Path]:
+    pkl_file = Path(target_file_name).parent / Path(data_file_name.replace("eval-", "").replace(".p", "") + "_" + Path(target_file_name).name.replace(".csv", ".pkl")).name
+    png_file = Path(target_file_name).parent / Path(data_file_name.replace("eval-", "").replace(".p", "") + "_" + Path(target_file_name).name.replace(".csv", ".png")).name
+    return pkl_file, png_file
+
+
+def plot_confusion_matrices(confusion_matrix: List[np.ndarray], source_file_names: List[str], target_file_name: str):
+    for cm, src_file in zip(confusion_matrix, source_file_names):
+        plt.clf()
+        #plt.figure(figsize=(cm.shape[0], cm.shape[1]))
+        print("creating savefiles from", src_file, target_file_name)
+        pkl_file, png_file = _obtain_savefile(data_file_name=src_file, target_file_name=target_file_name)
+        print('Saving confusion matrix to', png_file, "and", pkl_file)
+        with open(pkl_file, "wb") as fp:
+            pickle.dump(cm, fp)
+        sns.heatmap(cm, annot=True, fmt='.2f', cmap="hot", vmin=0, vmax=1)
+        #plt.imshow(cm, cmap='hot', interpolation='nearest')
+        #plt.clim(0, 1)
+        #plt.colorbar()
+
+        plt.xlabel("Prediction")
+        plt.ylabel("Ground Truth")
+        plt.tight_layout()
+        plt.savefig(png_file)
 
 
 def main(args: PseudoArgs):
@@ -219,7 +269,7 @@ def main(args: PseudoArgs):
         else:
             print("overwriting is disabled, stopping...")
             return
-    names, t_accs, e_accs = [], [], []
+    names, t_accs, e_accs, cms = [], [], [], []
     train_set, eval_set = obtain_all_dataset(args.folder)
     if len(train_set) != len(eval_set):
         raise FileNotFoundError(f"Number of training sets ({len(train_set)}) does not"
@@ -231,9 +281,10 @@ def main(args: PseudoArgs):
         names.append(os.path.basename(train_data[0][:-2]))
         if args.mp == 0:
             print('Multiprocessing is disabled starting training...')
-            train_acc, eval_acc = train_model_for_data(train_data, eval_data)
+            train_acc, eval_acc, cm = train_model_for_data(train_data, eval_data)
             t_accs.append(train_acc)
             e_accs.append(eval_acc)
+            cms.append(cm)
             pd.DataFrame.from_dict(
                 {
                     'name': names,
@@ -250,6 +301,9 @@ def main(args: PseudoArgs):
         for i, result in enumerate(results):
             t_accs.append(result[0])
             e_accs.append(result[1])
+            cms.append(result[2])
+        eval_datasets = [farg[1][0] for farg in fargs]
+        plot_confusion_matrices(cms, eval_datasets, os.path.join(args.save_path, config.PROBE_PERFORMANCE_SAVEFILE))
         pd.DataFrame.from_dict(
             {
                 'name': names,
