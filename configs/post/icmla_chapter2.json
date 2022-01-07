@@ -2,16 +2,16 @@
     "model": [
         "vgg19",
         "vgg19_EuroSat",
-        "vgg19_EuroSat_Performance",
-        "vgg19_EuroSat_Hybrid"
+        "vgg19_EuroSat_Hybrid",
+        "vgg19_EuroSat_Performance"
     ],
-    "epoch": [30],
+    "epoch": [90],
     "batch_size": [32],
 
     "dataset": ["EuroSat"],
     "resolution": [64],
 
-    "optimizer": ["lrs"],
+    "optimizer": ["lrs90"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],

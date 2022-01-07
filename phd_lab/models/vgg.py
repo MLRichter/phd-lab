@@ -100,6 +100,9 @@ cfg = {
     'EXL':  [256, 256, 'M', 512, 512, 'M', 1024, 1024, 1024, 1024, 'M', 2048, 2048, 2048, 2048, 'M', 2048, 2048, 2048, 2048, 'M'],
     'EXXL': [512, 512, 'M', 1024, 1024, 'M', 2048, 2048, 2048, 2048, 'M', 4096, 4096, 4096, 4096, 'M', 4096, 4096, 4096, 4096, 'M'],
     'E':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
+    'EuroSat_Hybrid':  [64, 64, 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M'],
+    'EuroSat_Performance':  [64, 64, 128, 128, 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
+    'EuroSat':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512],
     'ET':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M'],
     'ET2':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M'],
     'EP-1':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M', 512, 512, 512],
@@ -240,6 +243,36 @@ def vgg19_L(*args, **kwargs):
     """
     model = VGG(make_layers(cfg['EL']), final_filter=1024, **kwargs)
     model.name = "VGG19_L"
+    return model
+
+
+def vgg19_EuroSat(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['EuroSat']), final_filter=512, **kwargs)
+    model.name = "VGG19_EuroSat"
+    return model
+
+
+def vgg19_EuroSat_Hybrid(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['EuroSat_Hybrid']), final_filter=512, **kwargs)
+    model.name = "VGG19_EuroSat_Hybrid"
+    return model
+
+
+def vgg19_EuroSat_Performance(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['EuroSat_Performance']), final_filter=512, **kwargs)
+    model.name = "VGG19_EuroSat_Performance"
     return model
 
 

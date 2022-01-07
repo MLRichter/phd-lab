@@ -40,21 +40,23 @@ def EuroSat(batch_size=12,
 
 
     # Transforms object for trainset with augmentation
-    transform_with_aug = transforms.Compose([RS, RC, RHF, TT, NRM])
+    transform_with_aug = transforms.Compose([RS, RHF, TT, NRM])
     # Transforms object for testset with NO augmentation
     transform_no_aug = transforms.Compose([RS, TT, NRM])
 
-    train_dataset = torchvision.datasets.ImageFolder(root='./tmp/eurosat/train', transform=transform_with_aug)
-    test_dataset = torchvision.datasets.ImageFolder(root='./tmp/eurosat/val', transform=transform_no_aug)
+    train_dataset = torchvision.datasets.ImageFolder(root='../tmp/eurosat/train', transform=transform_with_aug)
+    test_dataset = torchvision.datasets.ImageFolder(root='../tmp/eurosat/val', transform=transform_no_aug)
 
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, num_workers=4, pin_memory=True)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, num_workers=4, pin_memory=True, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, pin_memory=True, shuffle=False, num_workers=4)
+
+    num_classes = len(train_dataset.classes)
 
     return DataBundle(
         dataset_name="EuroSat",
         train_dataset=train_loader,
         test_dataset=test_loader,
-        cardinality=len(train_dataset.classes),
+        cardinality=num_classes,
         output_resolution=output_size,
         is_classifier=True
     )
