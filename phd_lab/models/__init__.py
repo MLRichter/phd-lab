@@ -24,6 +24,7 @@ from .resnetModified import \
     PC_ResNet34_XXXL as ResNet34_PC_XXXL, \
     PC_ResNet18T, \
     PC_ResNet34T
+from .resnetInvolution import resnet18 as resnet18_involution, resnet34 as resnet34_involution
 print()
 from .msnet import msnet18, msnet18nt, msnet18_ntns, msnet18_ns
 from .msnet2 import msnet22, msnet22_nt, msnet22fpn, msnet22_swish

@@ -95,7 +95,6 @@ def Cifar10A(batch_size=12, output_size=32, cache_dir='tmp') -> DataBundle:
         is_classifier=True
     )
 
-
 def Cifar10(batch_size=12, output_size=32, cache_dir='tmp') -> DataBundle:
 
     # Transformations
