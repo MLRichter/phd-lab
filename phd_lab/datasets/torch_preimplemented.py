@@ -257,8 +257,8 @@ def ResizedImageNet16(batch_size=12, output_size=64, cache_dir="tmp") -> DataBun
     # Transformations
     from PIL import PngImagePlugin, ImageFile, Image
     ImageFile.LOAD_TRUNCATED_IMAGES = True
-    LARGE_ENOUGH_NUMBER = 100000000000000
-    Image.MAX_IMAGE_PIXELS = 1000000000
+    LARGE_ENOUGH_NUMBER = 1000000
+    Image.MAX_IMAGE_PIXELS = 100000
     PngImagePlugin.MAX_TEXT_CHUNK = LARGE_ENOUGH_NUMBER * (1024 ** 3)
     RC = transforms.RandomCrop(16, padding=1)
     RHF = transforms.RandomHorizontalFlip()
