@@ -6,7 +6,7 @@
         "resnet18_ri_hybrid"
     ],
     "epoch": [30],
-    "batch_size": [512],
+    "batch_size": [128],
 
     "dataset": ["ResizedImageNet16"],
     "resolution": [16],
