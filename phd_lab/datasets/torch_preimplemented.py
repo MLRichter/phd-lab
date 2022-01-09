@@ -253,6 +253,43 @@ def Food101(batch_size=12,
     )
 
 
+def ResizedImageNet16(batch_size=12, output_size=64, cache_dir="tmp") -> DataBundle:
+    # Transformations
+    from PIL import PngImagePlugin, ImageFile, Image
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
+    LARGE_ENOUGH_NUMBER = 100000000000000
+    Image.MAX_IMAGE_PIXELS = 1000000000
+    PngImagePlugin.MAX_TEXT_CHUNK = LARGE_ENOUGH_NUMBER * (1024 ** 3)
+    RC = transforms.RandomCrop(16, padding=1)
+    RHF = transforms.RandomHorizontalFlip()
+    NRM = transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
+    TT = transforms.ToTensor()
+    RS = transforms.Resize(output_size)
+
+    # Transforms object for trainset with augmentation
+    transform_with_aug = transforms.Compose([RC, RHF, RS, TT, NRM])
+    # Transforms object for testset with NO augmentation
+    transform_no_aug = transforms.Compose([RS, TT, NRM])
+
+
+    trainset = torchvision.datasets.ImageFolder(root='../tmp/ImageNetResized/train/lanczos', transform=transform_with_aug)
+    testset = torchvision.datasets.ImageFolder(root='../tmp/ImageNetResized/val/lanczos', transform=transform_no_aug)
+
+
+    train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                              shuffle=True, num_workers=3, pin_memory=False)
+    test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                             shuffle=True, num_workers=3, pin_memory=False)
+    train_loader.name = "ResizedImageNet16"
+    return DataBundle(
+        train_dataset=train_loader,
+        test_dataset=test_loader,
+        cardinality=1000,
+        output_resolution=output_size,
+        is_classifier=True,
+        dataset_name="ResizedImageNet16"
+    )
+
 def TinyImageNet(batch_size=12, output_size=64, cache_dir="tmp") -> DataBundle:
     # Transformations
     RC = transforms.RandomCrop(64, padding=64//8)

@@ -389,7 +389,7 @@ class ResNet(nn.Module):
     def __init__(self, block, layers, num_classes=1000, zero_init_residual=False, thresh=.999, centering=False,
                  noskip=False, scale_factor=1, nodownsampling=False, highway=False, noskip_by_layer=None,
                  disable_early_downsampling=False, disable_early_pooling=False, inner_conv=conv3x3, outer_conv=conv1x1,
-                 **kwargs):
+                 stem_kernel_size=7, stem_stride=2, **kwargs):
         super(ResNet, self).__init__()
         self.disable_early_pooling = disable_early_pooling
         if len(layers) <= 4:
@@ -409,7 +409,7 @@ class ResNet(nn.Module):
         self.inplanes = 64 / scale_factor
         self.thresh = thresh
         self.centering = centering
-        self.conv1 = nn.Conv2d(3, int(64 / scale_factor), kernel_size=7, stride=2 if not disable_early_downsampling else 1, padding=3,
+        self.conv1 = nn.Conv2d(3, int(64 / scale_factor), kernel_size=stem_kernel_size, stride=stem_stride if not disable_early_downsampling else 1, padding=(stem_kernel_size-1) // 2,
                                bias=False)
         if PCA:
             self.conv1pca = Conv2DPCALayer(64, threshold=thresh, centering=centering)
@@ -1156,6 +1156,46 @@ def resnet18(pretrained=False, **kwargs):
         model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
     model.name = 'ResNet18'
     return model
+
+
+def resnet18_ri_performance(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 3, 3], disable_early_pooling=True, stem_kernel_size=3, stem_stride=1)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_RI_Performance'
+    return model
+
+
+def resnet18_ri_hybrid(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, 1], disable_early_pooling=True, stem_kernel_size=3, stem_stride=2)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_RI_Hybrid'
+    return model
+
+
+def resnet18_ri_efficiency(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 1], stem_kernel_size=3, stem_stride=2)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_RI_Efficiency'
+    return model
+
 
 
 def resnet18_se(pretrained=False, **kwargs):
