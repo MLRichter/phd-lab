@@ -102,6 +102,7 @@ cfg = {
     'E':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
     'EuroSat_Hybrid':  [64, 64, 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M'],
     'EuroSat_Performance':  [64, 64, 128, 128, 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
+    'EuroSat_Performance2':  [64, 64, 128, 128, 256, 256, 'M', 256, 256, 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
     'EuroSat':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512],
     'ET':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M'],
     'ET2':  [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M'],
@@ -273,6 +274,16 @@ def vgg19_EuroSat_Performance(*args, **kwargs):
     """
     model = VGG(make_layers(cfg['EuroSat_Performance']), final_filter=512, **kwargs)
     model.name = "VGG19_EuroSat_Performance"
+    return model
+
+
+def vgg19_EuroSat_Performance2(*args, **kwargs):
+    """VGG 19-layer model (configuration "D")
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = VGG(make_layers(cfg['EuroSat_Performance2']), final_filter=512, **kwargs)
+    model.name = "VGG19_EuroSat_Performance2"
     return model
 
 
