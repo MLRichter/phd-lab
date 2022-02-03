@@ -4,7 +4,7 @@
         "better_mobilenet_v3_small"
     ],
     "epoch": [30],
-    "batch_size": [128],
+    "batch_size": [256],
 
     "dataset": ["ImageNet"],
     "resolution": [200],
@@ -16,6 +16,6 @@
 
     "conv_method": ["channelwise"],
     "delta": [0.99],
-    "data_parallel": false,
-    "downsampling": 4
+    "data_parallel": true,
+    "downsampling": 1
 }
