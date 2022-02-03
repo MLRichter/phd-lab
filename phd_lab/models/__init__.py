@@ -31,3 +31,5 @@ from .msnet2 import msnet22, msnet22_nt, msnet22fpn, msnet22_swish
 from .transformers import *
 from .pretrained import resnet18_pretrained, resnet34_pretrained, resnet50_pretrained, resnet101_pretrained, \
     resnet152_pretrained, densenet121_pretrained, densenet161_pretrained, densenet169_pretrained, densenet201_pretrained
+from .mobilenet import *
+from .mobilenet import better_mobilenet_v3_small
