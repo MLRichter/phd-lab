@@ -3,7 +3,8 @@
         "resnet18_ri_efficiency",
         "resnet18",
         "resnet18_ri_performance",
-        "resnet18_ri_hybrid"
+        "resnet18_ri_hybrid",
+        "resnet18_ri_hybrid2"
     ],
     "epoch": [30],
     "batch_size": [128],

@@ -154,6 +154,57 @@ class BasicBlock(nn.Module):
         return out
 
 
+class SimpleBlock(nn.Module):
+    expansion = 1
+
+    def __init__(self, inplanes, planes, stride=1, downsample=None,
+                 thresh=.99, centering=False, noskip=False, nodownsampling=False, inner_conv=conv3x3, has_se: bool = False, has_sa: bool = False):
+        super(SimpleBlock, self).__init__()
+        self.has_se = has_se
+        self.has_sa = has_sa
+        if self.has_se:
+            self.se = SELayer(planes * self.expansion, reduction=max(1, int(inplanes*0.25)))
+        if self.has_sa:
+            self.sa = SpatialAttention(kernel_size=7)
+        self.noskip = noskip
+        self.nodownsampling = nodownsampling
+        self.thresh = thresh
+        self.centering = centering
+        self.conv1 = inner_conv(inplanes, planes, stride)
+        if PCA:
+            self.convpca1 = Conv2DPCALayer(planes, threshold=thresh, centering=centering)
+        self.bn1 = nn.BatchNorm2d(planes)
+        self.relu = nn.ReLU(inplace=True)
+        #self.conv2 = inner_conv(planes, planes)
+        #if PCA:
+        #    self.convpca2 = Conv2DPCALayer(planes, threshold=thresh, centering=centering)
+        #self.bn2 = nn.BatchNorm2d(planes)
+        self.downsample = downsample
+        self.stride = stride
+
+    def forward(self, x):
+        identity = x
+
+        out = self.conv1(x)
+        if PCA:
+            out = self.convpca1(out)
+        out = self.bn1(out)
+
+        if self.has_se:
+            out = self.se(out)
+        if self.has_sa:
+            out = self.sa(out)
+
+        if self.downsample is not None and not self.noskip:
+            identity = self.downsample(x)
+
+        if not self.noskip and not (self.nodownsampling and self.downsample is not None):
+            out += identity
+        out = self.relu(out)
+
+        return out
+
+
 class Bottleneck(nn.Module):
     expansion = 4
 
@@ -389,12 +440,18 @@ class ResNet(nn.Module):
     def __init__(self, block, layers, num_classes=1000, zero_init_residual=False, thresh=.999, centering=False,
                  noskip=False, scale_factor=1, nodownsampling=False, highway=False, noskip_by_layer=None,
                  disable_early_downsampling=False, disable_early_pooling=False, inner_conv=conv3x3, outer_conv=conv1x1,
-                 stem_kernel_size=7, stem_stride=2, **kwargs):
+                 stem_kernel_size=7, stem_stride=2, last_block=None, **kwargs):
         super(ResNet, self).__init__()
         self.disable_early_pooling = disable_early_pooling
+        if last_block is None:
+            last_block = [None for _ in range(len(layers))]
         if len(layers) <= 4:
             for _ in range(len(layers), 9):
                 layers.append(None)
+        if len(last_block) <= 4:
+            for _ in range(len(last_block), 9):
+                last_block.append(None)
+
 
         if noskip:
             self.noskip_by_layer = [True] * len(layers)
@@ -418,41 +475,49 @@ class ResNet(nn.Module):
         if not self.disable_early_pooling:
             self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, int(64 / scale_factor), layers[0], threshold=thresh, centering=centering,
-                                       noskip=self.noskip_by_layer[0], inner_conv=inner_conv, outer_conv=outer_conv)
+                                       noskip=self.noskip_by_layer[0], inner_conv=inner_conv, outer_conv=outer_conv,
+                                       last_block=last_block[0])
         self.layer2 = None if layers[1] is None else self._make_layer(block, int(128 / scale_factor), layers[1],
                                                                       stride=2, threshold=thresh, centering=centering,
                                                                       nodownsampling=nodownsampling,
                                                                       noskip=self.noskip_by_layer[1],
-                                                                      inner_conv=inner_conv, outer_conv=outer_conv)
+                                                                      inner_conv=inner_conv, outer_conv=outer_conv,
+                                                                      last_block=last_block[1])
         self.layer3 = None if layers[2] is None else self._make_layer(block, int(256 / scale_factor), layers[2],
                                                                       stride=2, threshold=thresh, centering=centering,
                                                                       nodownsampling=nodownsampling,
                                                                       noskip=self.noskip_by_layer[2],
-                                                                      inner_conv=inner_conv, outer_conv=outer_conv)
+                                                                      inner_conv=inner_conv, outer_conv=outer_conv,
+                                                                      last_block=last_block[2])
         self.layer4 = None if layers[3] is None else self._make_layer(block, int(512 / scale_factor), layers[3],
                                                                       stride=2, threshold=thresh, centering=centering,
                                                                       nodownsampling=nodownsampling,
                                                                       noskip=self.noskip_by_layer[3],
-                                                                      inner_conv=inner_conv, outer_conv=outer_conv)
+                                                                      inner_conv=inner_conv, outer_conv=outer_conv,
+                                                                      last_block=last_block[3])
         self.layer5 = None if layers[4] is None else self._make_layer(block, int(512 / scale_factor), layers[4],
                                                                       stride=2, threshold=thresh, centering=centering,
                                                                       nodownsampling=nodownsampling,
                                                                       noskip=self.noskip_by_layer[4],
-                                                                      inner_conv=inner_conv, outer_conv=outer_conv)
+                                                                      inner_conv=inner_conv, outer_conv=outer_conv,
+                                                                      last_block=last_block[4])
         self.layer6 = None if layers[5] is None else self._make_layer(block, int(512 / scale_factor), layers[5],
                                                                       stride=2, threshold=thresh, centering=centering,
                                                                       nodownsampling=nodownsampling,
-                                                                      noskip=self.noskip_by_layer[5])
+                                                                      noskip=self.noskip_by_layer[5],
+                                                                      last_block=last_block[5])
         self.layer7 = None if layers[6] is None else self._make_layer(block, int(512 / scale_factor), layers[6],
                                                                       stride=2, threshold=thresh, centering=centering,
                                                                       nodownsampling=nodownsampling,
                                                                       noskip=self.noskip_by_layer[6],
-                                                                      inner_conv=inner_conv, outer_conv=outer_conv)
+                                                                      inner_conv=inner_conv, outer_conv=outer_conv,
+                                                                      last_block=last_block[6])
         self.layer8 = None if layers[7] is None else self._make_layer(block, int(512 / scale_factor), layers[7],
                                                                       stride=2, threshold=thresh, centering=centering,
                                                                       nodownsampling=nodownsampling,
                                                                       noskip=self.noskip_by_layer[7],
-                                                                      inner_conv=inner_conv, outer_conv=outer_conv)
+                                                                      inner_conv=inner_conv, outer_conv=outer_conv,
+                                                                      last_block=last_block[8])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(int(self.get_fully_connected_units(layers) / scale_factor) * block.expansion, num_classes)
 
@@ -480,7 +545,10 @@ class ResNet(nn.Module):
             return noskip[index]
 
     def _make_layer(self, block, planes, blocks, stride=1, threshold=.999,
-                    centering=False, nodownsampling=False, noskip=False, inner_conv=conv3x3, outer_conv=conv1x1):
+                    centering=False, nodownsampling=False, noskip=False, inner_conv=conv3x3, outer_conv=conv1x1,
+                    last_block=None):
+        if blocks == 1 and last_block is not None:
+            block = last_block
         downsample = None
         if self.highway or (stride != 1 or self.inplanes != planes * block.expansion) and not (noskip or self.nodownsampling):
             downsample = nn.Sequential(
@@ -495,6 +563,8 @@ class ResNet(nn.Module):
                   inner_conv=inner_conv))
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
+            if i == blocks-1 and last_block is not None:
+                block = last_block
             if self.highway:
                 downsample = nn.Sequential(
                     outer_conv(self.inplanes, planes * block.expansion, 1),
@@ -511,10 +581,10 @@ class ResNet(nn.Module):
         return min(64 * (2 ** layer), 512)
 
     def _last_not_none(self, l):
-        result = -1
+        result = 0
         for i, elem in enumerate(l):
             if elem is None:
-                return result
+                continue
             result = i
         return result
 
@@ -1171,6 +1241,19 @@ def resnet18_ri_performance(pretrained=False, **kwargs):
     return model
 
 
+def resnet18_ri_performance2(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 3, 3], disable_early_pooling=True, stem_kernel_size=3, stem_stride=1)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_RI_Performance2'
+    return model
+
+
 def resnet18_ri_hybrid(pretrained=False, **kwargs):
     """Constructs a ResNet-18 model.
 
@@ -1183,6 +1266,18 @@ def resnet18_ri_hybrid(pretrained=False, **kwargs):
     model.name = 'ResNet18_RI_Hybrid'
     return model
 
+
+def resnet18_ri_hybrid2(pretrained=False, **kwargs):
+    """Constructs a ResNet-18 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(BasicBlock, [2, 2, None, 1], last_block=[None, None, None, SimpleBlock], disable_early_pooling=True, stem_kernel_size=3, stem_stride=2)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+    model.name = 'ResNet18_RI_Hybrid2'
+    return model
 
 def resnet18_ri_efficiency(pretrained=False, **kwargs):
     """Constructs a ResNet-18 model.
