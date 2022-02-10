@@ -1,0 +1,20 @@
+{
+    "model": [
+        "resnet18_ri_hybrid2"
+    ],
+    "epoch": [30],
+    "batch_size": [128],
+
+    "dataset": ["ResizedImageNet16"],
+    "resolution": [16],
+
+    "optimizer": ["adam"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 4
+}
