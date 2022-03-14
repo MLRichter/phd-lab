@@ -914,3 +914,110 @@ def MNISTSmallRandomPositioning(batch_size=12, output_size=32, cache_dir='tmp') 
         output_resolution=output_size,
         is_classifier=True
     )
+
+
+def ZIEL_UC(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
+    __imagenet_pca = {
+        'eigval': torch.Tensor([0.2175, 0.0188, 0.0045]),
+        'eigvec': torch.Tensor([
+            [-0.5675, 0.7192, 0.4009],
+            [-0.5808, -0.0045, -0.8140],
+            [-0.5836, -0.6948, 0.4203],
+        ])
+    }
+
+
+    train_tfms = transforms.Compose([
+        transforms.Resize((output_size, output_size)),
+        transforms.CenterCrop((output_size, output_size)),
+        transforms.RandomHorizontalFlip(),
+        transforms.ColorJitter(.4,.4,.4),
+        transforms.ToTensor(),
+        Lighting(0.1, __imagenet_pca['eigval'], __imagenet_pca['eigvec']),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    val_tfms = transforms.Compose([
+        transforms.Resize(int(output_size*1.14)),
+        transforms.CenterCrop(output_size),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    if exists("C:\\Users\\van30\\Documents\\yolov5\\datasets\\uncropped_dataset"):
+        path = "C:\\Users\\van30\\Documents\\yolov5\\datasets\\uncropped_dataset"
+    elif exists("./tmp/uncropped_dataset"):
+        path = "./tmp/uncropped_dataset"
+    else:
+        raise ValueError("ZIEL-Dataset not found")
+
+    trainset = torchvision.datasets.ImageFolder(root=join(path, "train"), transform=train_tfms)
+    testset = torchvision.datasets.ImageFolder(root=join(path, "val"), transform=val_tfms)
+
+    train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                               shuffle=True, num_workers=6, pin_memory=True)
+    test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                             shuffle=False, num_workers=6, pin_memory=True)
+    train_loader.name = "ZIEL_UC"
+    return DataBundle(
+        dataset_name="ZIEL_UC",
+        train_dataset=train_loader,
+        test_dataset=test_loader,
+        cardinality=2,
+        output_resolution=output_size,
+        is_classifier=True
+    )
+
+
+def ZIEL_C(batch_size=12, output_size=224, cache_dir='tmp') -> DataBundle:
+    __imagenet_pca = {
+        'eigval': torch.Tensor([0.2175, 0.0188, 0.0045]),
+        'eigvec': torch.Tensor([
+            [-0.5675, 0.7192, 0.4009],
+            [-0.5808, -0.0045, -0.8140],
+            [-0.5836, -0.6948, 0.4203],
+        ])
+    }
+
+
+    train_tfms = transforms.Compose([
+        transforms.Resize((output_size, output_size)),
+        transforms.CenterCrop((output_size, output_size)),
+        transforms.RandomHorizontalFlip(),
+        transforms.ColorJitter(.4,.4,.4),
+        transforms.ToTensor(),
+        Lighting(0.1, __imagenet_pca['eigval'], __imagenet_pca['eigvec']),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    val_tfms = transforms.Compose([
+        transforms.Resize(int(output_size*1.14)),
+        transforms.CenterCrop(output_size),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    if exists("C:\\Users\\van30\\Documents\\yolov5\\datasets\\cropped_dataset"):
+        path = "C:\\Users\\van30\\Documents\\yolov5\\datasets\\cropped_dataset"
+    elif exists("./tmp/cropped_dataset"):
+        path = "./tmp/cropped_dataset"
+    else:
+        raise ValueError("ZIEL-Dataset not found")
+
+    trainset = torchvision.datasets.ImageFolder(root=join(path, "train"), transform=train_tfms)
+    testset = torchvision.datasets.ImageFolder(root=join(path, "val"), transform=val_tfms)
+
+    train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                               shuffle=True, num_workers=6, pin_memory=True)
+    test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                             shuffle=False, num_workers=6, pin_memory=True)
+    train_loader.name = "ZIEL_C"
+    return DataBundle(
+        dataset_name="ZIEL_C",
+        train_dataset=train_loader,
+        test_dataset=test_loader,
+        cardinality=2,
+        output_resolution=output_size,
+        is_classifier=True
+    )
+

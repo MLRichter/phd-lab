@@ -2,7 +2,8 @@ from pathlib import Path
 
 from attr import attrs
 from sklearn.base import ClassifierMixin
-from sklearn.metrics import balanced_accuracy_score, plot_confusion_matrix
+from sklearn.metrics import balanced_accuracy_score, plot_confusion_matrix, f1_score, recall_score, precision_score, \
+    confusion_matrix
 from matplotlib import pyplot as plt
 from torch import Tensor
 from typing import Union, Tuple, Optional, List
@@ -68,6 +69,126 @@ class Accuracy:
     def reset(self) -> None:
         self.total = 0
         self.correct = 0
+
+
+@attrs(auto_attribs=True, slots=True)
+class Precision:
+
+    y_true: Optional[np.ndarray] = None
+    y_pred: Optional[np.ndarray] = None
+    name: str = "precision"
+    classes: List[str] = None
+
+
+
+    @property
+    def value(self) -> float:
+        return precision_score(self.y_true, self.y_pred)
+
+    def update(self, y_true: Tensor, y_pred: Tensor) -> None:
+        predicted = torch.max(y_pred.data, 1)[1].detach().cpu().numpy()
+        ground_truth = y_true.detach().cpu().numpy()
+        self.y_true = ground_truth if self.y_true is None else np.hstack((self.y_true, ground_truth))
+        self.y_pred = predicted if self.y_pred is None else np.hstack((self.y_pred, predicted))
+
+    def reset(self) -> None:
+        self.y_true, self.y_pred = None, None
+
+
+@attrs(auto_attribs=True, slots=True)
+class Recall:
+
+    y_true: Optional[np.ndarray] = None
+    y_pred: Optional[np.ndarray] = None
+    name: str = "recall"
+    classes: List[str] = None
+
+
+
+    @property
+    def value(self) -> float:
+        return recall_score(self.y_true, self.y_pred)
+
+    def update(self, y_true: Tensor, y_pred: Tensor) -> None:
+        predicted = torch.max(y_pred.data, 1)[1].detach().cpu().numpy()
+        ground_truth = y_true.detach().cpu().numpy()
+        self.y_true = ground_truth if self.y_true is None else np.hstack((self.y_true, ground_truth))
+        self.y_pred = predicted if self.y_pred is None else np.hstack((self.y_pred, predicted))
+
+    def reset(self) -> None:
+        self.y_true, self.y_pred = None, None
+
+
+@attrs(auto_attribs=True, slots=True)
+class F1:
+
+    y_true: Optional[np.ndarray] = None
+    y_pred: Optional[np.ndarray] = None
+    name: str = "f1"
+    classes: List[str] = None
+
+
+
+    @property
+    def value(self) -> float:
+        return f1_score(self.y_true, self.y_pred)
+
+    def update(self, y_true: Tensor, y_pred: Tensor) -> None:
+        predicted = torch.max(y_pred.data, 1)[1].detach().cpu().numpy()
+        ground_truth = y_true.detach().cpu().numpy()
+        self.y_true = ground_truth if self.y_true is None else np.hstack((self.y_true, ground_truth))
+        self.y_pred = predicted if self.y_pred is None else np.hstack((self.y_pred, predicted))
+
+    def reset(self) -> None:
+        self.y_true, self.y_pred = None, None
+
+
+@attrs(auto_attribs=True, slots=True)
+class Sensitivity:
+
+    y_true: Optional[np.ndarray] = None
+    y_pred: Optional[np.ndarray] = None
+    name: str = "sensitivity"
+    classes: List[str] = None
+
+    @property
+    def value(self) -> float:
+        tn, fp, fn, tp = confusion_matrix(self.y_true, self.y_pred).ravel()
+        return tp / (tp + fn)
+
+    def update(self, y_true: Tensor, y_pred: Tensor) -> None:
+        predicted = torch.max(y_pred.data, 1)[1].detach().cpu().numpy()
+        ground_truth = y_true.detach().cpu().numpy()
+        self.y_true = ground_truth if self.y_true is None else np.hstack((self.y_true, ground_truth))
+        self.y_pred = predicted if self.y_pred is None else np.hstack((self.y_pred, predicted))
+
+    def reset(self) -> None:
+        self.y_true, self.y_pred = None, None
+
+
+@attrs(auto_attribs=True, slots=True)
+class Specificity:
+
+    y_true: Optional[np.ndarray] = None
+    y_pred: Optional[np.ndarray] = None
+    name: str = "specificity"
+    classes: List[str] = None
+
+
+
+    @property
+    def value(self) -> float:
+        tn, fp, fn, tp = confusion_matrix(self.y_true, self.y_pred).ravel()
+        return tn / (tn + fp)
+
+    def update(self, y_true: Tensor, y_pred: Tensor) -> None:
+        predicted = torch.max(y_pred.data, 1)[1].detach().cpu().numpy()
+        ground_truth = y_true.detach().cpu().numpy()
+        self.y_true = ground_truth if self.y_true is None else np.hstack((self.y_true, ground_truth))
+        self.y_pred = predicted if self.y_pred is None else np.hstack((self.y_pred, predicted))
+
+    def reset(self) -> None:
+        self.y_true, self.y_pred = None, None
 
 
 @attrs(auto_attribs=True, slots=True)
