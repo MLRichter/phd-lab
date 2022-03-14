@@ -1,7 +1,6 @@
-from efficientnet_pytorch import EfficientNet
-
+from torchvision.models.efficientnet import efficientnet_b0
 
 def efficentnet_b0(*args, **kwargs):
-    model = EfficientNet.from_name('efficientnet-b0', **kwargs)
+    model = efficientnet_b0()
     model.name = "EfficentNet_B0"
     return model

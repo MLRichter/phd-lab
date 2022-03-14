@@ -7,7 +7,7 @@
         "efficientnet_b0"
     ],
     "epoch": [30],
-    "batch_size": [32],
+    "batch_size": [128],
 
     "dataset": ["ZIEL_C", "ZIEL_UC"],
     "resolution": [224],

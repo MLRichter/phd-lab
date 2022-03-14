@@ -1,0 +1,20 @@
+{
+    "model": [
+        "efficientnet_b0"
+    ],
+    "epoch": [30],
+    "batch_size": [256],
+
+    "dataset": ["ImageNet"],
+    "resolution": [299],
+
+    "optimizer": ["lrs"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": true,
+    "downsampling": 1
+}
