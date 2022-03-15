@@ -22,7 +22,30 @@ def lrs(model: Module,
         weight_decay: float = 5e-4,
         ) -> OptimizerSchedulerBundle:
     optimizer = SGD(model.parameters(), lr=0.1, momentum=0, weight_decay=0)
-    return OptimizerSchedulerBundle(optimizer=optimizer)
+    scheduler = StepLR(optimizer, step_size=10)
+    return OptimizerSchedulerBundle(optimizer=optimizer, scheduler=scheduler)
+
+
+def lrs_imgnet(model: Module,
+        lr: float = 0.01,
+        momentum: float = 0.9,
+        weight_decay: float = 5e-4,
+        ) -> OptimizerSchedulerBundle:
+    optimizer = SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=1e-4)
+    scheduler = StepLR(optimizer, step_size=10)
+    return OptimizerSchedulerBundle(optimizer=optimizer, scheduler=scheduler)
+
+
+
+def lrs60_imgnet(model: Module,
+        lr: float = 0.01,
+        momentum: float = 0.9,
+        weight_decay: float = 5e-4,
+        ) -> OptimizerSchedulerBundle:
+    optimizer = SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=1e-4)
+    scheduler = StepLR(optimizer, step_size=20)
+    return OptimizerSchedulerBundle(optimizer=optimizer, scheduler=scheduler)
+
 
 
 def lrs60(model: Module,

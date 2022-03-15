@@ -2,7 +2,6 @@
     "model": [
         "resnet18",
         "resnet34",
-        "vgg16",
         "vgg11",
         "efficientnet_b0"
     ],

@@ -8,13 +8,13 @@
     "dataset": ["ImageNet"],
     "resolution": [299],
 
-    "optimizer": ["lrs"],
+    "optimizer": ["lrs_imgnet"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],
 
     "conv_method": ["channelwise"],
     "delta": [0.99],
-    "data_parallel": true,
+    "data_parallel": false,
     "downsampling": 1
 }
