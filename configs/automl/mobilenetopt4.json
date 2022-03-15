@@ -1,0 +1,20 @@
+{
+    "model": [
+        "mobilenet_v3_small"
+    ],
+    "epoch": [30],
+    "batch_size": [256],
+
+    "dataset": ["ImageNet"],
+    "resolution": [224],
+
+    "optimizer": ["lrs_imgnet"],
+    "metrics": ["Accuracy", "Top5Accuracy"],
+
+    "logs_dir": ["../logs/"],
+
+    "conv_method": ["channelwise"],
+    "delta": [0.99],
+    "data_parallel": false,
+    "downsampling": 1
+}
