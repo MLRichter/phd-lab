@@ -8,7 +8,7 @@
     "batch_size": [256],
 
     "dataset": ["ImageNet"],
-    "resolution": [224],
+    "resolution": [171, 299],
 
     "optimizer": ["lrs_imgnet"],
     "metrics": ["Accuracy", "Top5Accuracy"],
