@@ -11,7 +11,7 @@ from torchvision.ops import StochasticDepth
 
 from torchvision._internally_replaced_utils import load_state_dict_from_url
 from torchvision.ops.misc import ConvNormActivation, SqueezeExcitation
-from torchvision.utils import _log_api_usage_once
+#from torchvision.utils import _log_api_usage_once
 from torchvision.models._utils import _make_divisible
 
 model_urls = {
@@ -160,7 +160,7 @@ class EfficientNet(nn.Module):
             norm_layer (Optional[Callable[..., nn.Module]]): Module specifying the normalization layer to use
         """
         super().__init__()
-        _log_api_usage_once(self)
+        #_log_api_usage_once(self)
 
         if not inverted_residual_setting:
             raise ValueError("The inverted_residual_setting should not be empty")
