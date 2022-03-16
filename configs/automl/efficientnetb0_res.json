@@ -2,7 +2,7 @@
     "model": [
         "efficientnet_b0",
         "efficientnet_b0_eff",
-        "efficientnet_b0_perf",
+        "efficientnet_b0_perf"
     ],
     "epoch": [30],
     "batch_size": [256],
