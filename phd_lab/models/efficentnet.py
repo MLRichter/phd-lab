@@ -450,6 +450,25 @@ def efficientnet_b0_perf(*args, **kwargs):
     return model
 
 
+def efficientnet_b0_perf2(*args, **kwargs):
+    bneck_conf = partial(MBConvConfig, width_mult=1.0, depth_mult=1.0)
+    inverted_residual_setting = [
+        bneck_conf(1, 3, 1, 32, 16, 1),
+        bneck_conf(6, 3, 2, 16, 24, 3),
+        bneck_conf(6, 5, 2, 24, 40, 3),
+        bneck_conf(6, 3, 2, 40, 80, 4),
+        bneck_conf(6, 5, 1, 80, 112, 4),
+        bneck_conf(6, 5, 2, 112, 192, 1),
+        #bneck_conf(6, 3, 1, 192, 320, 1),
+    ]
+    model = _efficientnet("efficientnet_b0", width_mult=1.0, depth_mult=1.0, dropout=0.2, pretrained=False,
+                          progress=True, inverted_residual_setting=inverted_residual_setting,
+                          **kwargs)
+    model.name = "EfficentNetB0_Performance2"
+    return model
+
+
+
 
 if __name__ == '__main__':
     from rfa_toolbox import create_graph_from_pytorch_model, visualize_architecture
