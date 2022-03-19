@@ -2,6 +2,7 @@
     "model": [
         "efficientnet_b0",
         "efficientnet_b0_eff",
+        "efficientnet_b0_perf3",
         "efficientnet_b0_perf2"
     ],
     "epoch": [30],
