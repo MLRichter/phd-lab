@@ -1,18 +1,14 @@
 {
     "model": [
-        "efficientnet_b0",
-        "efficientnet_b0_eff",
-        "efficientnet_b0_perf3",
-        "efficientnet_b0_perf5",
-        "efficientnet_b0_perf2"
+        "fatnet"
     ],
     "epoch": [30],
-    "batch_size": [256],
+    "batch_size": [32],
 
-    "dataset": ["ImageNet"],
+    "dataset": ["Cifar10"],
     "resolution": [224],
 
-    "optimizer": ["lrs_imgnet"],
+    "optimizer": ["adam"],
     "metrics": ["Accuracy", "Top5Accuracy"],
 
     "logs_dir": ["../logs/"],

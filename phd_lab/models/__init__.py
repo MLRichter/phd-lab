@@ -33,3 +33,4 @@ from .pretrained import resnet18_pretrained, resnet34_pretrained, resnet50_pretr
     resnet152_pretrained, densenet121_pretrained, densenet161_pretrained, densenet169_pretrained, densenet201_pretrained
 from .mobilenet import *
 from .mobilenet import better_mobilenet_v3_small
+from .fatnet import *
