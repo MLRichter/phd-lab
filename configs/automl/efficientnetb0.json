@@ -3,6 +3,7 @@
         "efficientnet_b0",
         "efficientnet_b0_eff",
         "efficientnet_b0_perf3",
+        "efficientnet_b0_perf4",
         "efficientnet_b0_perf5",
         "efficientnet_b0_perf2"
     ],

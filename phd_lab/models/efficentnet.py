@@ -493,9 +493,9 @@ def efficientnet_b0_perf4(*args, **kwargs):
         bneck_conf(6, 3, 2, 16, 24, 2),
         bneck_conf(6, 5, 2, 24, 40, 2),
         bneck_conf(6, 3, 2, 40, 80, 3),
-        bneck_conf(6, 5, 1, 80, 112, 3),
-        bneck_conf(6, 5, 1, 112, 192, 4),
-        bneck_conf(6, 3, 1, 192, 320, 1),
+        bneck_conf(6, 5, 1, 80, 240, 7),
+        bneck_conf(6, 5, 2, 240, 320, 1),
+        #bneck_conf(6, 3, 1, 192, 320, 1),
     ]
     model = _efficientnet("efficientnet_b0", width_mult=1.0, depth_mult=1.0, dropout=0.2, pretrained=False,
                           progress=True, inverted_residual_setting=inverted_residual_setting,
@@ -527,6 +527,6 @@ def efficientnet_b0_perf5(*args, **kwargs):
 
 if __name__ == '__main__':
     from rfa_toolbox import create_graph_from_pytorch_model, visualize_architecture
-    model = efficientnet_b0_perf5()
+    model = efficientnet_b0_perf4()
     graph = create_graph_from_pytorch_model(model, custom_layers=["SqueezeExcitation", "ConvNormActivation"])
     visualize_architecture(graph, "EfficientNet").view()
