@@ -1,6 +1,6 @@
 {
     "model": [
-        "efficientnet_b0"
+        "efficientnet_b0_perf4"
     ],
     "epoch": [60],
     "batch_size": [256],

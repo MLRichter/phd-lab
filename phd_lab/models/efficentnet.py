@@ -552,7 +552,8 @@ def efficientnet_b0_perf6(pretrained: bool = False, progress: bool = True, **kwa
 
 
 if __name__ == '__main__':
-    from rfa_toolbox import create_graph_from_pytorch_model, visualize_architecture
+    from rfa_toolbox import create_graph_from_pytorch_model, visualize_architecture, input_resolution_range
     model = efficientnet_b0_perf6()
     graph = create_graph_from_pytorch_model(model, custom_layers=["SqueezeExcitation", "ConvNormActivation"])
+    print(input_resolution_range(graph, lower_bound=True))
     visualize_architecture(graph, "EfficientNet").view()
