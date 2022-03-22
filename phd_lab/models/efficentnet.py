@@ -40,6 +40,7 @@ class MBConvConfig:
         num_layers: int,
         width_mult: float,
         depth_mult: float,
+        allways_skip: bool = False
     ) -> None:
         self.expand_ratio = expand_ratio
         self.kernel = kernel
@@ -47,6 +48,7 @@ class MBConvConfig:
         self.input_channels = self.adjust_channels(input_channels, width_mult)
         self.out_channels = self.adjust_channels(out_channels, width_mult)
         self.num_layers = self.adjust_depth(num_layers, depth_mult)
+        self.allways_skip = allways_skip
 
     def __repr__(self) -> str:
         s = (
@@ -57,6 +59,7 @@ class MBConvConfig:
             f", input_channels={self.input_channels}"
             f", out_channels={self.out_channels}"
             f", num_layers={self.num_layers}"
+            f", allways_skip={self.allways_skip}"
             f")"
         )
         return s
@@ -83,7 +86,15 @@ class MBConv(nn.Module):
         if not (1 <= cnf.stride <= 2):
             raise ValueError("illegal stride value")
 
-        self.use_res_connect = cnf.stride == 1 and cnf.input_channels == cnf.out_channels
+        self.use_res_connect = cnf.allways_skip or (cnf.stride == 1 and cnf.input_channels == cnf.out_channels)
+        self.conv_skip = None
+        if cnf.allways_skip and (cnf.stride != 1 or cnf.input_channels != cnf.out_channels):
+            # add a 1x1 convolution with stride 1 which is used in allways_skip mode
+            self.conv_skip = nn.Conv2d(
+                kernel_size=1, stride=cnf.stride,
+                in_channels=cnf.input_channels,
+                out_channels=cnf.out_channels
+            )
 
         layers: List[nn.Module] = []
         activation_layer = nn.SiLU
@@ -131,6 +142,8 @@ class MBConv(nn.Module):
 
     def forward(self, input: Tensor) -> Tensor:
         result = self.block(input)
+        if self.conv_skip is not None:
+            input = self.conv_skip(input)
         if self.use_res_connect:
             result = self.stochastic_depth(result)
             result += input
@@ -263,9 +276,10 @@ def _efficientnet(
     pretrained: bool,
     progress: bool,
     inverted_residual_setting: Optional[List[MBConvConfig]] = None,
+    allways_skip: bool = False,
     **kwargs: Any,
 ) -> EfficientNet:
-    bneck_conf = partial(MBConvConfig, width_mult=width_mult, depth_mult=depth_mult)
+    bneck_conf = partial(MBConvConfig, width_mult=width_mult, depth_mult=depth_mult, allways_skip=allways_skip)
     inverted_residual_setting = [
         bneck_conf(1, 3, 1, 32, 16, 1),
         bneck_conf(6, 3, 2, 16, 24, 2),
@@ -522,11 +536,23 @@ def efficientnet_b0_perf5(*args, **kwargs):
     return model
 
 
+def efficientnet_b0_perf6(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> EfficientNet:
+    """
+    Constructs a EfficientNet B0 architecture from
+    `"EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks" <https://arxiv.org/abs/1905.11946>`_.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+        progress (bool): If True, displays a progress bar of the download to stderr
+    """
+    model =  _efficientnet("efficientnet_b0", 1.0, 1.0, 0.2, pretrained, progress, allways_skip=True, **kwargs)
+    model.name = "EfficientNetB0_Performance6"
+    return model
 
 
 
 if __name__ == '__main__':
     from rfa_toolbox import create_graph_from_pytorch_model, visualize_architecture
-    model = efficientnet_b0_perf4()
+    model = efficientnet_b0_perf6()
     graph = create_graph_from_pytorch_model(model, custom_layers=["SqueezeExcitation", "ConvNormActivation"])
     visualize_architecture(graph, "EfficientNet").view()
